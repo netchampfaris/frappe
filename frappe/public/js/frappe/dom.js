@@ -4,6 +4,8 @@
 // add a new dom element
 frappe.provide('frappe.dom');
 
+// testing lint bot
+
 frappe.dom = {
 	id_count: 0,
 	freeze_count: 0,
@@ -168,6 +170,7 @@ frappe.dom = {
 		return ('ontouchstart' in window)
 	}
 }
+
 
 frappe.get_modal = function(title, content) {
 	return $(frappe.render_template("modal", {title:title, content:content})).appendTo(document.body);
