@@ -1,6 +1,8 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // MIT License. See license.txt
 
+asdf)
+
 frappe.db = {
 	get_value: function(doctype, filters, fieldname, callback) {
 		frappe.call({
