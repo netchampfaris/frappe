@@ -15,7 +15,7 @@ from frappe.utils import markdown
 def delete_page_cache(path):
 	cache = frappe.cache()
 	cache.delete_value('full_index')
-	groups = ("website_page", "page_context")
+	groups = ("website_page", "page_context", "rendered_page_cache")
 	if path:
 		for name in groups:
 			cache.hdel(name, path)
