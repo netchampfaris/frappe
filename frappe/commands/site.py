@@ -677,6 +677,38 @@ def build_search_index(context):
 	finally:
 		frappe.destroy()
 
+@click.command('routes')
+@pass_context
+def routes(context):
+	from frappe.website.router import get_pages, get_page_info_from_doctypes
+	from frappe.utils.commands import render_table
+	from terminaltables import AsciiTable
+
+	site = get_site(context)
+	frappe.init(site=site)
+	frappe.connect()
+
+	pages = get_pages()
+
+	data = [['Route', 'Title']]
+	for route, context in pages.items():
+		data.append([route, context.title])
+
+	page_routes = AsciiTable(data)
+	page_routes.title = 'Page Routes'
+	print(page_routes.table)
+	print()
+
+	data = [['Route', 'DocType', 'Name']]
+	for route, context in get_page_info_from_doctypes().items():
+		data.append([route, context['doctype'], context['name']])
+
+	doctype_routes = AsciiTable(data)
+	doctype_routes.title = 'DocType Routes'
+	print(doctype_routes.table)
+
+	frappe.destroy()
+
 commands = [
 	add_system_manager,
 	backup,
@@ -703,5 +735,6 @@ commands = [
 	stop_recording,
 	add_to_hosts,
 	start_ngrok,
-	build_search_index
+	build_search_index,
+	routes
 ]
