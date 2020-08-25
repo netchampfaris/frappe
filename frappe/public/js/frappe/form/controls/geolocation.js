@@ -25,10 +25,12 @@ frappe.ui.form.ControlGeolocation = frappe.ui.form.ControlData.extend({
 	},
 
 	make_map() {
-		this.bind_leaflet_map();
-		this.bind_leaflet_draw_control();
-		this.bind_leaflet_locate_control();
-		this.bind_leaflet_refresh_button();
+		this.load_lib().then(() => {
+			this.bind_leaflet_map();
+			this.bind_leaflet_draw_control();
+			this.bind_leaflet_locate_control();
+			this.bind_leaflet_refresh_button();
+		});
 	},
 
 	format_for_input(value) {
@@ -193,5 +195,16 @@ frappe.ui.form.ControlGeolocation = frappe.ui.form.ControlData.extend({
 		this.editableLayers.eachLayer((l)=>{
 			this.editableLayers.removeLayer(l);
 		});
+	},
+
+	load_lib() {
+		return new Promise(resolve =>
+			frappe.require([
+				'/assets/frappe/js/lib/leaflet/leaflet.js',
+				'/assets/frappe/js/lib/leaflet/leaflet.draw.js',
+				'/assets/frappe/js/lib/leaflet/L.Control.Locate.js',
+				'/assets/frappe/js/lib/leaflet/easy-button.js'
+			], resolve)
+		)
 	}
 });

@@ -122,9 +122,6 @@ frappe.search.AwesomeBar = Class.extend({
 			$input.val("");
 		});
 
-		$input.on("keydown", null, 'esc', function() {
-			$input.blur();
-		});
 		frappe.search.utils.setup_recent();
 	},
 
