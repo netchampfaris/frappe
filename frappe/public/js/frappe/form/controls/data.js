@@ -106,22 +106,22 @@ frappe.ui.form.ControlData = frappe.ui.form.ControlInput.extend({
 		return val==null ? "" : val;
 	},
 	validate: function(v) {
+		let value = v;
+
 		if (!v) {
 			return '';
 		}
 		if(this.df.is_filter) {
-			return v;
+			return value;
 		}
 		if(this.df.options == 'Phone') {
-			this.df.invalid = !validate_phone(v);
-			return v;
+			this.df.invalid = !validate_phone(value);
 		} else if (this.df.options == 'Name') {
-			this.df.invalid = !validate_name(v);
-			return v;
+			this.df.invalid = !validate_name(value);
 		} else if(this.df.options == 'Email') {
-			var email_list = frappe.utils.split_emails(v);
+			var email_list = frappe.utils.split_emails(value);
 			if (!email_list) {
-				return '';
+				value = '';
 			} else {
 				let email_invalid = false;
 				email_list.forEach(function(email) {
@@ -130,10 +130,16 @@ frappe.ui.form.ControlData = frappe.ui.form.ControlInput.extend({
 					}
 				});
 				this.df.invalid = email_invalid;
-				return v;
 			}
-		} else {
-			return v;
+		} else if (this.df.options == 'URL') {
+			this.df.invalid = !frappe.utils.validate_type(value, 'url');
 		}
+
+		this.set_description(this.df.invalid
+			? `<span class="text-danger">${__('Invalid {0}', [this.df.options])}</span>`
+			: ''
+		);
+
+		return value;
 	}
 });
