@@ -225,3 +225,10 @@ def get_attr(cmd):
 @frappe.whitelist(allow_guest = True)
 def ping():
 	return "pong"
+
+def schedule():
+	from frappe import enqueue
+	enqueue(some_job)
+
+def some_job():
+	print('test')

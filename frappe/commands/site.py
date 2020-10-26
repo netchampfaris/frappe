@@ -1,6 +1,7 @@
 # imports - standard imports
 import os
 import sys
+from time import sleep
 
 # imports - third party imports
 import click
@@ -671,6 +672,26 @@ def build_search_index(context):
 	finally:
 		frappe.destroy()
 
+@click.command('rq')
+@pass_context
+def rq_stats(context):
+	from frappe.core.page.background_jobs.background_jobs import get_info
+	from pprint import pformat
+
+	site = get_site(context)
+	if not site:
+		raise SiteNotSpecifiedError
+
+	frappe.init(site=site)
+	frappe.connect()
+	try:
+		while True:
+			sys.stdout.write(pformat(get_info()))
+			sys.stdout.flush()
+			sleep(1)
+	except KeyboardInterrupt:
+		frappe.destroy()
+
 commands = [
 	add_system_manager,
 	backup,
@@ -697,5 +718,6 @@ commands = [
 	stop_recording,
 	add_to_hosts,
 	start_ngrok,
-	build_search_index
+	build_search_index,
+	rq_stats
 ]
