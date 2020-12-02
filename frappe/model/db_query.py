@@ -683,15 +683,22 @@ class DatabaseQuery(object):
 			self.match_filters.append(match_filters)
 
 	def get_permission_query_conditions(self):
+		conditions = []
 		condition_methods = frappe.get_hooks("permission_query_conditions", {}).get(self.doctype, [])
 		if condition_methods:
-			conditions = []
 			for method in condition_methods:
 				c = frappe.call(frappe.get_attr(method), self.user)
 				if c:
 					conditions.append(c)
 
-			return " and ".join(conditions) if conditions else None
+		if frappe.db.exists('Permission Script', {'document_type': self.doctype, 'enabled': 1}):
+			doc = frappe.get_doc('Permission Script', {'document_type': self.doctype, 'enabled': 1})
+			c = doc.get_permission_query_conditions(self.doctype, self.user)
+			if c:
+				conditions.append(c)
+
+		return " and ".join(conditions) if conditions else ""
+
 
 	def run_custom_query(self, query):
 		if '%(key)s' in query:
