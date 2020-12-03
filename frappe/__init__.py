@@ -273,6 +273,10 @@ def destroy():
 
 	release_local(local)
 
+def query(doctype):
+	from frappe.database.query_builder.query_builder import QueryBuilder
+	return QueryBuilder(doctype)
+
 # memcache
 redis_server = None
 def cache():
