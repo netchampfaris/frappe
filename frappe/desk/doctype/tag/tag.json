@@ -1,11 +1,13 @@
 {
+ "actions": [],
  "allow_rename": 1,
  "autoname": "Prompt",
  "creation": "2016-05-25 09:43:44.767581",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "description"
+  "description",
+  "color"
  ],
  "fields": [
   {
@@ -13,9 +15,16 @@
    "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Description"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "in_list_view": 1,
+   "label": "Color"
   }
  ],
- "modified": "2019-09-25 17:47:41.712237",
+ "links": [],
+ "modified": "2021-02-19 15:44:37.989883",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "Tag",

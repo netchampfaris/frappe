@@ -792,16 +792,23 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 
 	get_tags_html(user_tags, limit, colored=false) {
 		let get_tag_html = tag => {
-			let color = '', style = '';
 			if (tag) {
-				if (colored) {
-					color = frappe.get_palette(tag);
-					style = `background-color: var(${color[0]}); color: var(${color[1]})`;
+				let bg_color = (
+					frappe.tags.tags.find(t => t.name === tag) || {
+						color: ""
+					}
+				).color;
+				let text_color = frappe.ui.color.get_contrast_color(
+					bg_color
+				);
+				let style = "";
+				if (bg_color && text_color) {
+					style = `style="background-color: ${bg_color}; color: ${text_color}"`;
 				}
-
-				return `<div class="tag-pill ellipsis" title="${tag}" style="${style}">${tag}</div>`;
+				return `<div class="tag-pill ellipsis" title="${tag}" ${style}">${tag}</div>`;
 			}
 		};
+
 		return user_tags.split(',').slice(1, limit + 1).map(get_tag_html).join('');
 	}
 

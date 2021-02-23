@@ -9,7 +9,7 @@ frappe.tags.utils = {
 		let out = [];
 
 		for (let i in frappe.tags.tags) {
-			let tag = frappe.tags.tags[i];
+			let tag = frappe.tags.tags[i].name;
 			let level = frappe.search.utils.fuzzy_search(txt, tag);
 			if (level) {
 				out.push({
@@ -30,14 +30,10 @@ frappe.tags.utils = {
 	},
 
 	fetch_tags() {
-		frappe.call({
-			method: "frappe.desk.doctype.tag.tag.get_tags_list_for_awesomebar",
-			callback: function(r) {
-				if (r && r.message) {
-					frappe.tags.tags = $.extend([], r.message);
-				}
-			}
-		});
+		frappe.db.get_list('Tag', { fields: ['name', 'color' ] })
+			.then(tags => {
+				frappe.tags.tags = $.extend([], tags);
+			})
 	},
 
 	get_tag_results: function(tag) {
