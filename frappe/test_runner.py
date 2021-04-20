@@ -15,6 +15,7 @@ import cProfile, pstats
 from six import StringIO
 from six.moves import reload_module
 from frappe.model.naming import revert_series_if_last
+from frappe.test_runner_output import PrettyTextTestResult
 
 unittest_runner = unittest.TextTestRunner
 SLOW_TEST_THRESHOLD = 2
@@ -136,7 +137,7 @@ def run_all_tests(app=None, verbose=False, profile=False, ui_tests=False, failfa
 	if junit_xml_output:
 		runner = unittest_runner(verbosity=1+(verbose and 1 or 0), failfast=failfast)
 	else:
-		runner = unittest_runner(resultclass=TimeLoggingTestResult, verbosity=1+(verbose and 1 or 0), failfast=failfast)
+		runner = unittest_runner(resultclass=PrettyTextTestResult, verbosity=1+(verbose and 1 or 0), failfast=failfast)
 
 	if profile:
 		pr = cProfile.Profile()
@@ -202,7 +203,7 @@ def _run_unittest(modules, verbose=False, tests=(), profile=False, junit_xml_out
 	if junit_xml_output:
 		runner = unittest_runner(verbosity=1+(verbose and 1 or 0))
 	else:
-		runner = unittest_runner(resultclass=TimeLoggingTestResult, verbosity=1+(verbose and 1 or 0))
+		runner = unittest_runner(resultclass=PrettyTextTestResult, verbosity=1+(verbose and 1 or 0))
 
 	if profile:
 		pr = cProfile.Profile()
