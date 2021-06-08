@@ -10,16 +10,16 @@
 	<thead>
 		<tr>
 			<td style="width: 33%">{{ __("Property") }}</td>
-			<td style="width: 33%">{{ __("Original Value") }}</td>
-			<td style="width: 33%">{{ __("New Value") }}</td>
+			<td style="width: 33%">{{ __("Changes") }}</td>
+			<!-- <td style="width: 33%">{{ __("New Value") }}</td> -->
 		</tr>
 	</thead>
 	<tbody>
-		{% for item in data.changed %}
+		{% for item in changed_diff %}
 		<tr>
 			<td>{{ frappe.meta.get_label(doc.ref_doctype, item[0]) }}</td>
-			<td class="danger">{{ item[1] }}</td>
-			<td class="success">{{ item[2] }}</td>
+			<td>{{ item[1] }}</td>
+			<!-- <td class="success">{{ item[2] }}</td> -->
 		</tr>
 		{% endfor %}
 	</tbody>

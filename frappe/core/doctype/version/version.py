@@ -7,8 +7,21 @@ import frappe, json
 
 from frappe.model.document import Document
 from frappe.model import no_value_fields, table_fields
+from pprint import pprint
+from ghdiff import diff
 
 class Version(Document):
+	def onload(self):
+		changed = []
+		data = self.get_data()
+
+		for d in data['changed']:
+			field, old, new = d
+			value_diff = diff(old, new, css=False)
+			changed.append([field, value_diff])
+
+		self.set_onload('changed_diff', changed)
+
 	def set_diff(self, old, new):
 		'''Set the data property with the diff of the docs if present'''
 		diff = get_diff(old, new)
