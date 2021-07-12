@@ -1,0 +1,46 @@
+{% macro render_field(value, df, doc) %}
+{%- if df.fieldtype == 'Table' -%}
+{{ render_table_field(value, df, doc) }}
+{%- else -%}
+{{ render_data_field(value, df, doc) }}
+{%- endif -%}
+{% endmacro %}
+
+{% macro render_data_field(value, df, doc) %}
+<div class="field">
+	<div class="label">
+		{{ df.label }}
+	</div>
+	<div class="value">
+		{{ doc.get_formatted(df.fieldname) }}
+	</div>
+</div>
+{% endmacro %}
+
+{% macro render_table_field(value, df, doc) %}
+<div class="table-field">
+    {%- set meta = frappe.get_meta(df.options) -%}
+    <div class="row table-header">
+        {%- for df in meta.fields if df.in_list_view -%}
+        {%- if loop.index < 5 -%}
+        <div class="col table-column-header" data-fieldtype="{{ df.fieldtype }}">
+            {{ df.label }}
+        </div>
+        {%- endif -%}
+        {%- endfor -%}
+    </div>
+    <div class="table-body">
+        {%- for row in value -%}
+        <div class="table-row row">
+            {%- for df in meta.fields if df.in_list_view -%}
+            {%- if loop.index < 5 -%}
+            <div class="table-cell col" data-fieldtype="{{ df.fieldtype }}">
+                {{ row.get(df.fieldname) }}
+            </div>
+            {%- endif -%}
+            {%- endfor -%}
+        </div>
+        {%- endfor -%}
+    </div>
+</div>
+{% endmacro %}

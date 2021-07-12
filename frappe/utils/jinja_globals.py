@@ -73,8 +73,14 @@ def include_script(path):
 	return f'<script type="text/javascript" src="{path}"></script>'
 
 
-def include_style(path):
+def include_style(path, inline=False):
 	path = bundled_asset(path)
+	if inline and path.startswith('/assets'):
+		from frappe import read_file
+		css_content = read_file(path[1:])
+		if css_content:
+			return f'<style>{css_content}</style>'
+
 	return f'<link type="text/css" rel="stylesheet" href="{path}">'
 
 

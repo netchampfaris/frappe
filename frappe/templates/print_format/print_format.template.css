@@ -1,0 +1,49 @@
+@page {
+	size: {{ layout.size or 'A4' }} portrait;
+	margin-top: {{ layout.margin_top }}mm;
+	margin-bottom: {{ layout.margin_bottom }}mm;
+	margin-left: {{ layout.margin_left }}mm;
+	margin-right: {{ layout.margin_right }}mm;
+
+	{% set position_map = {
+		'Top Left': 'top-left',
+		'Top Right': 'top-right',
+		'Top Center': 'top-center',
+		'Bottom Left': 'bottom-left',
+		'Bottom Right': 'bottom-right',
+		'Bottom Center': 'bottom-center',
+	} %}
+	{% set position = position_map.get(layout.page_number_position) %}
+
+	{% if position %}
+	@{{ position }} {
+		content: "Page " counter(page) " of " counter(pages)
+	}
+	{% endif %}
+}
+
+@media print {
+	body {
+		min-width: {{ body_width }}mm !important;
+		max-width: {{ body_width }}mm !important;
+	}
+}
+
+.page-break {
+	page-break-after: always;
+}
+
+/* styles for /printpreview */
+@media screen {
+	html {
+		background-color: #e6e6e6;
+	}
+	body {
+		max-width: {{ paper_width }}mm;
+		margin: 2rem auto;
+		padding-top: {{ layout.margin_top }}mm;
+		padding-bottom: {{ layout.margin_bottom }}mm;
+		padding-left: {{ layout.margin_left }}mm;
+		padding-right: {{ layout.margin_right }}mm;
+	}
+}

@@ -1,0 +1,59 @@
+{% import "templates/print_format/macros.html" as macros %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>{{ doctype }}: {{ name }}</title>
+		{{ include_style('print_format_paper.bundle.css', inline=true) }}
+		<style>
+			{{ print_format_css }}
+		</style>
+	</head>
+	<body>
+		{%- if frappe.request.path == '/printpreview' -%}
+		{%- if letterhead -%}
+		<div class="letterhead-header">
+			{{ letterhead.content }}
+		</div>
+		{%- endif -%}
+		<div class="header">
+			{{ layout.header.html }}
+		</div>
+		{%- endif -%}
+
+		{%- for section in layout.sections -%}
+		<div class="section">
+			<div class="section-heading">{{ section.label or '' }}</div>
+
+			<div class="section-columns row">
+				{%- for column in section.columns -%}
+				<div class="col">
+					<div class="column">
+						{%- for df in column.fields -%}
+						{%- if doc.get(df.fieldname) -%}
+						{{ macros.render_field(doc.get(df.fieldname), df, doc) }}
+						{%- endif -%}
+						{%- endfor -%}
+					</div>
+				</div>
+				{%- endfor -%}
+			</div>
+		</div>
+		{%- if section.page_break -%}
+		<div class="page-break"></div>
+		{%- endif -%}
+		{%- endfor -%}
+
+		{%- if frappe.request.path == '/printpreview' -%}
+		<div class="footer">
+			{{ layout.footer.html }}
+		</div>
+		{%- if letterhead -%}
+		<div class="letterhead-footer">
+			{{ letterhead.footer }}
+		</div>
+		{%- endif -%}
+		{%- endif -%}
+	</body>
+</html>

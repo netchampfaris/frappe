@@ -1,0 +1,48 @@
+@import "frappe/public/scss/desk/variables.scss";
+@import "frappe/public/scss/common/mixins.scss";
+@import "frappe/public/scss/common/global.scss";
+@import "frappe/public/scss/common/icons.scss";
+
+@import "~bootstrap/scss/bootstrap";
+@import "frappe/public/scss/common/quill";
+@import "frappe/public/scss/desk/css_variables";
+
+.header-title {
+	font-size: 2rem;
+}
+
+.section {
+	margin-bottom: 1rem;
+}
+
+.section-heading {
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.field {
+	margin-bottom: 1rem;
+}
+
+.field .value {
+	font-weight: bold;
+}
+
+.table-header {
+	padding: 0.5rem 0;
+	color: var(--text-muted);
+}
+
+.table-row {
+	padding: 0.5rem 0;
+	border-top: 1px solid var(--border-color);
+}
+
+.table-cell, .table-column-header {
+	&[data-fieldtype="Int"],
+	&[data-fieldtype="Float"],
+	&[data-fieldtype="Currency"] {
+		text-align: right;
+	}
+}
+
