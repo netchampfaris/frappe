@@ -16,7 +16,11 @@ class SystemConsole(Document):
 			safe_exec(self.console)
 			self.output = '\n'.join(frappe.debug_log)
 		except: # noqa: E722
-			self.output = frappe.get_traceback()
+			self.output = ''
+			if frappe.debug_log:
+				self.output = '\n'.join(frappe.debug_log)
+				self.output += '\n\n'
+			self.output += frappe.get_traceback()
 
 		if self.commit:
 			frappe.db.commit()
