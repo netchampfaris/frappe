@@ -45,6 +45,14 @@ frappe.ui.form.ControlCode = class ControlCode extends frappe.ui.form.ControlTex
 		});
 	}
 
+	fetch_autocompletions(method) {
+		frappe.call(method)
+			.then(r => r.message)
+			.then(items => {
+				this.df.autocompletions = items;
+			});
+	}
+
 	setup_autocompletion() {
 		if (this._autocompletion_setup) return;
 

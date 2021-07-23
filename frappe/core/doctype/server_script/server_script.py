@@ -3,12 +3,11 @@
 # For license information, please see license.txt
 
 import ast
-from types import FunctionType, MethodType, ModuleType
 from typing import Dict, List
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils.safe_exec import get_safe_globals, safe_exec, NamespaceDict
+from frappe.utils.safe_exec import safe_exec
 from frappe import _
 
 
@@ -120,51 +119,6 @@ class ServerScript(Document):
 		safe_exec(self.script, None, locals)
 		if locals["conditions"]:
 			return locals["conditions"]
-
-	@frappe.whitelist()
-	def get_autocompletion_items(self):
-		"""Generates a list of a autocompletion strings from the context dict
-		that is used while executing a Server Script.
-
-		Returns:
-			list: Returns list of autocompletion items.
-			For e.g., ["frappe.utils.cint", "frappe.db.get_all", ...]
-		"""
-		def get_keys(obj):
-			out = []
-			for key in obj:
-				if key.startswith('_'):
-					continue
-				value = obj[key]
-				if isinstance(value, (NamespaceDict, dict)) and value:
-					if key == 'form_dict':
-						out.append(['form_dict', 7])
-						continue
-					for subkey, score in get_keys(value):
-						fullkey = f'{key}.{subkey}'
-						out.append([fullkey, score])
-				else:
-					if isinstance(value, type) and issubclass(value, Exception):
-						score = 0
-					elif isinstance(value, ModuleType):
-						score = 10
-					elif isinstance(value, (FunctionType, MethodType)):
-						score = 9
-					elif isinstance(value, type):
-						score = 8
-					elif isinstance(value, dict):
-						score = 7
-					else:
-						score = 6
-					out.append([key, score])
-			return out
-
-		items = frappe.cache().get_value('server_script_autocompletion_items')
-		if not items:
-			items = get_keys(get_safe_globals())
-			items = [{'value': d[0], 'score': d[1]} for d in items]
-			frappe.cache().set_value('server_script_autocompletion_items', items)
-		return items
 
 
 @frappe.whitelist()

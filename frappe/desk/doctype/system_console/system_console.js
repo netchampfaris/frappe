@@ -17,5 +17,8 @@ frappe.ui.form.on('System Console', {
 		frm.page.set_primary_action(__("Execute"), () => {
 			frm.execute_action('Execute');
 		});
+		frm.get_field("console").fetch_autocompletions(
+			"frappe.utils.safe_exec.get_autocompletion_items"
+		);
 	}
 });

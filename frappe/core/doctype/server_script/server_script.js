@@ -10,11 +10,9 @@ frappe.ui.form.on('Server Script', {
 			frm.dashboard.hide();
 		}
 
-		frm.call('get_autocompletion_items')
-			.then(r => r.message)
-			.then(items => {
-				frm.set_df_property('script', 'autocompletions', items);
-			});
+		frm.get_field("script").fetch_autocompletions(
+			"frappe.utils.safe_exec.get_autocompletion_items"
+		);
 	},
 
 	setup_help(frm) {
