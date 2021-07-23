@@ -7,7 +7,7 @@ from typing import Dict, List
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils.safe_exec import safe_exec
+from frappe.utils.safe_exec import safe_exec, get_autocompletion_items, get_keys_from_object
 from frappe import _
 
 
@@ -26,6 +26,24 @@ class ServerScript(Document):
 		if self.script_type == "Scheduler Event":
 			for job in self.scheduled_jobs:
 				frappe.delete_doc("Scheduled Job Type", job.name)
+
+	@frappe.whitelist()
+	def get_document_autocompletion_items(self):
+		out = []
+		if self.reference_doctype:
+			meta = frappe.get_meta(self.reference_doctype)
+			for df in meta.fields:
+				if df.fieldtype not in frappe.model.no_value_fields:
+					out.append({
+						'value': f'doc.{df.fieldname}',
+						'score': 11
+					})
+			for fieldname in frappe.model.default_fields:
+				out.append({
+					'value': f'doc.{fieldname}',
+					'score': 11
+				})
+		return out
 
 	@property
 	def scheduled_jobs(self) -> List[Dict[str, str]]:

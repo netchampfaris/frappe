@@ -14,6 +14,20 @@ frappe.ui.form.on('Server Script', {
 			"frappe.utils.safe_exec.get_autocompletion_items"
 		);
 	},
+	reference_doctype(frm) {
+		if (frm.doc.script_type !== 'DocType Event' || !frm.doc.reference_doctype) {
+			return;
+		}
+
+		frm.call('get_document_autocompletion_items')
+			.then(r => r.message)
+			.then(items => {
+				let df = frm.get_field('script').df;
+				df.autocompletions = df.autocompletions || [];
+				df.autocompletions = df.autocompletions.filter(d => !d.value.startsWith('doc.'));
+				df.autocompletions.push(...items);
+			});
+	},
 
 	setup_help(frm) {
 		frm.get_field('help_html').html(`
