@@ -1,0 +1,8 @@
+.control-table {
+    &-header, &-row {
+        display: grid;
+        grid-template-columns: var(--grid-template-columns);
+        gap: 4px;
+        margin-top: 4px;
+    }
+}

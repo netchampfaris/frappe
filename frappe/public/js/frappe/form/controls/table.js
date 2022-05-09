@@ -1,128 +1,203 @@
-import Grid from '../grid';
-
-frappe.ui.form.ControlTable = class ControlTable extends frappe.ui.form.Control {
+frappe.ui.form.ControlTable = class ControlTable extends frappe.ui.form
+	.Control {
 	make() {
 		super.make();
-
-		// add title if prev field is not column / section heading or html
-		this.grid = new Grid({
-			frm: this.frm,
-			df: this.df,
-			perm: this.perm || (this.frm && this.frm.perm) || this.df.perm,
-			parent: this.wrapper,
-			control: this
-		});
-
-		if (this.frm) {
-			this.frm.grids[this.frm.grids.length] = this;
-		}
-
-		this.$wrapper.on('paste', ':text', e => {
-			const table_field = this.df.fieldname;
-			const grid = this.grid;
-			const grid_pagination = grid.grid_pagination;
-			const grid_rows = grid.grid_rows;
-			const doctype = grid.doctype;
-			const row_docname = $(e.target).closest('.grid-row').data('name');
-			const in_grid_form = $(e.target).closest('.form-in-grid').length;
-
-			let pasted_data = frappe.utils.get_clipboard_data(e);
-
-			if (!pasted_data || in_grid_form) return;
-
-			let data = frappe.utils.csv_to_array(pasted_data, '\t');
-
-			if (data.length === 1 && data[0].length === 1) return;
-
-			let fieldnames = [];
-			// for raw data with column header
-			if (this.get_field(data[0][0])) {
-				data[0].forEach(column => {
-					fieldnames.push(this.get_field(column));
-				});
-				data.shift();
-			} else {
-				// no column header, map to the existing visible columns
-				const visible_columns = grid_rows[0].get_visible_columns();
-				let target_column_matched = false;
-				visible_columns.forEach(column => {
-					// consider all columns after the target column.
-					if (target_column_matched || column.fieldname === $(e.target).data('fieldname')) {
-						fieldnames.push(column.fieldname);
-						target_column_matched = true;
-					}
-				});
-			}
-
-			let row_idx = locals[doctype][row_docname].idx;
-			let data_length = data.length;
-			data.forEach((row, i) => {
-				setTimeout(() => {
-					let blank_row = !row.filter(Boolean).length;
-					if (!blank_row) {
-						if (row_idx > this.frm.doc[table_field].length) {
-							this.grid.add_new_row();
-						}
-
-						if (row_idx > 1 && (row_idx - 1) % grid_pagination.page_length === 0) {
-							grid_pagination.go_to_page(grid_pagination.page_index + 1);
-						}
-
-						const row_name = grid_rows[row_idx - 1].doc.name;
-						row.forEach((value, data_index) => {
-							if (fieldnames[data_index]) {
-								frappe.model.set_value(doctype, row_name, fieldnames[data_index], value);
-							}
-						});
-						row_idx++;
-						if (data_length >= 10) {
-							let progress = i + 1;
-							frappe.show_progress(__('Processing'), progress, data_length, null, true);
-						}
-					}
-				}, 0);
-			});
-			return false; // Prevent the default handler from running.
-		});
+		this.setup_meta();
+		this.make_table();
 	}
-	get_field(field_name) {
-		let fieldname;
-		field_name = field_name.toLowerCase();
-		this.grid.meta.fields.some(field => {
-			if (frappe.model.no_value_type.includes(field.fieldtype)) {
-				return false;
-			}
 
-			const is_field_matching = () => {
+	make_table() {
+		this.$wrapper.html(`
+			<div class="form-group">
+				<label class="control-label">${this.df.label}</label>
+				<div class="control-table-wrapper">
+					<div class="control-table-header"></div>
+					<div class="control-table-body"></div>
+				</div>
+			</div>
+		`);
+		this.$header = this.$wrapper.find(".control-table-header");
+		this.$body = this.$wrapper.find(".control-table-body");
+	}
+
+	setup_meta() {
+		this.doctype = this.df.options;
+		if (!this.doctype) {
+			throw `Doctype not specified in Options field for ${this.df.fieldname}`;
+		}
+		this.meta = frappe.get_meta(this.doctype);
+	}
+
+	get_columns() {
+		if (this.columns) {
+			return this.columns;
+		}
+		this.columns = this.meta.fields
+			.filter(df => {
 				return (
-					field.fieldname.toLowerCase() === field_name ||
-					(field.label || '').toLowerCase() === field_name  ||
-					(__(field.label) || '').toLowerCase() === field_name
+					df &&
+					!df.hidden &&
+					df.in_list_view &&
+					((this.frm && this.frm.get_perm(df.permlevel, "read")) ||
+						!this.frm) &&
+					!in_list(frappe.model.layout_fields, df.fieldtype)
 				);
-			};
+			})
+			.map(df => {
+				if (df.columns) return;
+				let default_column_size = {
+					Check: 1,
+					"Small Text": 3,
+					Text: 3,
+					"Text Editor": 3
+				};
+				df.columns = default_column_size[df.fieldtype] || 1;
+				return df;
+			});
 
-			if (is_field_matching()) {
-				fieldname = field.fieldname;
-				return true;
-			}
-		});
-		return fieldname;
+		return this.columns;
 	}
-	refresh_input() {
-		this.grid.refresh();
+
+	render_header() {
+		let columns = this.get_columns();
+		this.$header.html(`
+			<div class="table-cell d-flex align-items-center">
+				<input type="checkbox" class="control-table-checkbox" />
+			</div>
+			${columns
+				.map(
+					column =>
+						`
+							<div
+								class="table-cell"
+								data-fieldname="${column.fieldname}"
+							>
+								${__(column.label)}
+							</div>
+						`
+				)
+				.join("")}
+		`);
 	}
-	get_value() {
-		if(this.grid) {
-			return this.grid.get_data();
+
+	render_body() {
+		let rows = this.get_value();
+		this.$body.html("");
+
+		let row_html = row => `
+			<div
+				class="control-table-row"
+				data-idx="${row.idx}"
+				data-doctype="${row.doctype}"
+				data-name="${row.name}"
+			></div>
+		`;
+		let rows_html = rows.map(row_html).join("");
+		this.$body.html(rows_html);
+
+		this.table_rows = {};
+		for (let row of rows) {
+			this.table_rows[row.name] = new TableRow({
+				frm: this.frm,
+				table: this,
+				doc: row,
+				wrapper: this.$body.find(
+					`.control-table-row[data-name=${row.name}]`
+				)
+			});
 		}
 	}
-	set_input( ) {
-		//
+
+	refresh_input() {
+		let columns = this.get_columns();
+		let grid_template_columns = `2rem ${columns
+			.map(col => `${col.columns}fr`)
+			.join(" ")}`;
+		this.$wrapper
+			.find(".control-table-wrapper")
+			.css("--grid-template-columns", grid_template_columns);
+
+		this.render_header();
+		this.render_body();
 	}
-	validate() {
-		return this.get_value();
-	}
-	check_all_rows() {
-		this.$wrapper.find('.grid-row-check')[0].click();
+
+	get_value() {
+		return this.get_model_value();
 	}
 };
+
+class TableRow {
+	constructor({ frm, table, wrapper, doc }) {
+		this.frm = frm;
+		this.table = table;
+		this.$wrapper = wrapper;
+		this.doc = doc;
+		this.render();
+	}
+
+	render() {
+		let columns = this.table.get_columns();
+
+		this.$wrapper.html(`
+			<div class="table-cell d-flex align-items-center">
+				<input type="checkbox" class="control-table-checkbox" />
+				<div>${this.doc.idx || ''}</div>
+			</div>
+			${columns
+				.map(
+					column => `
+						<div
+							class="table-cell"
+							data-fieldname="${column.fieldname}"
+						></div>
+					`
+				)
+				.join("")}
+		`);
+
+		this.cells = {};
+		for (let column of columns) {
+			this.cells[column.fieldname] = new TableCell({
+				frm: this.frm,
+				table: this.table,
+				doc: this.doc,
+				df: column,
+				wrapper: this.$wrapper.find(
+					`.table-cell[data-fieldname=${column.fieldname}]`
+				)
+			});
+		}
+	}
+}
+
+class TableCell {
+	constructor({ frm, table, wrapper, doc, df }) {
+		this.frm = frm;
+		this.table = table;
+		this.$wrapper = wrapper;
+		this.doc = doc;
+		this.df = df;
+		this.render();
+	}
+
+	render() {
+		if (!this.control) {
+			this.control = frappe.ui.form.make_control({
+				frm: this.frm,
+				df: this.df,
+				parent: this.$wrapper,
+				only_input: true,
+				with_link_btn: true,
+				doc: this.doc,
+				doctype: this.doc.doctype,
+				docname: this.doc.name,
+				value: this.doc[this.df.fieldname],
+				render_input: true
+			});
+		}
+		this.control.refresh();
+	}
+}
+
+frappe.provide("frappe.ui.form");
+frappe.ui.form.close_grid_form = function() {};
