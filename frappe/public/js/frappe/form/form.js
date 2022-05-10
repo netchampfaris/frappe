@@ -275,7 +275,8 @@ frappe.ui.form.Form = class FrappeForm {
 			frappe.model.on(df.options, "*", function(fieldname, value, doc) {
 				if (doc.parent == me.docname && doc.parentfield === df.fieldname) {
 					me.dirty();
-					me.fields_dict[df.fieldname].grid.set_value(fieldname, value, doc);
+					// me.fields_dict[df.fieldname].grid.set_value(fieldname, value, doc);
+					me.fields_dict[df.fieldname].set_table_value(doc.name, fieldname, value);
 					return me.script_manager.trigger(fieldname, doc.doctype, doc.name);
 				}
 			});

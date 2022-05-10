@@ -1,8 +1,22 @@
 .control-table {
-    &-header, &-row {
-        display: grid;
-        grid-template-columns: var(--grid-template-columns);
-        gap: 4px;
-        margin-top: 4px;
-    }
+	&-header,
+	&-row {
+		display: grid;
+		grid-template-columns: var(--grid-template-columns);
+		gap: 4px;
+		margin-top: 4px;
+	}
+	&-wrapper {
+		.table-cell-checkbox,
+		.table-cell-actions {
+			display: flex;
+			align-items: center;
+		}
+		.table-cell-checkbox {
+			gap: 4px;
+		}
+	}
+	&-footer {
+		margin-top: var(--margin-md);
+	}
 }
