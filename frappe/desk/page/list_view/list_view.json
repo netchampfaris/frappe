@@ -1,0 +1,23 @@
+{
+ "content": null,
+ "creation": "2022-11-15 15:18:04.603127",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2022-11-15 15:18:04.603127",
+ "modified_by": "Administrator",
+ "module": "Desk",
+ "name": "list-view",
+ "owner": "Administrator",
+ "page_name": "list-view",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "List View"
+}
