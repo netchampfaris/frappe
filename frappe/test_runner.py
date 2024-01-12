@@ -18,7 +18,7 @@ from frappe.modules import get_module_name, load_doctype_module
 from frappe.utils import cint
 
 unittest_runner = unittest.TextTestRunner
-SLOW_TEST_THRESHOLD = 2
+SLOW_TEST_THRESHOLD = 10
 
 
 def xmlrunner_wrapper(output):

@@ -318,6 +318,7 @@ def handle_exception(e):
 	)
 
 	allow_traceback = frappe.get_system_settings("allow_error_traceback") if frappe.db else False
+	allow_traceback = True
 
 	if not frappe.session.user:
 		# If session creation fails then user won't be unset. This causes a lot of code that
