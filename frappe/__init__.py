@@ -2388,6 +2388,7 @@ def get_version(doctype, name, limit=None, head=False, raise_err=True):
 
 @whitelist(allow_guest=True)
 def ping():
+	throw("Unknown Exception")
 	return "pong"
 
 
