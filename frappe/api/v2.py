@@ -71,13 +71,36 @@ def read_doc(doctype: str, name: str):
 
 
 def document_list(doctype: str):
-	if frappe.form_dict.get("fields"):
-		frappe.form_dict["fields"] = json.loads(frappe.form_dict["fields"])
+	from frappe.model.base_document import get_controller
 
-	# set limit of records for frappe.get_list
-	frappe.form_dict.limit_page_length = frappe.form_dict.limit or 20
-	# evaluate frappe.get_list
-	return frappe.call(frappe.client.get_list, doctype, **frappe.form_dict)
+	args = frappe.request.args
+
+	fields = args.get("fields", None)
+	print(fields, type(fields))
+
+	filters = args.get("filters", None)
+	order_by = args.get("order_by", None)
+	start = args.get("start", 0)
+	limit = args.get("limit", 20)
+	group_by = args.get("group_by", None)
+	debug = args.get("debug", False)
+
+	query = frappe.qb.get_query(
+		table=doctype,
+		fields=fields,
+		filters=filters,
+		order_by=order_by,
+		offset=start,
+		limit=limit,
+		group_by=group_by,
+	)
+	controller = get_controller(doctype)
+	if hasattr(controller, "get_list"):
+		return_value = controller.get_list(query)
+		if return_value is not None:
+			query = return_value
+	print(query)
+	return query.run(as_dict=True, debug=debug)
 
 
 def count(doctype: str) -> int:
@@ -167,9 +190,12 @@ def run_doc_method(method: str, document: dict[str, Any] | str, kwargs=None):
 	frappe.response.docs.append(doc)  # send modified document and result both.
 	return response
 
+def throw_error():
+	frappe.throw("There was an unrecoverable error")
 
 url_rules = [
 	# RPC calls
+	Rule("/method/throw_error", endpoint=throw_error),
 	Rule("/method/login", endpoint=login),
 	Rule("/method/logout", endpoint=logout),
 	Rule("/method/ping", endpoint=frappe.ping),
