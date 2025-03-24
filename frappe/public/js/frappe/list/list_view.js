@@ -33,6 +33,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		);
 		this.count_upper_bound = 1001;
 		this._element_factory = new ElementFactory(this.doctype);
+		this.column_max_widths = {};
 	}
 
 	has_permissions() {
@@ -641,6 +642,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 				this.$result.append(this.get_list_row_html(doc));
 			}
 		}
+		this.apply_column_widths();
 	}
 
 	render_count() {
@@ -697,6 +699,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 					col.type == "Subject" ? "list-subject level" : "hidden-xs",
 					col.type == "Tag" ? "tag-col hide" : "",
 					frappe.model.is_numeric_field(col.df) ? "text-right" : "",
+					col.df?.fieldname,
 				].join(" ");
 
 				let html = "";
@@ -768,7 +771,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		return `
 			<div class="list-row-container" tabindex="1">
 				<div class="level list-row">
-					<div class="level-left">
+					<div class="level-left ellipsis">
 						${left}
 					</div>
 					<div class="level-right text-muted ellipsis">
@@ -893,6 +896,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			"list-row-col ellipsis",
 			class_map[col.type],
 			frappe.model.is_numeric_field(df) ? "text-right" : "",
+			fieldname,
 		].join(" ");
 
 		let column_html;
@@ -909,11 +913,31 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			}[col.type];
 		}
 
+		let textLength = $(column_html).text()?.trim()?.length || 22.5;
+		let calculatedWidth = (textLength * 10) / 1.3;
+
+		// store the max width for this column
+		if (
+			!this.column_max_widths[fieldname] ||
+			calculatedWidth > this.column_max_widths[fieldname]
+		) {
+			this.column_max_widths[fieldname] = calculatedWidth;
+		}
+
 		return `
 			<div class="${css_class}">
 				${column_html}
 			</div>
 		`;
+	}
+
+	apply_column_widths() {
+		Object.entries(this.column_max_widths).forEach(([fieldname, width]) => {
+			$(`.${fieldname}`).css({
+				width: width,
+				flex: `1 0 ${width}px`,
+			});
+		});
 	}
 
 	get_tags_html(user_tags, limit, colored = false) {
