@@ -636,7 +636,7 @@ class Engine:
 		self, field: str | Criterion | dict | Field
 	) -> "list | Criterion | Field | DynamicTableField | ChildQuery | None":
 		"""Parses a single item from the fields list/tuple. Assumes comma-separated strings have already been split."""
-		if isinstance(field, Criterion | Field):
+		if isinstance(field, (Criterion | Field | Term)):
 			return field
 		elif isinstance(field, dict):
 			# Check if it's a SQL function dictionary
