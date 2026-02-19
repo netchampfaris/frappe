@@ -28,8 +28,8 @@ def get_headers():
 		frappe.throw(_("You are not allowed to access this resource"))
 
 	# check if communication secret is set
-	if not frappe.conf.get("fc_communication_secret"):
-		frappe.throw(_("Communication secret not set"))
+	# if not frappe.conf.get("fc_communication_secret"):
+	# 	frappe.throw(_("Communication secret not set"))
 
 	return {
 		"X-Site-Token": frappe.conf.get("fc_communication_secret"),
@@ -41,6 +41,9 @@ def get_headers():
 @frappe.whitelist()
 def current_site_info():
 	from frappe.utils import cint
+
+	print(get_headers())
+	print(f"{get_base_url()}/api/method/press.saas.api.site.info")
 
 	request = requests.post(f"{get_base_url()}/api/method/press.saas.api.site.info", headers=get_headers())
 	if request.status_code == 200:
@@ -77,7 +80,8 @@ def api(method, data=None):
 @frappe.whitelist()
 def is_fc_site() -> bool:
 	is_system_manager = frappe.get_roles(frappe.session.user).count("System Manager")
-	return bool(is_system_manager and frappe.conf.get("fc_communication_secret"))
+	# return bool(is_system_manager and frappe.conf.get("fc_communication_secret"))
+	return bool(is_system_manager)
 
 
 # login to frappe cloud dashboard

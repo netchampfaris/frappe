@@ -2,6 +2,35 @@ let frappeCloudBaseEndpoint = "https://frappecloud.com";
 let isFCUser = false;
 
 $(document).ready(function () {
+	if (frappe.boot.is_fc_site) {
+
+		$(document).on("desktop_screen", function (event, data) {
+			data.desktop.add_menu_item({
+				label: __("Manage Billing"),
+				icon: "receipt-text",
+				// condition: function () {
+				// 	return frappe.boot.sysdefaults.demo_company;
+				// },
+				onClick: function () {
+					let $dialog = new frappe.ui.Dialog({
+						title: __("Manage Billing"),
+						size: "extra-large",
+					});
+					$dialog.show();
+					let url = `${frappe.boot.frappecloud_base_url}/dashboard/sites/${frappe.boot.frappecloud_sitename}`;
+					$dialog.$body.html(`
+						<div class="billing-iframe-container" style="height: 80vh;">
+							<iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>
+						</div>
+					`);
+				},
+			});
+		});
+
+		return;
+	}
+
+
 	if (
 		frappe.boot.is_fc_site &&
 		!!frappe.boot.setup_complete &&
