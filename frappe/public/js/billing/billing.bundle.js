@@ -1,3 +1,5 @@
+import { openInAppBillingDialog } from "./in_app_billing";
+
 let frappeCloudBaseEndpoint = "https://frappecloud.com";
 let isFCUser = false;
 
@@ -74,7 +76,7 @@ function addManageBillingDropdown(desktop) {
 			return frappe.boot.is_fc_site;
 		},
 		onClick: function () {
-			return openFrappeCloudDashboard();
+			return openInAppBillingDialog();
 		},
 	});
 }
