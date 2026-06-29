@@ -1,0 +1,187 @@
+---
+title: OAuth2
+---
+
+# OAuth2
+
+Frappe speaks OAuth 2.0 in both directions:
+
+- As an **authorization server (provider)**: let third-party apps act on behalf
+  of your users, with scoped access and revocable tokens. It also supports OpenID
+  Connect, so Frappe can be an identity provider.
+- As a **client**: call another OAuth-protected API from your Frappe app using
+  the **Connected App** DocType.
+
+For server-to-server scripts you control, an [API key and secret](/rest-api/authentication)
+is simpler. Reach for OAuth when a separate application needs delegated access to a
+user's data.
+
+## Frappe as an OAuth2 provider
+
+### Endpoints
+
+The provider endpoints are whitelisted methods (see
+`frappe/integrations/oauth2.py`):
+
+| Purpose       | Endpoint                                                      |
+| ------------- | ------------------------------------------------------------ |
+| Authorization | `/api/method/frappe.integrations.oauth2.authorize`           |
+| Token         | `/api/method/frappe.integrations.oauth2.get_token`           |
+| Userinfo      | `/api/method/frappe.integrations.oauth2.openid_profile`      |
+| Revocation    | `/api/method/frappe.integrations.oauth2.revoke_token`        |
+| Introspection | `/api/method/frappe.integrations.oauth2.introspect_token`    |
+
+For OpenID Connect, the discovery document is served at
+`/.well-known/openid-configuration`, and (when enabled in **OAuth Settings**) the
+RFC 8414 metadata at `/.well-known/oauth-authorization-server`. ID tokens are
+signed with `HS256`.
+
+### Registering a client
+
+Create an **OAuth Client** record. The important fields:
+
+- **App Name**: display name shown on the consent screen.
+- **Redirect URIs**: a **space-separated** allowlist. The `redirect_uri` in a
+  request must match one of these **exactly**. The validator splits this field on
+  spaces (`validate_redirect_uri` in `frappe/oauth.py`), so put each URI on the
+  same line separated by a single space, not on separate lines.
+- **Default Redirect URI**: used when none is supplied.
+- **Scopes**: space-separated. Include `openid` to enable OIDC.
+- **Grant Type** / **Response Type**: `Authorization Code` / `Code` for the
+  standard web flow.
+- **Skip Authorization**: skip the consent screen for trusted clients.
+
+Saving the client gives you a **Client ID** and **Client Secret**.
+
+### Authorization Code flow
+
+The supported (and recommended) flow is authorization code; the implicit `token`
+response type is intentionally not advertised in the server metadata. PKCE is
+supported (`code_challenge_methods_supported: ["S256"]`).
+
+**1. Send the user to the authorization endpoint.** If they're not logged in,
+Frappe redirects them to log in first, then shows a consent screen (unless skipped):
+
+```text
+https://example.com/api/method/frappe.integrations.oauth2.authorize
+  ?client_id=<client_id>
+  &response_type=code
+  &redirect_uri=https://yourapp.com/callback
+  &scope=openid%20all
+  &state=<random_state>
+```
+
+**2. Frappe redirects back** to your `redirect_uri` with a `code` (and your
+`state`):
+
+```text
+https://yourapp.com/callback?code=<authorization_code>&state=<random_state>
+```
+
+**3. Exchange the code for tokens** at the token endpoint:
+
+```bash
+curl -X POST https://example.com/api/method/frappe.integrations.oauth2.get_token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code" \
+  -d "code=<authorization_code>" \
+  -d "redirect_uri=https://yourapp.com/callback" \
+  -d "client_id=<client_id>" \
+  -d "client_secret=<client_secret>"
+```
+
+```json
+{
+  "access_token": "...",
+  "refresh_token": "...",
+  "expires_in": 3600,
+  "token_type": "Bearer",
+  "scope": "openid all",
+  "id_token": "..."
+}
+```
+
+**4. Call the API** with the access token as a bearer token:
+
+```bash
+curl https://example.com/api/resource/ToDo \
+  -H "Authorization: Bearer <access_token>"
+```
+
+The request runs as the user who authorized the client, limited to the granted
+scopes (validated in `frappe.auth.validate_oauth`).
+
+### Refreshing and revoking
+
+Refresh an expired access token:
+
+```bash
+curl -X POST https://example.com/api/method/frappe.integrations.oauth2.get_token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=refresh_token" \
+  -d "refresh_token=<refresh_token>" \
+  -d "client_id=<client_id>" \
+  -d "client_secret=<client_secret>"
+```
+
+Revoke a token:
+
+```bash
+curl -X POST https://example.com/api/method/frappe.integrations.oauth2.revoke_token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "token=<access_or_refresh_token>"
+```
+
+### Userinfo (OpenID Connect)
+
+With the `openid` scope, fetch the standard profile claims:
+
+```bash
+curl https://example.com/api/method/frappe.integrations.oauth2.openid_profile \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Returns `sub`, `name`, `email`, `picture`, `roles`, and `iss`.
+
+### Dynamic client registration
+
+If **OAuth Settings &gt; Enable Dynamic Client Registration** is on, clients can
+self-register (RFC 7591) by POSTing metadata to
+`/api/method/frappe.integrations.oauth2.register_client`; the response includes a
+freshly issued `client_id` and `client_secret`.
+
+## Frappe as an OAuth2 client
+
+To call an external OAuth-protected API *from* Frappe, use the **Connected App**
+DocType, Frappe's built-in OAuth client. Create a Connected App and set:
+
+- **Provider Name** and the provider's **Authorization URI** and **Token URI**.
+- **Client ID** and **Client Secret** issued by that provider.
+- **Scopes** you need.
+
+Frappe fills in the **Redirect URI** for you on save. It points back at your
+site's Connected App callback handler. Register that generated URI with the
+provider. Once a user authorizes, Frappe stores the tokens (in
+**Token Cache**) and refreshes them automatically. In server code you obtain an
+authenticated session for the logged-in user like this:
+
+```python
+import frappe
+
+connected_app = frappe.get_doc("Connected App", "my-provider")
+session = connected_app.get_oauth2_session(user="jane@example.com")
+
+# `session` is a requests-OAuth2 session with the bearer token attached
+resp = session.get("https://provider.example.com/api/me")
+resp.raise_for_status()
+data = resp.json()
+```
+
+This keeps token storage, refresh, and per-user authorization out of your
+application code.
+
+## See also
+
+- [Authentication](/rest-api/authentication): API keys and bearer tokens
+- [Whitelisted Methods](/server-side/whitelisted-methods): how these endpoints are exposed
+- [Overview](/rest-api/overview): REST endpoint structure
