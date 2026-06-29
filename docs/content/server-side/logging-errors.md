@@ -69,6 +69,48 @@ Use `logger` for informational and debugging output you want to keep, and use `l
 logger = frappe.logger("library", with_more_info=True)  # adds request/site context
 ```
 
+### Arguments
+
+`frappe.logger` takes a few optional arguments:
+
+- `module`: names the logger and its log file. Defaults to `frappe`.
+- `with_more_info`: when true, appends the current site and a sanitized form dict to each record. Values for keys that look like secrets (password, token, key, and so on) are masked.
+- `allow_site`: pass a site name to log under that site, or `True` to use the current site. Defaults to `True`.
+- `filter`: a logging filter function to attach to the logger.
+- `max_size`: max size of each log file in bytes before it rotates. Defaults to `100_000`.
+- `file_count`: how many rotated files to keep. Defaults to `20`.
+- `stream_only`: log to stderr instead of files. Defaults to the `FRAPPE_STREAM_LOGGING` environment variable.
+
+### Log files and rotation
+
+Each logger writes to two files: a bench-level file under the bench's `logs/` directory and a site-level file under `sites/{site}/logs/`. Both use the same name, so `frappe.logger("library")` writes to `logs/library.log` and `sites/{site}/logs/library.log`. Files rotate by size using `max_size` and `file_count`, so they will not fill the disk.
+
+### Setting the log level
+
+Loggers use `frappe.log_level`, which falls back to `WARNING` on a dev server and `ERROR` otherwise. Set a different level with `set_log_level`:
+
+```python
+from frappe.utils.logger import set_log_level
+
+set_log_level("DEBUG")
+```
+
+This resets the cached loggers, so the new level applies the next time you call `frappe.logger`.
+
+## Operational logs
+
+Beyond your own loggers, the bench keeps a set of logs you can read when debugging. Bench-level logs live in the bench's `logs/` directory; the Frappe application also mirrors its own logs under `sites/{site}/logs/`. Some useful ones:
+
+- `scheduler.log`: scheduled job activity, written by `frappe.logger("scheduler")`.
+- `database.log`: database-level logging, written by `frappe.logger("database")`.
+- `worker.log`: background worker process output.
+- `bench.log`: output from bench commands.
+- `frappe.web.log`: per-request logging (off by default, see below).
+
+To log every web request to `frappe.web.log`, set `enable_frappe_logger` to `true` in the site config. Each request is recorded with its site, remote address, user, URL, method, and HTTP status code.
+
+When a request fails with an unhandled exception, Frappe records it in the Error Log automatically. There is no separate snapshot file or DocType; the failure lands in the same Error Log described above.
+
 ## Getting the current traceback
 
 If you need the traceback text yourself, for example to include in a notification, use `frappe.get_traceback`:

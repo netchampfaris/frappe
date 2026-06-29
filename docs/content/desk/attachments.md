@@ -71,7 +71,7 @@ Read the bytes back, or get the on-disk path:
 
 ```python
 file = frappe.get_doc("File", file_name)
-content = file.get_content()          # bytes
+content = file.get_content()          # bytes for binary files, str for text
 path = file.get_full_path()           # absolute path on disk
 ```
 

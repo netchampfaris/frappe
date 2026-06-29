@@ -59,8 +59,14 @@ cannot restore without it.
 
 ## Read replica
 
-To take read load off the primary database, point read queries at a replica. Set
-these keys in `site_config.json`:
+To take read load off the primary database, point read queries at a replica. This
+needs a primary-replica setup already running, for example
+[MariaDB replication](https://mariadb.com/kb/en/setting-up-replication/), so the
+replica stays in sync with the primary.
+
+The replica is connected using the same database name as the primary
+(`db_name`), so the replica must serve that same database. Set these keys in
+`site_config.json`:
 
 ```json
 {

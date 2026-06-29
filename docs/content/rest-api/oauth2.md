@@ -111,6 +111,32 @@ curl https://example.com/api/resource/ToDo \
 The request runs as the user who authorized the client, limited to the granted
 scopes (validated in `frappe.auth.validate_oauth`).
 
+### PKCE
+
+Public clients (mobile and single-page apps that can't keep a secret) should use
+PKCE. Add two params to the authorization request in step 1:
+
+- `code_challenge_method`: `S256` (recommended) or `plain`.
+- `code_challenge`: for `S256`, the URL-safe base64 of `sha256(code_verifier)`;
+  for `plain`, the `code_verifier` itself. See
+  [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636#appendix-A).
+
+Then send the matching `code_verifier` (the original random string) when you
+exchange the code in step 3:
+
+```bash
+curl -X POST https://example.com/api/method/frappe.integrations.oauth2.get_token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code" \
+  -d "code=<authorization_code>" \
+  -d "redirect_uri=https://yourapp.com/callback" \
+  -d "client_id=<client_id>" \
+  -d "code_verifier=<code_verifier>"
+```
+
+Only `S256` is advertised in the server metadata
+(`code_challenge_methods_supported: ["S256"]`).
+
 ### Refreshing and revoking
 
 Refresh an expired access token:
@@ -132,6 +158,42 @@ curl -X POST https://example.com/api/method/frappe.integrations.oauth2.revoke_to
   -d "token=<access_or_refresh_token>"
 ```
 
+Revocation always returns an empty body with HTTP 200, even for an unknown token.
+
+### Introspecting a token
+
+Check whether a token is active and read its metadata. Send the token and an
+optional `token_type_hint` (`access_token` or `refresh_token`, defaults to
+`access_token`):
+
+```bash
+curl -X POST https://example.com/api/method/frappe.integrations.oauth2.introspect_token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "token=<access_or_refresh_token>" \
+  -d "token_type_hint=access_token"
+```
+
+For an active token it returns `client_id`, `trusted_client`, `active`, `exp`,
+and `scope`. When the token carries the `openid` scope, the userinfo claims
+(`sub`, `name`, `email`, `picture`, `roles`, `iss`, and so on) are included too:
+
+```json
+{
+  "client_id": "<client_id>",
+  "trusted_client": 1,
+  "active": true,
+  "exp": 1619523326,
+  "scope": "openid all",
+  "sub": "1234567890",
+  "name": "J. Doe",
+  "email": "j@doe.com",
+  "roles": ["System Manager"],
+  "iss": "https://example.com"
+}
+```
+
+Otherwise it returns `{ "active": false }`.
+
 ### Userinfo (OpenID Connect)
 
 With the `openid` scope, fetch the standard profile claims:
@@ -142,6 +204,39 @@ curl https://example.com/api/method/frappe.integrations.oauth2.openid_profile \
 ```
 
 Returns `sub`, `name`, `email`, `picture`, `roles`, and `iss`.
+
+### Decoding the ID token
+
+When the `openid` scope is granted, the token response includes an `id_token`.
+It is a JWT signed with the client's **client secret** using `HS256`
+(`finalize_id_token` in `frappe/oauth.py`). Verify and read it with PyJWT:
+
+```python
+import jwt
+
+payload = jwt.decode(
+    id_token,
+    key=client_secret,
+    audience=client_id,
+    algorithms=["HS256"],
+)
+print(payload)
+```
+
+The claims:
+
+| Claim     | Description                                            |
+| --------- | ------------------------------------------------------ |
+| `aud`     | The client ID the token was issued for.                |
+| `iss`     | The Frappe server URL.                                 |
+| `sub`     | The user's `frappe` social login `userid`.             |
+| `iat`     | Issued-at time.                                        |
+| `exp`     | Expiry, `iat` plus the access token lifetime.          |
+| `at_hash` | Hash of the access token.                              |
+| `nonce`   | Echoed back if a `nonce` was sent in the auth request. |
+
+With the `openid` scope the userinfo claims (`name`, `given_name`,
+`family_name`, `email`, `picture`, `roles`) are merged in as well.
 
 ### Dynamic client registration
 

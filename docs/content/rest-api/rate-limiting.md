@@ -35,7 +35,8 @@ than many fast ones.
 
 It runs in `frappe/rate_limiter.py`: `apply()` rejects the request if the window
 is already over budget, and `update()` adds the request's duration to the counter
-after it finishes. Responses carry rate-limit headers:
+after it finishes. Every response carries the current rate-limit status in its
+headers:
 
 ```text
 X-RateLimit-Limit: 600000000
@@ -43,8 +44,15 @@ X-RateLimit-Remaining: 540000000
 X-RateLimit-Reset: 2400
 ```
 
-The limit and remaining values are in microseconds. When a request is rejected,
-a `Retry-After` header is added with the seconds until the window resets.
+| Header                  | Description                                                       |
+| ----------------------- | ----------------------------------------------------------------- |
+| `X-RateLimit-Limit`     | Processing time allowed in a window, in microseconds.             |
+| `X-RateLimit-Remaining` | Processing time left in the current window, in microseconds.      |
+| `X-RateLimit-Reset`     | Seconds until the current window resets.                          |
+| `Retry-After`           | Seconds until the window resets. Sent only on a rejected request. |
+
+When the window is over budget the request gets a `429` with the same headers
+plus `Retry-After`.
 
 ## Per-endpoint rate limiting
 

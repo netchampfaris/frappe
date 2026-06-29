@@ -35,6 +35,7 @@ When a query runs through `frappe.db.get_list` (the `DatabaseQuery`), Frappe loo
 | `Data` with option `Email` | `XXXXXX@` plus the original domain |
 | `Date`                     | `XX-XX-XXXX`                       |
 | `Time`                     | `XX:XX`                            |
+| `Datetime`                 | `XX-XX-XXXX XX:XX`                 |
 | Anything else              | `XXXXXXXX`                         |
 
 Empty values are left as-is. The per-user list of masked fields is cached, so the lookup stays cheap on repeated queries.

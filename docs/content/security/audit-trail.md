@@ -26,7 +26,7 @@ The diff captures more than simple field edits. Its structure is:
   "changed": [["status", "Draft", "Submitted"]],
   "added": [["items", { "item_code": "BOOK-1" }]],
   "removed": [["items", { "item_code": "BOOK-2" }]],
-  "row_changed": [["items", "row-name", 0, [["qty", 1, 2]]]]
+  "row_changed": [["items", 0, "row-name", [["qty", 1, 2]]]]
 }
 ```
 

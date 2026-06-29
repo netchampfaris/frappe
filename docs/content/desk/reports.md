@@ -71,6 +71,48 @@ def execute(filters=None):
     return columns, data
 ```
 
+Each column is a dict. `fieldname` and `label` are the basics; `fieldtype` and `options` control how the value renders, and `width` sets the column width in pixels:
+
+```python
+columns = [
+    {"label": "Account", "fieldname": "account", "fieldtype": "Link", "options": "Account", "width": 200},
+    {"label": "Balance", "fieldname": "balance", "fieldtype": "Currency", "options": "currency"},
+]
+```
+
+If a label has no `fieldname`, Frappe derives one with `frappe.scrub(label)`. Rows in `data` can be a list of dicts keyed by `fieldname`, or a list of lists in column order.
+
+### Optional return values
+
+`execute` can return more than `columns, data`. The extra values are positional and must follow this order:
+
+```python
+return columns, data, message, chart, report_summary, skip_total_row
+```
+
+You only need to return as far as the values you set. The trailing values are:
+
+- `message`: HTML shown above the table.
+- `chart`: a chart config rendered above the report.
+- `report_summary`: a list of dicts shown as summary cards at the top.
+- `skip_total_row`: set truthy to suppress the auto total row when **Add Total Row** is on.
+
+A `report_summary` entry looks like this:
+
+```python
+report_summary = [
+    {
+        "label": "Total Profit",
+        "value": profit,
+        "datatype": "Currency",
+        "currency": "INR",
+        "indicator": "Green" if profit > 0 else "Red",
+    }
+]
+```
+
+### Filter fields
+
 The matching `.js` file defines `frappe.query_reports["Report Name"]` with the filter fields the user sees:
 
 ```javascript
@@ -82,9 +124,19 @@ frappe.query_reports["My Tasks"] = {
       fieldtype: "Select",
       options: ["", "Open", "Working", "Completed"],
     },
+    {
+      fieldname: "company",
+      label: "Company",
+      fieldtype: "Link",
+      options: "Company",
+      default: frappe.defaults.get_user_default("company"),
+      depends_on: 'eval:doc.status=="Completed"',
+    },
   ],
 };
 ```
+
+Filter values arrive in `execute` as the `filters` dict, keyed by `fieldname`. Use `depends_on` with an `eval:` expression to show a filter only when another filter has a given value.
 
 ## Filters
 

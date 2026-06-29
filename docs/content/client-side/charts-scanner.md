@@ -50,17 +50,40 @@ new frappe.Chart("#chart", {
 
 ### Live charts
 
-`frappe.ui.RealtimeChart` extends the chart and updates it from a realtime socket event. Pass the element, the event name, the maximum number of points to keep, and the initial data, then call `start_updating()`. See [Realtime](/server-side/realtime) for publishing events from the server.
+`frappe.ui.RealtimeChart` extends the chart and updates it from a realtime socket event.
+
+```javascript
+new frappe.ui.RealtimeChart(element, event_name, max_label_points, data);
+```
+
+- `element`: selector or DOM node to render into.
+- `event_name`: the realtime event to listen on for new data.
+- `max_label_points`: maximum number of points to keep on the x-axis. The chart drops the oldest point once it is full. Defaults to 8.
+- `data`: the same config object you pass to `frappe.Chart`, including `data.datasets`. The initial values array must not be longer than `max_label_points`.
 
 ```javascript
 let chart = new frappe.ui.RealtimeChart("#live", "task_update", 8, {
+  title: __("Tasks per minute"),
+  type: "line",
+  height: 250,
   data: {
     labels: ["t0"],
-    datasets: [{ values: [0] }],
+    datasets: [{ name: __("Tasks"), values: [0] }],
   },
 });
 chart.start_updating();
-// later: chart.stop_updating();
+```
+
+Methods:
+
+- `start_updating()`: listen on `event_name` and append each payload to the chart.
+- `stop_updating()`: stop listening on that event.
+- `update_chart(label, points)`: append a point by hand. `label` is the new x-axis label and `points` is the array of values, one per dataset.
+
+Publish events from the server with `frappe.publish_realtime`. The payload must carry a `label` and a `points` array, with one value per dataset on the chart. See [Realtime](/server-side/realtime) for more.
+
+```python
+frappe.publish_realtime("task_update", {"label": "t1", "points": [10]})
 ```
 
 ## Barcode and QR scanner
@@ -89,13 +112,15 @@ Options:
 ```javascript
 // inline, scanning many codes into a list
 let codes = [];
-new frappe.ui.Scanner({
+let scanner = new frappe.ui.Scanner({
   container: "#scan-area",
   multiple: true,
   on_scan(result) {
     codes.push(result.result.text);
   },
 });
+// inline mode does not auto-start; call scan() to begin
+scanner.scan();
 ```
 
 Any Data field with the scan option turned on already shows a scan button that uses this same scanner and writes the result into the field, so you do not need to wire it up by hand for that case.

@@ -40,6 +40,17 @@ If the provider publishes an OpenID Connect discovery document, paste its URL
 into **OpenID Configuration** and use the "Get OpenID Configuration" action to
 pull in the endpoints automatically.
 
+If your integration ships its own settings doctype, add a Link field to
+**Connected App** on it. An admin can then create the Connected App, enter the
+credentials, and link it, and your code looks it up from your settings:
+
+```python
+import frappe
+
+settings = frappe.get_single("My Integration Settings")
+app = frappe.get_doc("Connected App", settings.connected_app)
+```
+
 ## Authorize a user
 
 A Connected App stores one token per user. The first time a user needs access,

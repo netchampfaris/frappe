@@ -37,7 +37,7 @@ frappe-bench/
 
 The framework reads two config files: `common_site_config.json` (shared by every
 site) and each site's `site_config.json`. See
-[Configuration](/administration/configuration) for the keys.
+[Configuration](/administration/site-config) for the keys.
 
 ## Common commands
 
@@ -98,5 +98,5 @@ bench update --no-backup     # skip the automatic backup step
 ## Next steps
 
 - [Site Management](/administration/site-management): create, back up, restore, and drop sites
-- [Configuration](/administration/configuration): the config file keys
+- [Configuration](/administration/site-config): the config file keys
 - [Production Setup](/administration/production-setup): nginx and supervisor

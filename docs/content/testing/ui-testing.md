@@ -84,3 +84,66 @@ For data your spec needs, call the whitelisted helpers in
 `frappe/tests/ui_test_helpers.py`, for example `create_if_not_exists`, through
 `cy.call`. These endpoints only work when the site runs in test mode, so they are
 safe to leave in place.
+
+## Code coverage
+
+Coverage tells you which lines of JavaScript ran during the tests. The source is
+instrumented with [Istanbul](https://istanbul.js.org/), and the
+[Cypress code-coverage plugin](https://github.com/cypress-io/code-coverage)
+merges the results from every spec into one report.
+
+To generate a report locally:
+
+1. Instrument the source with [nyc](https://github.com/istanbuljs/nyc). This
+   rewrites the files in place to add counters, so do it on a throwaway checkout.
+
+   ```bash
+   npx nyc instrument -x 'frappe/public/dist/**' -x 'frappe/public/js/lib/**' -x '**/*.bundle.js' --compact=false --in-place frappe
+   ```
+
+   The `-x` flag excludes paths; use `-n` to include specific paths instead.
+
+2. Run the tests with coverage enabled:
+
+   ```bash
+   bench --site mysite run-ui-tests frappe --with-coverage
+   ```
+
+3. Print the report:
+
+   ```bash
+   npx nyc report --reporter=text
+   ```
+
+   See [alternative reporters](https://istanbul.js.org/docs/advanced/alternative-reporters/)
+   for other output formats. The HTML and clover reports are written to
+   `.cypress-coverage/` (set by the `nyc` config in `package.json`).
+
+## Testing Library queries
+
+You can use [Testing Library](https://testing-library.com/) queries inside specs.
+They find elements the way a user would, by role, label, or visible text, instead
+of by CSS selectors that break on refactors. See the
+[queries docs](https://testing-library.com/docs/queries/about) for the full list.
+
+`findByRole` is the one to reach for first.
+[This table](https://www.w3.org/TR/html-aria/#docconformance) maps HTML elements
+to their default roles.
+
+| Query                                  | Matches                                  |
+| -------------------------------------- | ---------------------------------------- |
+| `findByRole('button', {name: 'Save'})` | a button whose accessible name is 'Save' |
+| `findByRole('checkbox')`               | `input type=checkbox`                    |
+| `findByRole('textbox')`                | `input type=text`, `textarea`            |
+| `findByRole('searchbox')`              | `input type=search`                      |
+| `findByRole('listbox')`                | `select`, `datalist`                     |
+
+Other queries target an element by a specific attribute or its text:
+
+| Query                            | Matches                                      |
+| -------------------------------- | -------------------------------------------- |
+| `findByLabelText('Optimize')`    | element tied to the label 'Optimize'         |
+| `findByPlaceholderText('Name')`  | element with `placeholder='Name'`            |
+| `findByText('example.json')`     | element whose text content is 'example.json' |
+| `findByDisplayValue('Option 1')` | input, textarea, or select with that value   |
+| `findByTitle('Open Link')`       | element with `title='Open Link'`             |

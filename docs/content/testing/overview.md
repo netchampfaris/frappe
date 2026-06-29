@@ -106,8 +106,87 @@ Other options you will reach for:
 bench --site mysite --verbose run-tests --app myapp --failfast
 ```
 
-For continuous integration, `bench run-parallel-tests` splits the suite across
-several build machines.
+## Writing tests for commands
+
+To test a bench command, write a test class that inherits from
+`BaseTestCommands` in `frappe.commands.test_commands`. It already extends
+`IntegrationTestCase`, so the runner picks it up like any other test.
+
+Call `self.execute(command)` to run a command. The `{site}` placeholder is
+filled in with the current test site. After it runs you can read `self.stdout`,
+`self.stderr`, and `self.returncode`.
+
+```python
+from frappe.commands.test_commands import BaseTestCommands
+
+
+class TestExecuteCommand(BaseTestCommands):
+    def test_execute(self):
+        # run a command and expect a numeric result
+        self.execute("bench --site {site} execute frappe.db.get_database_size")
+        self.assertEqual(self.returncode, 0)
+        self.assertIsInstance(float(self.stdout), float)
+
+        # an unknown attribute should fail
+        self.execute("bench --site {site} execute frappe.lacol.site")
+        self.assertEqual(self.returncode, 1)
+        self.assertIsNotNone(self.stderr)
+```
+
+Pass values through the second argument and reference them as placeholders in
+the command string. This avoids escaping problems with shell quoting:
+
+```python
+self.execute(
+    "bench --site {site} execute frappe.bold --kwargs '{payload}'",
+    {"payload": '{"text": "DocType"}'},
+)
+self.assertEqual(self.stdout, frappe.bold(text="DocType"))
+```
+
+To feed input to an interactive command, pass `cmd_input` as a byte string:
+
+```python
+self.execute(
+    "bench make-app {apps_path} {app_name}",
+    {"apps_path": apps_path, "app_name": "testapp0", "cmd_input": b"\n".join(user_input)},
+)
+```
+
+## Running tests in parallel
+
+As a suite grows, running it serially on one machine gets slow. `run-parallel-tests`
+splits the test files across several build machines so continuous integration
+finishes faster.
+
+Pass the build number and the total number of builds. Each machine runs its
+slice of the files:
+
+```bash
+# on the first machine
+bench --site mysite run-parallel-tests --app myapp --build-number 1 --total-builds 2
+
+# on the second machine
+bench --site mysite run-parallel-tests --app myapp --build-number 2 --total-builds 2
+```
+
+The file list is split evenly by count, so an even split does not mean an even
+run time. If some files take much longer than others, the machines finish at
+different times.
+
+To balance the load, use the [test orchestrator](https://github.com/frappe/test-orchestrator).
+It hands the next test file to whichever machine is free, so slow files do not
+hold up the whole run:
+
+```bash
+bench --site mysite run-parallel-tests --app myapp --use-orchestrator
+```
+
+The orchestrator mode reads two environment variables: `ORCHESTRATOR_URL`, the
+public URL of your hosted orchestrator, and `CI_BUILD_ID`, the unique id for the
+build run.
+
+## UI tests
 
 UI tests use Cypress and a separate command. See
 [UI Testing](/testing/ui-testing).

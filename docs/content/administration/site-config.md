@@ -42,6 +42,24 @@ bench set-config -g --parse redis_cache_sentinels '["10.0.0.1:26379"]'
 When you edit the files by hand, run `bench --site mysite.localhost clear-cache`
 so the running processes pick up the change.
 
+## Config precedence
+
+A key in a site's `site_config.json` overrides the same key in
+`common_site_config.json`, so the common config acts as a fallback. This lets you
+set a default for the whole bench and change it for one site. To turn the request
+logger on everywhere but off for one busy site:
+
+```bash
+# default for every site
+bench set-config -g enable_frappe_logger 1
+
+# override for one site
+bench --site worker.localhost set-config enable_frappe_logger 0
+```
+
+The same idea applies to database and Redis keys: point every site at one host
+through the common config, then override per site only where needed.
+
 ## Database keys
 
 These live in `site_config.json` (each site has its own database):
@@ -115,6 +133,43 @@ supervisor and nginx configs:
 Worker tuning keys for background jobs include `rq_results_ttl`,
 `rq_job_failure_ttl`, `rq_failed_jobs_limit`, and `use_rq_auth` (with
 `rq_username` / `rq_password`) when your Redis requires authentication.
+
+## Site setup and security keys
+
+These live in `site_config.json`:
+
+| Key                      | What it does                                                                                                                                 |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin_password`         | Password for the Administrator user, set when the site is created.                                                                           |
+| `encryption_key`         | Key used to encrypt stored passwords. Generated on a fresh site. Back it up; restoring a site needs the same key to read existing passwords. |
+| `install_apps`           | Apps to install on new, reinstall, and restore.                                                                                              |
+| `skip_setup_wizard`      | When `1`, skips the setup wizard on a new site.                                                                                              |
+| `host_name`              | Canonical URL for the site, used when building absolute links.                                                                               |
+| `deny_multiple_sessions` | When `1`, a new login ends the user's other sessions.                                                                                        |
+| `ignore_csrf`            | When `1`, skips CSRF token checks. For development only.                                                                                     |
+| `mute_emails`            | When `1`, outgoing email is not sent.                                                                                                        |
+| `disable_global_search`  | When `1`, turns off global search indexing.                                                                                                  |
+| `disable_website_cache`  | When `1`, skips the website page cache.                                                                                                      |
+| `enable_frappe_logger`   | When `1`, logs request info to `logs/frappe.web.log`.                                                                                        |
+| `error_report_email`     | Default recipient for error reports.                                                                                                         |
+| `data_import_batch_size` | Rows per batch during data import. Defaults to 1000.                                                                                         |
+| `allow_tests`            | When `1`, allows running tests on the site.                                                                                                  |
+
+## Email keys
+
+Set these to send outgoing mail without configuring an Email Account in the desk.
+They are read as a fallback when no Email Account is set up:
+
+| Key                                     | What it does                                            |
+| --------------------------------------- | ------------------------------------------------------- |
+| `mail_server`                           | SMTP server hostname for outgoing email.                |
+| `mail_port`                             | SMTP port.                                              |
+| `mail_login`                            | SMTP login.                                             |
+| `mail_password`                         | SMTP password.                                          |
+| `use_tls`                               | When `1`, connects to the SMTP server over TLS.         |
+| `auto_email_id`                         | Default From address for outgoing mail.                 |
+| `email_sender_name`                     | Default sender name.                                    |
+| `always_use_account_email_id_as_sender` | When `1`, sends from the account email, not the user's. |
 
 ## Inspecting config from code
 

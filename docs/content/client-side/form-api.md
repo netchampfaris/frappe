@@ -133,7 +133,7 @@ frm.add_custom_button(
   () => {
     frappe.new_doc("Sales Invoice", { customer: frm.doc.customer });
   },
-  __("Create")
+  __("Create"),
 );
 ```
 
@@ -165,6 +165,66 @@ frm.set_query("item_code", "items", (doc, cdt, cdn) => {
 });
 ```
 
+`filters` as an object matches each field with equality. For other operators, pass an array of conditions:
+
+```javascript
+frm.set_query("bank_account", () => {
+  return {
+    filters: [
+      ["Bank Account", "account_type", "=", "Bank"],
+      ["Bank Account", "is_group", "!=", 1],
+    ],
+  };
+});
+```
+
+You can also build filters from the current document:
+
+```javascript
+frm.set_query("item_code", "items", () => {
+  return {
+    filters:
+      frm.doc.order_type === "Maintenance"
+        ? { is_service_item: 1 }
+        : { is_sales_item: 1 },
+  };
+});
+```
+
+#### Server-side query
+
+For search logic that filters can not express, point the query at a whitelisted method:
+
+```javascript
+frm.set_query("role", () => {
+  return {
+    query: "frappe.core.doctype.role.role.role_query",
+  };
+});
+```
+
+The method runs server-side and returns the rows to show. Whitelist it and add `@frappe.validate_and_sanitize_search_inputs` to clean the search inputs before they reach the query. The decorator fixes the argument order, so keep the signature as below:
+
+```python
+import frappe
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def role_query(doctype, txt, searchfield, start, page_len, filters):
+    role = frappe.qb.DocType("Role")
+    return (
+        frappe.qb.from_(role)
+        .select(role.name)
+        .where(role.name.like(f"%{txt}%"))
+        .where(role.is_custom == 0)
+        .limit(page_len)
+        .offset(start)
+        .run()
+    )
+```
+
+`txt` is the typed text, `searchfield` is the field being searched, and `start` and `page_len` page the results. Any `filters` you pass from `set_query` arrive as the last argument. Return a list of rows; the first column is used as the value.
+
 ### Saving and reloading
 
 `frm.save()` saves the document. Pass an action to submit or cancel: `frm.save("Submit")`, `frm.save("Cancel")`, or `frm.save("Update")` for a submitted document. `frm.reload_doc()` reloads the record from the server and discards unsaved changes.
@@ -189,3 +249,29 @@ For general server calls that are not tied to the document, see [Server Calls](/
 let grid = frm.fields_dict.items.grid;
 frm.fields_dict.subject.$input.focus();
 ```
+
+## Form tours
+
+A Form Tour walks a user through a form by highlighting fields one at a time with a title and description. You build a tour from the Form Tour DocType (search "New Form Tour" in the awesomebar), set the Reference DocType, then add a step for each field you want to explain.
+
+Each Form Tour Step has a few fields:
+
+- `field`: the field to highlight.
+- `title` and `description`: the text shown in the popover.
+- `position`: where the popover sits relative to the field.
+- `next_condition`: a JS condition on the document that must hold before the tour moves on, for example `eval: doc.priority != ""`.
+- `is_table_field` and `parent_field`: check `is_table_field` and set `parent_field` to highlight a field inside a child table.
+
+`frm.tour` is available on every form. Load a saved tour by name with `frm.tour.init`, which returns a promise, then start it:
+
+```javascript
+frappe.ui.form.on("Task", {
+  onload(frm) {
+    frm.tour.init({ tour_name: "Setting up a Task" }).then(() => {
+      frm.tour.start();
+    });
+  },
+});
+```
+
+`frm.tour.start(idx)` jumps to a step by index and defaults to the first step.

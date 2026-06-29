@@ -28,6 +28,26 @@ You can profile the development web server the same way:
 bench serve --profile
 ```
 
+## Profiling a single function
+
+When the slow code is one function rather than a test, run it through
+`bench execute` with `--profile`. The command resolves the dotted path, calls
+it, and prints a `cProfile` stats table sorted by cumulative time.
+
+```bash
+bench --site mysite execute erpnext.projects.doctype.task.task.set_tasks_as_overdue --profile
+```
+
+You can run most things you would run in `bench console`, including `db`
+methods. Without `--profile` it just prints the return value:
+
+```bash
+bench --site mysite execute frappe.db.get_database_size
+```
+
+Pass arguments with `--args` and `--kwargs`, or as trailing positional and
+`--key value` pairs after the method.
+
 ## The Monitor
 
 The Monitor records one entry per web request and per background job on a live

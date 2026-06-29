@@ -27,8 +27,10 @@ A safe deploy follows this shape:
 4. Restart the processes so they load the new code.
 5. Turn maintenance mode off.
 
-Maintenance mode is a config flag. When it is on, the site returns a "Session
-Stopped" response to write requests. You set it with:
+Maintenance mode is a config flag (`maintenance_mode` in the site config). When
+it is on and you have not allowed reads, every request is stopped and the user
+gets a 503 "Updating" page asking them to refresh in a few moments. You set it
+with:
 
 ```bash
 bench --site mysite.localhost set-maintenance-mode on
@@ -71,6 +73,11 @@ migration would disrupt:
 ```bash
 bench --site mysite.localhost ready-for-migration
 ```
+
+It checks for pending jobs a few times one second apart to avoid a race with the
+scheduler, then prints whether the site is ready. It exits non-zero when jobs are
+still pending, so you can gate a deploy script on it. Put the site in maintenance
+mode first so no new jobs are enqueued while you check.
 
 ## Restarting after deploy
 

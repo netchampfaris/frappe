@@ -22,7 +22,7 @@ export const sidebar: SidebarSection[] = [
       { text: "Create the DocType", link: "/tutorial/create-the-doctype" },
       {
         text: "Controllers & Business Logic",
-        link: "/tutorial/controllers-and-validation",
+        link: "/tutorial/controllers-and-business-logic",
       },
       { text: "Form Scripts", link: "/tutorial/form-scripts" },
       {
@@ -95,8 +95,6 @@ export const sidebar: SidebarSection[] = [
         link: "/rest-api/filters-fields-pagination",
       },
       { text: "Webhooks", link: "/rest-api/webhooks" },
-      { text: "OAuth2", link: "/rest-api/oauth2" },
-      { text: "Social Login OIDC", link: "/rest-api/social-login-oidc" },
       { text: "Connected Apps", link: "/rest-api/connected-apps" },
       {
         text: "Third Party Integrations",
@@ -114,6 +112,9 @@ export const sidebar: SidebarSection[] = [
       { text: "List View", link: "/client-side/list-view" },
       { text: "Dialog API", link: "/client-side/dialog-api" },
       { text: "Charts, Barcode & QR", link: "/client-side/charts-scanner" },
+      { text: "Custom Pages", link: "/client-side/custom-pages" },
+      { text: "Tree View", link: "/client-side/tree-view" },
+      { text: "Asset Bundling", link: "/client-side/asset-bundling" },
       { text: "Common Utilities", link: "/client-side/common-utilities" },
     ],
   },
@@ -131,7 +132,7 @@ export const sidebar: SidebarSection[] = [
   {
     text: "Portal & Web Forms",
     items: [
-      { text: "Portal Pages", link: "/portal/portal-pages-context" },
+      { text: "Portal Pages", link: "/portal/portal-pages" },
       { text: "Generators Routing", link: "/portal/generators-routing" },
       { text: "Web Forms", link: "/portal/web-forms" },
       {
@@ -141,7 +142,7 @@ export const sidebar: SidebarSection[] = [
     ],
   },
   {
-    text: "Security & Permissions",
+    text: "Security, Auth & Permissions",
     items: [
       { text: "Permission Model", link: "/security/permission-model" },
       { text: "User Role Management", link: "/security/user-role-management" },
@@ -152,9 +153,23 @@ export const sidebar: SidebarSection[] = [
       { text: "Document Sharing", link: "/security/document-sharing" },
       { text: "User Permissions", link: "/security/user-permissions" },
       { text: "Audit Trail", link: "/security/audit-trail" },
+      { text: "OAuth2", link: "/rest-api/oauth2" },
+      { text: "Social Login OIDC", link: "/rest-api/social-login-oidc" },
+      { text: "LDAP & Active Directory", link: "/rest-api/ldap" },
       {
         text: "Security Best Practices",
         link: "/security/security-best-practices",
+      },
+    ],
+  },
+  {
+    text: "App Lifecycle & Tooling",
+    items: [
+      { text: "Migrations & Patches", link: "/server-side/migrations-patches" },
+      { text: "Translations", link: "/server-side/translations" },
+      {
+        text: "Custom Bench Commands",
+        link: "/server-side/custom-bench-commands",
       },
     ],
   },
@@ -163,7 +178,7 @@ export const sidebar: SidebarSection[] = [
     items: [
       { text: "Bench Overview", link: "/administration/bench-overview" },
       { text: "Site Management", link: "/administration/site-management" },
-      { text: "Site Config", link: "/administration/configuration" },
+      { text: "Site Config", link: "/administration/site-config" },
       { text: "Production Setup", link: "/administration/production-setup" },
       { text: "HTTPS", link: "/administration/https" },
       {
@@ -202,11 +217,11 @@ export const sidebar: SidebarSection[] = [
   {
     text: "Data Import / Export",
     items: [
-      { text: "Data Import", link: "/data-import/bulk-import" },
+      { text: "Data Import", link: "/data-import/data-import" },
       { text: "Large CSV Import", link: "/data-import/large-csv-import" },
       {
         text: "Moving Data Between Sites",
-        link: "/data-import/data-migration-tool",
+        link: "/data-import/moving-data-between-sites",
       },
     ],
   },

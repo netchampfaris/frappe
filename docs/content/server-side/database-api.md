@@ -63,8 +63,14 @@ frappe.db.set_single_value("System Settings", "country", "India")
 To delete rows by filter (also skipping the lifecycle):
 
 ```python
+# delete rows matching filters
 frappe.db.delete("Task", {"status": "Cancelled"})
+
+# delete every row in the table
+frappe.db.delete("Error Log")
 ```
+
+`delete` runs a `DELETE` query, which is DML, so it is part of the current transaction and can be rolled back. To empty a table fast, `frappe.db.truncate("Error Log")` runs `TRUNCATE TABLE`. That is DDL: it commits the current transaction first and **cannot** be rolled back. Use it only for clearing out log tables.
 
 ## Raw SQL
 
@@ -101,6 +107,17 @@ frappe.db.rollback()  # ROLLBACK and start a new transaction
 
 Why avoid manual commits: a mid-request `commit()` makes earlier changes permanent even if a later step fails, leaving partial, inconsistent data. Let the request boundary handle it. Legitimate uses are rare, such as a long-running background job that intentionally checkpoints progress.
 
+### When Frappe commits and rolls back
+
+The automatic boundary depends on the context:
+
+- **Web requests**: a `POST` or `PUT` that writes to the database commits at the end of a successful request. `frappe.call` is `POST` by default, so AJAX calls follow this. `GET` requests do not commit. An uncaught exception rolls the transaction back.
+- **Background and scheduled jobs**: the transaction commits after the job function completes successfully, and rolls back on an uncaught exception.
+- **Patches**: a patch's `execute` function commits on successful completion and rolls back on an uncaught exception.
+- **Unit tests**: the transaction commits after each test module and again after the whole suite finishes.
+
+If you catch an exception yourself, Frappe cannot tell that something went wrong, so you are responsible for calling `frappe.db.rollback()` (or rolling back to a savepoint) where appropriate.
+
 ### Savepoints
 
 For "try this, and undo just this part on failure" semantics within the current transaction, use savepoints. Rolling back to a savepoint undoes only the database changes since the savepoint. It does **not** trigger rollback watchers, so don't pair it with filesystem changes.
@@ -133,6 +150,20 @@ from frappe.database import savepoint
 @savepoint(catch=frappe.DuplicateEntryError)
 def process(doc):
     doc.insert()
+```
+
+## Indexes
+
+`frappe.db.add_index` creates an index on a DocType for the given fields, if one does not already exist:
+
+```python
+frappe.db.add_index("Notes", ["reference_type", "reference_name"])
+```
+
+For a `Text` or other long column, give a prefix length, otherwise the database refuses to index it:
+
+```python
+frappe.db.add_index("Notes", ["content(500)"])
 ```
 
 ## See also

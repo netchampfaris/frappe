@@ -52,6 +52,38 @@ Every template gets a set of globals, including `frappe` itself with a safe subs
 
 The `_()` function marks a string for translation.
 
+### Whitelisted helpers
+
+Templates run in a sandbox, so only a fixed set of `frappe` methods is exposed. The common ones:
+
+| Helper                                                     | What it does                                                                              |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `frappe.format(value, df, doc)`                            | Format a stored value for display. `df` is a fieldtype dict like `{"fieldtype": "Date"}`. |
+| `frappe.format_date(date)`                                 | Format a date in the long, human readable format (`January 8, 2026`).                     |
+| `frappe.get_doc(doctype, name)`                            | Return a document as a dict. Read only inside templates.                                  |
+| `frappe.get_all(doctype, filters, fields, order_by, ...)`  | List records. Ignores user permissions. Returns names only when `fields` is omitted.      |
+| `frappe.get_list(doctype, filters, fields, order_by, ...)` | Same as `get_all` but filtered by the session user's permissions.                         |
+| `frappe.db.get_value(doctype, filters, fieldname)`         | Return one field value, or a list of values if `fieldname` is a list.                     |
+| `frappe.db.get_single_value(doctype, fieldname)`           | Return a field value from a Single doctype.                                               |
+| `frappe.get_system_settings(fieldname)`                    | Return a field value from System Settings.                                                |
+| `frappe.get_meta(doctype)`                                 | Return the doctype meta (fields, title field, and so on).                                 |
+| `frappe.get_fullname(user)`                                | Full name of a user. Defaults to the current user when no email is passed.                |
+| `frappe.render_template(template, context)`                | Render a nested template string or file.                                                  |
+| `_(string)`                                                | Mark a string for translation.                                                            |
+| `frappe.session.user`                                      | The current session user.                                                                 |
+| `frappe.session.csrf_token`                                | CSRF token for the current session.                                                       |
+| `frappe.form_dict`                                         | Query parameters when rendered in a web request.                                          |
+
+```jinja
+{% set tasks = frappe.get_all("Task", filters={"status": "Open"}, fields=["title", "due_date"], order_by="due_date asc") %}
+{% for task in tasks %}
+  <h3>{{ task.title }}</h3>
+  <p>Due {{ frappe.format_date(task.due_date) }}</p>
+{% endfor %}
+```
+
+The full list lives in `render_safe_globals` in `frappe/utils/safe_exec.py`.
+
 ## Adding methods and filters
 
 To expose your own functions to every template, register them in `hooks.py` under the `jinja` key. `methods` are callables you can invoke; `filters` are used with the pipe syntax.
@@ -59,8 +91,8 @@ To expose your own functions to every template, register them in `hooks.py` unde
 ```python
 # hooks.py
 jinja = {
-    "methods": ["library.utils.jinja_methods"],
-    "filters": ["library.utils.jinja_filters"],
+    "methods": ["library.utils.days_left"],
+    "filters": ["library.utils.shout"],
 }
 ```
 
@@ -73,12 +105,9 @@ def days_left(due_date):
 # a filter
 def shout(value):
     return value.upper()
-
-jinja_methods = ["library.utils.days_left"]
-jinja_filters = ["library.utils.shout"]
 ```
 
-The `methods` and `filters` entries can point at a module that defines `jinja_methods` / `jinja_filters` lists, or list the dotted paths directly. After editing `hooks.py`, run `bench migrate` (or `bench clear-cache`) so the new entries are picked up. Then use them:
+Each entry is a dotted path to either a module or a function. A module path exposes every function defined in that module (for example `"methods": ["library.utils"]`); a function path exposes just that function. After editing `hooks.py`, run `bench migrate` (or `bench clear-cache`) so the new entries are picked up. Then use them:
 
 ```jinja
 {{ days_left(loan.due_date) }} days left

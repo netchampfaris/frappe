@@ -1,0 +1,20 @@
+/* Docs-local table fixes for pages that opt into `tableFirstCol`
+   (the shared theme adds `.align-tables` and uses `table-layout: fixed`).
+
+   1. Wrap long cell content, including inline code like API paths, so it never
+      overflows a fixed-width column and overlaps the next one.
+   2. Let a page pin the second column (via the `create-doctype-tables` class)
+      so the remaining width goes to the last column. */
+.align-tables td,
+.align-tables th {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+.align-tables td code {
+	white-space: normal;
+}
+
+.create-doctype-tables.align-tables th:nth-child(2),
+.create-doctype-tables.align-tables td:nth-child(2) {
+	width: 8rem;
+}

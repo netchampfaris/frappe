@@ -63,6 +63,68 @@ When a request comes in, `PathResolver.resolve()` in `frappe/website/path_resolv
 
 For a generator, the document renderer matches a route to a published record of a DocType that has a web view.
 
+## Request lifecycle
+
+Every request hits `application()` in `frappe/app.py`, which splits traffic by path before the website router runs:
+
+- `/api/...` goes to the REST and RPC handler in `frappe/api`.
+- `/backups` and `/private/files/...` return downloadable files.
+- `/.well-known/...` serves well-known files.
+- Everything else on GET, HEAD, or POST goes to `get_response()`, which runs the website router.
+
+Public files under `/files` are served by static middleware (NGINX in production), so they never reach the Python router.
+
+## Path resolver stages
+
+`PathResolver.resolve()` returns the final endpoint and a renderer instance. It works in three stages:
+
+1. Redirect resolution. `resolve_redirect()` checks the `website_redirects` hook and the Route Redirects table in Website Settings. A match raises `frappe.Redirect` and the resolver returns a `RedirectPage`.
+2. Route resolution. With no redirect, `resolve_path()` maps the incoming path to an endpoint using `website_route_rules` and the dynamic routes of DocTypes that have a web view. A `website_path_resolver` hook can replace this step.
+3. Renderer selection. The endpoint is passed to each renderer in order. The first one whose `can_render()` returns true is used. If none match, the resolver returns a `NotFoundPage`.
+
+## Page renderers
+
+A page renderer is a class that knows how to respond for a given endpoint. Each renderer has two methods:
+
+- `can_render()`: return true if this renderer can handle the path.
+- `render()`: build and return the response.
+
+The base class is `BaseRenderer` in `frappe/website/page_renderers/base_renderer.py`. It provides `build_response()` and leaves `can_render` and `render` for subclasses.
+
+The standard renderers are tried in this order (see `PathResolver.resolve()`):
+
+- `StaticPage`: serves non-text files (anything that is not html, md, js, xml, css, txt, or py) from the `www` folder of an app. Prefer the app's `public` folder for static assets so NGINX serves them directly.
+- `WebFormPage`: renders a Web Form when the path matches a Web Form route.
+- `DocumentPage`: renders a generator document. It looks for a template in the DocType's `templates` folder named after the DocType, for example `doctype/blog_post/templates/blog_post.html`.
+- `TemplatePage`: serves an HTML or markdown file from any app's `www` folder. For a folder, it serves `index.html` or `index.md`.
+- `PrintPage`: renders the print view of a document, using the standard print format unless the DocType sets a `default_print_format`.
+- `ListPage`: renders a DocType list template from the DocType's `templates` folder when one exists.
+
+Two more renderers handle errors: `NotFoundPage` responds with 404, and `NotPermittedPage` responds with 403.
+
+## Custom page renderer
+
+For cases the standard renderers do not cover, register your own with the `page_renderer` hook. Custom renderers are checked before the standard ones.
+
+```python
+# your_app/hooks.py
+page_renderer = "your_app.renderers.CustomPage"
+```
+
+```python
+# your_app/renderers.py
+from frappe.website.page_renderers.base_renderer import BaseRenderer
+
+class CustomPage(BaseRenderer):
+    def can_render(self):
+        return self.path.startswith("custom/")
+
+    def render(self):
+        return self.build_response("<div>Custom Response</div>")
+```
+
+The class must define `can_render` and `render`. You can also subclass a standard renderer to reuse its behavior.
+
 ## website_route_rules
 
 `website_route_rules` is a hook for mapping a URL pattern to a target route. Use it for dynamic segments or to alias one path to another. Frappe evaluates these with Werkzeug routing, so you can capture parts of the path.
@@ -79,15 +141,40 @@ The captured value (`category` above) lands in `frappe.form_dict`, so the target
 
 In development the rules are not cached, so changes show up immediately. In production they are cached and cleared when website cache is cleared.
 
-## Dynamic routes on Web Page
+## Dynamic routes with www pages
 
-The Web Page DocType supports dynamic routes directly. Tick "Dynamic Route" on a Web Page and put a pattern in its `route`, like `project/<name>`. At request time `get_page_info_from_web_page_with_dynamic_routes()` builds a Werkzeug rule per dynamic Web Page and matches the incoming path. Matched arguments are merged into `frappe.form_dict`, and the page is rendered with those values available in `get_context`.
+You can serve dynamic URLs without a DocType by combining a `www/` template, its
+Python controller, and a `website_route_rules` entry. The rule maps a URL pattern
+to a static template, and the captured segment is read in `get_context`.
 
-```text
-route: project/<name>
+To render a page per project at `/project/<name>`, add the rule:
+
+```python
+# your_app/hooks.py
+website_route_rules = [
+    {"from_route": "/project/<name>", "to_route": "project"},
+]
 ```
 
-A request to `/project/website-revamp` matches, and `frappe.form_dict.name` is set to `website-revamp`.
+Add the template and its controller next to each other in `www/`:
+
+```html
+<!-- your_app/www/project.html -->
+<h1>Project: {{ name }}</h1>
+```
+
+```python
+# your_app/www/project.py
+import frappe
+
+def get_context(context):
+    # the <name> segment from the URL is available in form_dict
+    context.name = frappe.form_dict.name
+```
+
+A request to `/project/website-revamp` matches the rule, runs `project.py`'s
+`get_context`, and renders `project.html` with `frappe.form_dict.name` set to
+`website-revamp`.
 
 ## Redirects
 

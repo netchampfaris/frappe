@@ -106,9 +106,7 @@ curl -G https://example.com/api/v2/document/ToDo \
 
 ```json
 {
-  "data": [
-    /* up to 20 rows */
-  ],
+  "data": [/* up to 20 rows */],
   "has_next_page": true
 }
 ```

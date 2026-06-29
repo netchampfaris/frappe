@@ -6,7 +6,7 @@ title: Moving Data Between Sites
 
 When you need to move data between sites or systems, the right tool depends on
 what you are moving. For end-user records (Customers, Items, Sales Invoices), use
-[bulk import](/data-import/bulk-import) with CSV or Excel. For configuration
+[bulk import](/data-import/data-import) with CSV or Excel. For configuration
 and developer-defined records that you want to ship with an app or copy verbatim
 between sites, use the JSON export and import commands described here.
 

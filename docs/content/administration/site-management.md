@@ -78,7 +78,7 @@ it to restore.
 
 Scheduled backups run automatically when the scheduler is enabled. The retention
 window is controlled by `keep_backups_for_hours` in the site or common config
-(see [Configuration](/administration/configuration)).
+(see [Configuration](/administration/site-config)).
 
 ## Restore a site
 
@@ -102,6 +102,28 @@ To restore a partial backup onto an existing site, use `partial-restore`:
 
 ```bash
 bench --site mysite.localhost partial-restore /path/to/partial.sql.gz
+```
+
+`partial-restore` also accepts `--encryption-key` for encrypted partial backups.
+
+## Backup encryption
+
+Turn on **Encrypt Backup** in System Settings to encrypt the database dump and the
+public and private files in every backup. Encryption uses `gpg`, so it must be
+installed and on the `PATH` (on macOS, `brew install gnupg`).
+
+The key is stored in the site config under `backup_encryption_key`. If it is not
+set when a backup runs, Frappe generates one and writes it to the site config. A
+System Manager can read it from the **Backups** list at `/app/backups`, or from
+`sites/mysite.localhost/site_config.json`. Encrypted backups are marked with a key
+icon in that list.
+
+`restore` and `partial-restore` pick the key up from the site config
+automatically. Pass `--encryption-key <key>` to override it, for example when
+restoring onto a different site:
+
+```bash
+bench --site mysite.localhost restore /path/to/database.sql.gz --encryption-key <key>
 ```
 
 ## Drop a site
@@ -132,3 +154,30 @@ the site is lost. Useful for resetting a development site:
 ```bash
 bench --site mysite.localhost reinstall
 ```
+
+## How URLs map to files
+
+A few URL prefixes are served straight from the filesystem. Knowing where each one
+points helps when you debug a missing asset or a broken file link.
+
+`/assets/...` serves shared, app-level static files from `sites/assets/`. Each
+app's `public` folder is symlinked in as `assets/<app>`, so
+`apps/frappe/frappe/public/images/favicon.png` is reachable at
+`/assets/frappe/images/favicon.png`. Built JS and CSS bundles land in
+`assets/<app>/dist/js` and `assets/<app>/dist/css` (RTL styles in
+`assets/<app>/dist/css-rtl`), with a content hash in the filename like
+`assets/frappe/dist/js/desk.bundle.ABCD1234.js`. These files are public and need
+no login.
+
+`/files/...` serves a site's public uploads from
+`sites/<site>/public/files`. Anyone can read them.
+
+`/private/files/...` serves a site's private uploads from
+`sites/<site>/private/files`. The request must be logged in and have permission on
+the linked File document.
+
+`/backups/...` serves files from `sites/<site>/private/backups`. Only the
+Administrator or a System Manager can download them.
+
+The symlinks under `sites/assets/` are created by `bench build`. If an asset 404s
+after adding an app, rebuild to recreate them.

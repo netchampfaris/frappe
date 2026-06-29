@@ -100,7 +100,7 @@ Available frequencies include `all` (every scheduler tick), `hourly`, `daily`, `
 
 ### override_doctype_class
 
-This is an advanced hook. Reach for `doc_events` or `override_whitelisted_methods` first, and only override the class when you need to change methods those hooks can't reach.
+This is an advanced hook. Reach for `doc_events` first, and only override the class when you need to change methods those hooks can't reach.
 
 Replace a DocType's controller class with your own subclass. Always extend the base controller class and call `super()` so the original behavior still runs. This is useful for changing behavior of a DocType you don't own:
 
@@ -181,16 +181,37 @@ on_logout = ["library.auth.on_logout"]
 extend_bootinfo = ["library.boot.boot_session"]
 ```
 
+`on_login`, `on_session_creation`, and `on_logout` are each called with the `login_manager`. `extend_bootinfo` is called with the `bootinfo` dict, which you mutate in place; the result is available client-side as `frappe.boot`.
+
+```python
+# library/boot.py
+def boot_session(bootinfo):
+    bootinfo.my_global_key = "my_global_value"
+```
+
+### Authentication hooks
+
+`auth_hooks` run during request authentication, before the request is handled. Use them to read a custom header or token, verify it, and map the request to a user with `frappe.set_user()`. They take no arguments.
+
+```python
+auth_hooks = ["library.auth.validate_custom_jwt"]
+```
+
+Do not raise if verification fails. Return without setting a user and the request stays a Guest request, so other auth hooks still get a chance to run.
+
 ## Assets
 
 Inject JavaScript and CSS into the Desk, the website, or specific DocType forms:
 
 ```python
-app_include_js = ["library.bundle.js"]   # desk
+app_include_js = ["library.bundle.js"]    # desk
 app_include_css = ["library.bundle.css"]
-web_include_js = ["library_web.js"]      # website pages
+web_include_js = ["library_web.js"]        # website pages
+web_include_css = ["library_web.css"]
 
-doctype_js = {"Library Loan": "public/js/library_loan.js"}
+doctype_js = {"Library Loan": "public/js/library_loan.js"}     # form view
+page_js = {"background_jobs": "public/js/custom_background_jobs.js"}  # desk page
+webform_include_js = {"ToDo": "public/js/custom_todo.js"}      # standard web form
 ```
 
 ## Jinja and queries
@@ -205,6 +226,111 @@ jinja = {
 # replace the default link-field search query for a doctype
 standard_queries = {"Library Book": "library.queries.book_query"}
 ```
+
+## Website hooks
+
+These hooks control how portal (website) pages render and route.
+
+### Context
+
+When a portal page renders, Frappe builds a `context` dict of values the template can use. `website_context` is a flat dict of static overrides. `update_website_context` points to a function for dynamic changes; it gets the `context` dict and can mutate it or return a dict to merge.
+
+```python
+website_context = {"favicon": "/assets/library/img/favicon.png"}
+update_website_context = "library.website.update_context"
+```
+
+```python
+# library/website.py
+def update_context(context):
+    context.my_key = "my_value"
+```
+
+### Redirects and route rules
+
+`website_redirects` maps source routes to targets. The source can be a plain path or a regex, and the target can reference capture groups.
+
+```python
+website_redirects = [
+    {"source": "/compare", "target": "/comparison"},
+    {"source": r"/docs(/.*)?", "target": r"https://docs.example.com/\1"},
+]
+```
+
+`website_route_rules` maps a URL pattern to a controller path. Use it for clean, dynamic URLs.
+
+```python
+website_route_rules = [
+    {"from_route": "/projects/<name>", "to_route": "library/projects/project"},
+]
+```
+
+The controller reads the matched parameter from `frappe.form_dict`:
+
+```python
+# library/projects/project.py
+def get_context(context):
+    context.project = frappe.get_doc("Project", frappe.form_dict.name)
+```
+
+### Home page
+
+The root URL (`/`) renders `www/index` by default. Override it, top to bottom in increasing priority:
+
+```python
+# static override
+home_page = "homepage"
+
+# per-role override
+role_home_page = {"Customer": "orders", "Supplier": "bills"}
+
+# full control: function receives the user, returns a route
+get_website_user_home_page = "library.website.get_home_page"
+```
+
+If more than one is set, `get_website_user_home_page` wins over `role_home_page`, which wins over `home_page`.
+
+### Portal sidebar
+
+Some portal views show a sidebar of links. `portal_menu_items` are defined in code and fixed. `standard_portal_menu_items` sync to Portal Settings, where a System User can edit them later.
+
+```python
+standard_portal_menu_items = [
+    {"title": "Orders", "route": "/orders", "role": "Customer"},
+]
+```
+
+### Clearing website cache
+
+Frappe caches rendered web pages. `website_clear_cache` runs when that cache is cleared. The function gets a `path`: a route when one page is cleared, or `None` when all pages are cleared.
+
+```python
+website_clear_cache = "library.website.clear_cache"
+```
+
+## User data privacy
+
+Frappe ships personal data download and deletion. `user_data_fields` declares which doctypes hold personal data so those flows can find and redact it. Each entry is a dict:
+
+```python
+user_data_fields = [
+    {"doctype": "Access Log", "strict": True},
+    {"doctype": "Contact", "filter_by": "email_id", "rename": True},
+    {"doctype": "File", "filter_by": "attached_to_name", "redact_fields": ["file_name", "file_url"]},
+    {"doctype": "Email Unsubscribe", "filter_by": "email", "partial": True},
+]
+```
+
+| Key             | Meaning                                                                    |
+| --------------- | -------------------------------------------------------------------------- |
+| `doctype`       | The doctype that holds user data.                                          |
+| `filter_by`     | Field used to find the user's records. Defaults to `owner`.                |
+| `redact_fields` | Fields to redact. If unset, redacts personal data from all text fields.    |
+| `partial`       | Redact the user's name and username from all text fields.                  |
+| `rename`        | Rename the document to anonymize it when its name contains user data.      |
+| `strict`        | Redact data from every record of the doctype, not just ones the user owns. |
+
+Download only uses `doctype` and `filter_by`.
 
 ## Fixtures
 
@@ -241,6 +367,25 @@ before_migrate = "library.migrate.before_migrate"
 after_migrate = "library.migrate.after_migrate"
 ```
 
+`after_sync` runs after the app's fixtures are synced. `before_tests` runs once before the test suite starts, which is where you seed data your tests depend on.
+
+```python
+after_sync = "library.install.after_sync"
+before_tests = "library.tests.before_tests"
+```
+
+## File hooks
+
+These override how user-uploaded files are stored, so you can write to a CDN or object store instead of the local disk.
+
+```python
+before_write_file = "library.overrides.file.before_write"
+write_file = "library.overrides.file.write_file"
+delete_file_data_content = "library.overrides.file.delete_file"
+```
+
+`before_write_file` runs before a file is saved. `write_file` replaces the save itself. `delete_file_data_content` replaces deletion.
+
 ## Discovering hooks
 
 The framework's own `hooks.py` is the most complete reference for what each hook expects, so read `frappe/hooks.py` in the source. To see the merged value across all installed apps for any hook:
@@ -249,6 +394,59 @@ The framework's own `hooks.py` is the most complete reference for what each hook
 frappe.get_hooks("doc_events")
 frappe.get_hooks("scheduler_events")
 ```
+
+## Hook index
+
+The commonly used hooks, alphabetically, with the section that covers each.
+
+| Hook                           | Section                                                       |
+| ------------------------------ | ------------------------------------------------------------- |
+| `after_install`                | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `after_job`                    | [Request and job hooks](#request-and-job-hooks)               |
+| `after_migrate`                | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `after_request`                | [Request and job hooks](#request-and-job-hooks)               |
+| `after_sync`                   | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `app_include_css`              | [Assets](#assets)                                             |
+| `app_include_js`               | [Assets](#assets)                                             |
+| `app_name`, `app_title`, ...   | [App metadata](#app-metadata)                                 |
+| `auth_hooks`                   | [Authentication hooks](#authentication-hooks)                 |
+| `before_install`               | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `before_job`                   | [Request and job hooks](#request-and-job-hooks)               |
+| `before_migrate`               | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `before_request`               | [Request and job hooks](#request-and-job-hooks)               |
+| `before_tests`                 | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `before_write_file`            | [File hooks](#file-hooks)                                     |
+| `delete_file_data_content`     | [File hooks](#file-hooks)                                     |
+| `doc_events`                   | [Document events](#document-events)                           |
+| `doctype_js`                   | [Assets](#assets)                                             |
+| `extend_bootinfo`              | [Login and session hooks](#login-and-session-hooks)           |
+| `fixtures`                     | [Fixtures](#fixtures)                                         |
+| `get_website_user_home_page`   | [Website hooks](#home-page)                                   |
+| `has_permission`               | [Permission hooks](#permission-hooks)                         |
+| `home_page`                    | [Website hooks](#home-page)                                   |
+| `jinja`                        | [Jinja and queries](#jinja-and-queries)                       |
+| `on_login`                     | [Login and session hooks](#login-and-session-hooks)           |
+| `on_logout`                    | [Login and session hooks](#login-and-session-hooks)           |
+| `on_session_creation`          | [Login and session hooks](#login-and-session-hooks)           |
+| `override_doctype_class`       | [override_doctype_class](#override_doctype_class)             |
+| `override_whitelisted_methods` | [override_whitelisted_methods](#override_whitelisted_methods) |
+| `page_js`                      | [Assets](#assets)                                             |
+| `permission_query_conditions`  | [Permission hooks](#permission-hooks)                         |
+| `portal_menu_items`            | [Website hooks](#portal-sidebar)                              |
+| `role_home_page`               | [Website hooks](#home-page)                                   |
+| `scheduler_events`             | [Scheduler events](#scheduler-events)                         |
+| `standard_portal_menu_items`   | [Website hooks](#portal-sidebar)                              |
+| `standard_queries`             | [Jinja and queries](#jinja-and-queries)                       |
+| `update_website_context`       | [Website hooks](#context)                                     |
+| `user_data_fields`             | [User data privacy](#user-data-privacy)                       |
+| `web_include_css`              | [Assets](#assets)                                             |
+| `web_include_js`               | [Assets](#assets)                                             |
+| `webform_include_js`           | [Assets](#assets)                                             |
+| `website_clear_cache`          | [Website hooks](#clearing-website-cache)                      |
+| `website_context`              | [Website hooks](#context)                                     |
+| `website_redirects`            | [Website hooks](#redirects-and-route-rules)                   |
+| `website_route_rules`          | [Website hooks](#redirects-and-route-rules)                   |
+| `write_file`                   | [File hooks](#file-hooks)                                     |
 
 ## See also
 

@@ -44,7 +44,13 @@ sudo systemctl reload nginx
 ## Wildcard certificates
 
 For DNS-based multitenancy where many subdomains share one bench, you want a
-wildcard certificate (`*.mysite.com`). Wildcards require a DNS challenge, which
-Certbot supports through DNS provider plugins. The available options depend on
-your Bench and Certbot versions, run `bench setup lets-encrypt --help` to see
-what your install supports.
+wildcard certificate (`*.mysite.com`). Wildcards require a DNS challenge, so use
+the dedicated command, which runs Certbot with `certonly --manual
+--preferred-challenges=dns`:
+
+```bash
+sudo bench setup wildcard-ssl '*.mysite.com' --email you@example.com
+```
+
+This needs `dns_multitenant` enabled in your bench config. Run
+`bench setup wildcard-ssl --help` for options.

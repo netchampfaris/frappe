@@ -12,8 +12,8 @@ plus how to find the slow queries in the first place.
 ## Add a database index
 
 If a list view, report, or filter is slow, the usual fix is an index on the column
-being filtered or sorted. Add one with `add-database-index`. It creates the index
-and a Property Setter so the index survives migrations:
+being filtered or sorted. Add one with `add-database-index`. For a single column it
+creates the index and a Property Setter so the index survives migrations:
 
 ```bash
 bench --site mysite.localhost add-database-index --doctype "Sales Invoice" --column customer
@@ -27,13 +27,23 @@ bench --site mysite.localhost add-database-index --doctype "Sales Invoice" \
   --column customer --column posting_date
 ```
 
-You can also mark a DocType field as indexed in the DocType editor: tick "Index"
-on the field. From code, add an index through the database API:
+A multi-column index is not backed by a Property Setter, so it is not guaranteed to
+survive a migrate. To make it permanent, define it in the DocType controller's
+`on_doctype_update` function. Frappe runs this on every `bench migrate`, so the
+index is recreated whenever it is missing:
 
 ```python
-import frappe
-frappe.db.add_index("Sales Invoice", ["customer", "posting_date"])
+# sales_invoice.py
+def on_doctype_update():
+    frappe.db.add_index("Sales Invoice", ["customer", "posting_date"])
 ```
+
+`on_doctype_update` is a module-level function in the controller file, not a method
+on the document class. This is how the framework's own DocTypes add their
+composite indexes.
+
+You can also mark a single field as indexed in the DocType editor: tick "Index" on
+the field.
 
 Indexes speed up reads but slow down writes a little and use disk, so add them for
 columns you actually filter or sort on, not every column.

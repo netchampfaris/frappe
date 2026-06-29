@@ -16,7 +16,7 @@ Frappe lets you extend and tweak DocTypes **without editing their source JSON**.
 
 Behind the scenes Customize Form writes **Property Setters** (for property overrides) and **Custom Fields** (for new fields). It never modifies the original DocType JSON.
 
-To ship these customizations with your app (so they're created on install/migrate), declare the `Custom Field` and `Property Setter` records in `hooks.py` via `fixtures`. See [Hooks](/server-side/hooks).
+To ship these customizations with your app (so they're created on install/migrate), export them as fixtures. See [Shipping customizations with fixtures](#shipping-customizations-with-fixtures) below.
 
 ## Property Setters
 
@@ -49,6 +49,36 @@ frappe.make_property_setter({
 ```
 
 Each Property Setter targets exactly one property; create one per override.
+
+## Shipping customizations with fixtures
+
+Customize Form changes live as data in one site. To carry them into other sites, export the underlying records as **fixtures**: data dumped to JSON files in your app that Frappe re-imports on install and migrate.
+
+List the DocTypes to export in your app's `hooks.py`:
+
+```python
+# customizations as fixtures
+fixtures = ["Custom Field", "Property Setter"]
+```
+
+Export them from a site that has the customizations:
+
+```bash
+bench --site mysite export-fixtures
+```
+
+This writes one JSON file per DocType into a `fixtures/` folder in your app (for example `fixtures/custom_field.json`). Commit these files. When the app is installed on a new site, or when you run `bench migrate`, the fixtures are imported automatically, overwriting existing records with the same name.
+
+To export only some records, use a dict with `filters` (or `or_filters`) instead of a plain DocType name:
+
+```python
+fixtures = [
+    "Property Setter",
+    {"doctype": "Custom Field", "filters": [["dt", "in", ["Customer", "Sales Order"]]]},
+]
+```
+
+You can also ship single DocTypes (like `Website Settings`) as fixtures to carry their saved values across sites.
 
 ## Which tool to use
 

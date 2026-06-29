@@ -127,7 +127,7 @@ scheduler_events = {
 }
 ```
 
-Available frequencies: `all` (every scheduler tick, about once a minute), `hourly`, `daily`, `weekly`, `monthly`, and `cron` for arbitrary expressions. Each has a `_long` variant that runs on the long queue, and `_maintenance` variants for jobs whose exact run time does not matter.
+Available frequencies: `all` (every scheduler tick, about once a minute), `hourly`, `daily`, `weekly`, `monthly`, `yearly` (also `annual`), and `cron` for arbitrary expressions. `hourly`, `daily`, `weekly`, and `monthly` have a `_long` variant that runs on the long queue. `hourly` and `daily` also have a `_maintenance` variant for jobs whose exact run time does not matter; these run on the long queue at a per-site random offset. `all` and `cron` have no `_long` or `_maintenance` forms.
 
 The scheduler must be enabled for the site. Check and toggle it with:
 

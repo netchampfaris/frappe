@@ -79,6 +79,12 @@ Several fields control the look without any code:
 - `meta_title`, `meta_description`, `meta_image`: page metadata for sharing and SEO.
 - `hide_navbar`, `hide_footer`, `show_sidebar` with a linked "Website Sidebar".
 
+The `breadcrumbs` field holds a Python list of `{"label", "route"}` dicts, evaluated with `frappe.safe_eval`. The `_()` translation function is available, so wrap labels for translation:
+
+```python
+[{"label": _("Jobs"), "route": "jobs"}]
+```
+
 For scripts and styling beyond these, see [Customization](#customization).
 
 ## Customization

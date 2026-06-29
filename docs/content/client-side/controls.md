@@ -98,3 +98,88 @@ control.refresh();
 ```
 
 To group several controls together (for example to read them as one set of values), use `frappe.ui.FieldGroup`, which is the same base that powers dialogs. See [Dialog API](/client-side/dialog-api).
+
+## Field type properties
+
+The `df` you pass to `make_control` takes the same properties as a docfield. Some field types read extra properties:
+
+```javascript
+// Code: syntax highlight and sizing
+{
+  fieldtype: "Code",
+  fieldname: "script",
+  // valid options: Javascript, JS, Python, Py, PythonExpression,
+  // HTML, CSS, Markdown, SCSS, JSON, Golang, Go, Jinja, SQL
+  options: "Javascript",
+  wrap: true, // wrap long lines
+  min_lines: 5, // editor min height in lines
+  max_lines: 20, // editor max height in lines
+}
+
+// Currency: options is a currency code or the fieldname holding the currency
+{
+  fieldtype: "Currency",
+  fieldname: "amount",
+  options: "USD",
+}
+
+// Data: options picks a validated input format
+{
+  fieldtype: "Data",
+  fieldname: "contact",
+  // Email, Phone, URL, Name, Barcode, IBAN
+  options: "Email",
+}
+
+// Dynamic Link: options is the fieldname holding the linked DocType
+{
+  fieldtype: "Dynamic Link",
+  fieldname: "party",
+  options: "party_type",
+}
+
+// MultiCheck: columns is a fixed number, or "min-width max-columns"
+{
+  fieldtype: "MultiCheck",
+  fieldname: "tags",
+  options: ["Open", "Closed", "Cancelled"],
+  columns: 2,
+}
+
+// Rating: options sets the number of stars (default 5)
+{
+  fieldtype: "Rating",
+  fieldname: "rating",
+  options: 5,
+}
+
+// Icon: set options to "Emojis" to include emojis in the picker
+{
+  fieldtype: "Icon",
+  fieldname: "page_icon",
+  options: "Emojis",
+}
+
+// Button: btn_size is xs, sm, or lg (default xs)
+{
+  fieldtype: "Button",
+  fieldname: "fetch",
+  btn_size: "sm",
+}
+```
+
+## Link field formatters
+
+A Link field shows the linked record's `name`. To show more, like a code plus a descriptive name, register a formatter under `frappe.form.link_formatters` keyed by the DocType. It runs wherever that Link value is displayed.
+
+```javascript
+frappe.form.link_formatters["Employee"] = function (value, doc, docfield) {
+  // value is the linked name; doc is the row holding the link
+  if (doc.employee_name && doc.employee_name !== value) {
+    return value + ": " + doc.employee_name;
+  }
+  return value;
+};
+```
+
+The descriptive field (here `employee_name`) must be present on the document for the formatter to use it; it can be a hidden field. Frappe ships a built-in formatter for `User` that shows the full name. Load your formatter once, for example from an app's bundle, and it applies to every form.

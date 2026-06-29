@@ -103,8 +103,9 @@ the parsed JSON may change byte ordering and break the comparison.
 
 - Webhooks run in a **background job**, so they don't block the triggering save.
   Pick the queue with _Background Jobs Queue_; set a _Timeout_ (default 5s).
-- A failed request is **retried up to 3 times** (with a short backoff between
-  attempts). A non-2xx response counts as a failure.
+- A webhook is **attempted up to 3 times total** (the initial request plus up to
+  2 retries), with a backoff of about 1s then 4s between retries on a generic
+  error. A non-2xx response counts as a failure.
 - Every attempt is recorded in **Webhook Request Log** (URL, headers, body,
   response, and any error). This is the first place to look when a delivery fails.
 - `workflow_transition` is special: if all retries fail, the error is re-raised so

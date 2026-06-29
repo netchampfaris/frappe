@@ -1,6 +1,7 @@
 ---
 title: Create the DocType
 tableFirstCol: 10rem
+pageClass: create-doctype-tables
 ---
 
 # Create the DocType
@@ -110,7 +111,7 @@ like this (trimmed):
 ```
 
 The generated `article.py` is a near-empty controller. You add logic to it on the
-[next page](/tutorial/controllers-and-validation):
+[next page](/tutorial/controllers-and-business-logic):
 
 ```python
 # Copyright (c) 2024, Your Company and contributors
@@ -165,4 +166,4 @@ Add a couple of Library Transaction records with type `Issue` so the report on a
 later page has something to show.
 
 Continue to
-[Controllers and Validation](/tutorial/controllers-and-validation).
+[Controllers and Business Logic](/tutorial/controllers-and-business-logic).

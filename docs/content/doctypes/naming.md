@@ -102,6 +102,25 @@ class Task(Document):
 
 `make_autoname(key, doctype, doc)` accepts the same series syntax described above and also `"hash"`.
 
+## Document Naming Rule
+
+**Document Naming Rule** is a DocType, so you can add naming rules for any DocType at runtime without touching code. Each rule names documents of one `document_type` using a `prefix` and a counter `prefix_digits` wide.
+
+A rule with prefix `todo-high-` and `prefix_digits` 3 produces `todo-high-001`, `todo-high-002`, and so on. The prefix runs through the same placeholder parser, so `todo-.YYYY.-` resolves date parts too.
+
+Each rule has:
+
+| Field           | Purpose                                                            |
+| --------------- | ------------------------------------------------------------------ |
+| `document_type` | The DocType the rule names.                                        |
+| `priority`      | Rules are tried highest priority first.                            |
+| `conditions`    | Optional filters; the rule only applies when the document matches. |
+| `prefix`        | Text prepended before the counter.                                 |
+| `prefix_digits` | Width of the zero-padded counter.                                  |
+| `disabled`      | Skip the rule when checked.                                        |
+
+You can define several rules for one DocType. `set_naming_from_document_naming_rule` loads the enabled rules ordered by `priority desc` and applies them until one sets `name`, so the first matching rule wins.
+
 ## Resolution order
 
 When a document is inserted, `set_new_name` applies the first matching rule:
