@@ -4,12 +4,12 @@ title: Overview
 
 # Overview
 
-Desk is the admin UI you get after logging in. It is a single-page app served at `/app` that talks to the server over the same REST and RPC APIs your own code uses. Every DocType you create automatically gets a list view, a form, filters, reports, and print formats in Desk, with no extra UI code.
+Desk is the admin UI you get after logging in. It is a single-page app served at `/desk` that talks to the server over the same REST and RPC APIs your own code uses. Every DocType you create automatically gets a list view, a form, filters, reports, and print formats in Desk, with no extra UI code.
 
 You reach Desk at:
 
 ```text
-https://your-site/app
+https://your-site/desk
 ```
 
 Access to Desk requires a System User with the right roles. Website-only users (Customers, Suppliers, and other Website Users) land on the [portal](/portal/web-forms) instead.
@@ -25,7 +25,7 @@ When you define a DocType, Desk renders these views from its metadata:
 
 ## Navigating Desk
 
-The left sidebar lists [Workspaces](/desk/workspaces). A Workspace is a landing page that groups shortcuts, links, charts, and number cards for a module. The default sidebar mirrors the apps installed on the bench.
+The left sidebar lists Workspaces. A Workspace is a landing page that groups shortcuts, links, charts, and number cards for a module. The default sidebar mirrors the apps installed on the bench.
 
 The top bar has a few things worth knowing:
 
@@ -42,7 +42,7 @@ Desk is a client. Page loads pull document metadata and data through whitelisted
 
 Most day-to-day customization happens inside Desk itself:
 
-- [Workspaces](/desk/workspaces) for navigation and dashboards.
+- Workspaces for navigation and dashboards.
 - [Reports](/desk/reports) for tabular data.
 - [Print Formats](/desk/print-formats) for documents and PDFs.
 - [Client and Server Scripts](/desk/client-server-scripts) for no-deploy logic.

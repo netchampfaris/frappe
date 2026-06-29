@@ -6,7 +6,32 @@ title: Hooks
 
 `hooks.py` is the control panel of a Frappe app. It's a flat Python file of module-level variables that the framework reads to wire your app into the system. You use it to react to document events, schedule jobs, override classes, and inject assets. Every app has one at `<app>/<app>/hooks.py`.
 
-Hooks are **additive across apps**: when multiple installed apps define the same hook, Frappe merges them. Read the merged result for any hook with `frappe.get_hooks("hook_name")`.
+## Defining hooks in your app
+
+Frappe imports `hooks.py` and reads its module-level variables, so a hook is just a top-level assignment. There is no registration function to call.
+
+A hook value is one of three shapes:
+
+- a string dotted path to a function, like `"library.install.after_install"`
+- a list of dotted paths
+- a dict that maps a key (often a doctype) to one or more dotted paths
+
+```python
+# single function
+after_install = "library.install.after_install"
+
+# list of functions
+before_request = ["library.startup.before_request"]
+
+# dict keyed by doctype
+doc_events = {
+    "Library Loan": {
+        "on_submit": "library.events.loan.on_submit",
+    },
+}
+```
+
+Hooks are **additive across apps**: when multiple installed apps define the same hook, Frappe merges them. So you never edit another app's `hooks.py` to extend it. Define the same hook in your own app and Frappe combines the values. Read the merged result for any hook with `frappe.get_hooks("hook_name")`.
 
 After changing `hooks.py`, run `bench migrate` (or at least `bench clear-cache`) so the new configuration is picked up.
 
@@ -75,7 +100,9 @@ Available frequencies include `all` (every scheduler tick), `hourly`, `daily`, `
 
 ### override_doctype_class
 
-Replace a DocType's controller class with your own subclass. This is useful for changing behavior of a DocType you don't own:
+This is an advanced hook. Reach for `doc_events` or `override_whitelisted_methods` first, and only override the class when you need to change methods those hooks can't reach.
+
+Replace a DocType's controller class with your own subclass. Always extend the base controller class and call `super()` so the original behavior still runs. This is useful for changing behavior of a DocType you don't own:
 
 ```python
 override_doctype_class = {
@@ -166,7 +193,7 @@ web_include_js = ["library_web.js"]      # website pages
 doctype_js = {"Library Loan": "public/js/library_loan.js"}
 ```
 
-## Jinja, queries, and fixtures
+## Jinja and queries
 
 ```python
 # expose methods/filters to Jinja templates and print formats
@@ -177,10 +204,32 @@ jinja = {
 
 # replace the default link-field search query for a doctype
 standard_queries = {"Library Book": "library.queries.book_query"}
-
-# export records as part of the app (synced on migrate)
-fixtures = ["Custom Field", {"dt": "Role", "filters": [["name", "in", ["Librarian"]]]}]
 ```
+
+## Fixtures
+
+Fixtures let you ship database records as part of your app. They're useful for records you create through the Desk but want to version with code, like Custom Fields, Roles, or Workflows.
+
+The `fixtures` hook lists the doctypes (and optional filters) to include:
+
+```python
+fixtures = [
+    "Custom Field",
+    {"dt": "Role", "filters": [["name", "in", ["Librarian"]]]},
+]
+```
+
+An entry is either a doctype name (export every record) or a dict with `dt` and `filters` (or `or_filters`) to export a subset.
+
+Export the records to JSON with:
+
+```bash
+bench --site <site> export-fixtures --app library
+```
+
+This writes one file per doctype to `<app>/<app>/fixtures/`, for example `fixtures/custom_field.json`. Commit those files.
+
+On `bench migrate`, Frappe imports every JSON file under `fixtures/` for each installed app, overwriting matching records on the target site. So fixtures sync one way: export from where you author them, then migrate everywhere else to apply them. If a fixture's doctype doesn't exist on the site, that file is skipped.
 
 ## Install and migrate hooks
 

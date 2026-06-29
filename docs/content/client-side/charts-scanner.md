@@ -1,8 +1,8 @@
 ---
-title: Charts Scanner
+title: Charts, Barcode & QR
 ---
 
-# Charts Scanner
+# Charts, Barcode & QR
 
 This page covers two browser widgets you can drop into a custom Desk page or dialog: charts via `frappe.Chart`, and the camera-based barcode and QR scanner via `frappe.ui.Scanner`.
 
@@ -12,16 +12,14 @@ This page covers two browser widgets you can drop into a custom Desk page or dia
 
 ```javascript
 let chart = new frappe.Chart("#chart", {
-    title: __("Tasks by Status"),
-    type: "bar", // bar, line, pie, percentage, donut, heatmap
-    height: 300,
-    data: {
-        labels: ["Open", "In Progress", "Completed"],
-        datasets: [
-            { name: __("Tasks"), values: [12, 5, 30] },
-        ],
-    },
-    colors: ["#7cd6fd", "#743ee2", "#5e64ff"],
+  title: __("Tasks by Status"),
+  type: "bar", // bar, line, pie, percentage, donut, heatmap
+  height: 300,
+  data: {
+    labels: ["Open", "In Progress", "Completed"],
+    datasets: [{ name: __("Tasks"), values: [12, 5, 30] }],
+  },
+  colors: ["#7cd6fd", "#743ee2", "#5e64ff"],
 });
 ```
 
@@ -29,12 +27,12 @@ The `data` object holds `labels` (the x-axis) and `datasets` (one or more series
 
 ```javascript
 chart.update({
-    labels: ["Open", "In Progress", "Completed"],
-    datasets: [{ name: __("Tasks"), values: [8, 9, 33] }],
+  labels: ["Open", "In Progress", "Completed"],
+  datasets: [{ name: __("Tasks"), values: [8, 9, 33] }],
 });
 
 chart.addDataPoint(__("Cancelled"), [2]); // append a point
-chart.removeDataPoint(0);                 // remove the first point
+chart.removeDataPoint(0); // remove the first point
 ```
 
 You usually fetch the numbers from the server first, then feed them in. See [Server Calls](/client-side/server-calls).
@@ -42,11 +40,11 @@ You usually fetch the numbers from the server first, then feed them in. See [Ser
 ```javascript
 let rows = await frappe.xcall("myapp.api.task_counts");
 new frappe.Chart("#chart", {
-    type: "pie",
-    data: {
-        labels: rows.map((r) => r.status),
-        datasets: [{ values: rows.map((r) => r.count) }],
-    },
+  type: "pie",
+  data: {
+    labels: rows.map((r) => r.status),
+    datasets: [{ values: rows.map((r) => r.count) }],
+  },
 });
 ```
 
@@ -56,10 +54,10 @@ new frappe.Chart("#chart", {
 
 ```javascript
 let chart = new frappe.ui.RealtimeChart("#live", "task_update", 8, {
-    data: {
-        labels: ["t0"],
-        datasets: [{ values: [0] }],
-    },
+  data: {
+    labels: ["t0"],
+    datasets: [{ values: [0] }],
+  },
 });
 chart.start_updating();
 // later: chart.stop_updating();
@@ -71,14 +69,14 @@ chart.start_updating();
 
 ```javascript
 new frappe.ui.Scanner({
-    dialog: true,
-    multiple: false,
-    on_scan(result) {
-        if (result && result.result && result.result.text) {
-            let code = result.result.text;
-            frappe.show_alert(__("Scanned: {0}", [code]));
-        }
-    },
+  dialog: true,
+  multiple: false,
+  on_scan(result) {
+    if (result && result.result && result.result.text) {
+      let code = result.result.text;
+      frappe.show_alert(__("Scanned: {0}", [code]));
+    }
+  },
 });
 ```
 
@@ -92,11 +90,11 @@ Options:
 // inline, scanning many codes into a list
 let codes = [];
 new frappe.ui.Scanner({
-    container: "#scan-area",
-    multiple: true,
-    on_scan(result) {
-        codes.push(result.result.text);
-    },
+  container: "#scan-area",
+  multiple: true,
+  on_scan(result) {
+    codes.push(result.result.text);
+  },
 });
 ```
 

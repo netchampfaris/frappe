@@ -67,7 +67,7 @@ On the client, register a handler with `frappe.realtime.on`. The callback gets t
 
 ```javascript
 frappe.realtime.on("catalog_synced", (data) => {
-    frappe.show_alert(`Synced ${data.count} books`);
+  frappe.show_alert(`Synced ${data.count} books`);
 });
 ```
 
@@ -87,10 +87,10 @@ A common pattern is to start a background job, then listen for the event the job
 
 ```javascript
 frappe.call("library.api.start_sync").then(() => {
-    frappe.realtime.on("catalog_synced", (data) => {
-        frappe.msgprint(`Done: ${data.count}`);
-        frappe.realtime.off("catalog_synced");
-    });
+  frappe.realtime.on("catalog_synced", (data) => {
+    frappe.msgprint(`Done: ${data.count}`);
+    frappe.realtime.off("catalog_synced");
+  });
 });
 ```
 

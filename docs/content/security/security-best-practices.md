@@ -28,6 +28,14 @@ Book = DocType("Book")
 frappe.qb.from_(Book).select(Book.title).where(Book.author == author_name).run()
 ```
 
+`frappe.qb.get_query` builds a parameterized query from a `filters` dict, the same way the ORM does:
+
+```python
+frappe.qb.get_query("Book", fields=["title"], filters={"author": author_name}).run()
+```
+
+It defaults to `ignore_permissions=True`, so it does not apply DocType or user permissions. Pass `ignore_permissions=False` when the result depends on what the current user is allowed to see.
+
 If you must write raw SQL, pass values as parameters, never with f-strings or `%` formatting:
 
 ```python

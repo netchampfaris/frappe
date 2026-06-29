@@ -1,8 +1,8 @@
 ---
-title: Bulk Import
+title: Data Import
 ---
 
-# Bulk Import
+# Data Import
 
 Bulk import lets you create or update many records at once from a CSV or Excel
 file. You drive it from the **Data Import** DocType, either through the Desk UI

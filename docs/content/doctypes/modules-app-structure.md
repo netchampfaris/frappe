@@ -56,13 +56,13 @@ your_app/accounts/doctype/sales_invoice/
 
 What each file is for:
 
-| File | Role |
-|------|------|
-| `<doctype>.json` | The schema: fields, permissions, naming rule, flags. Source of truth. |
-| `<doctype>.py` | The controller and [lifecycle hooks](/doctypes/controllers-lifecycle). |
-| `<doctype>.js` | Client-side [form scripts](/client-side/form-api). |
-| `<doctype>_list.js` | Optional list-view customisation. |
-| `test_<doctype>.py` | Unit/integration tests. |
+| File                | Role                                                                   |
+| ------------------- | ---------------------------------------------------------------------- |
+| `<doctype>.json`    | The schema: fields, permissions, naming rule, flags. Source of truth.  |
+| `<doctype>.py`      | The controller and [lifecycle hooks](/doctypes/controllers-lifecycle). |
+| `<doctype>.js`      | Client-side [form scripts](/client-side/form-api).                     |
+| `<doctype>_list.js` | Optional list-view customisation.                                      |
+| `test_<doctype>.py` | Unit/integration tests.                                                |
 
 ## How the JSON reaches the database
 

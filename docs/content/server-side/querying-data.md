@@ -4,7 +4,7 @@ title: Querying Data
 
 # Querying Data
 
-When you need many records (or just a few columns), don't load full documents in a loop. Query them directly. `frappe.get_all` and `frappe.get_list` return lists of rows efficiently, with a flexible filter and field syntax. For single values, use [`frappe.db.get_value`](#single-values); for full SQL control, use the [Query Builder](/server-side/query-builder).
+When you need many records (or just a few columns), don't load full documents in a loop. Query them directly. `frappe.get_all` and `frappe.get_list` return lists of rows efficiently, with a flexible filter and field syntax. For one or a few fields, use [`frappe.db.get_value`](#reading-specific-field-values); for full SQL control, use the [Query Builder](/server-side/query-builder).
 
 ## get_all vs get_list
 
@@ -36,11 +36,20 @@ frappe.get_all("Task", fields=["name", "subject", "status"])
 
 Each row is a `frappe._dict`, so you can use attribute access: `rows[0].subject`.
 
-You can also use SQL expressions and aliases in `fields`:
+You can alias a column with `as`:
 
 ```python
-frappe.get_all("Task", fields=["status", "count(name) as count"], group_by="status")
+frappe.get_all("Task", fields=["name as task_id", "subject"])
 ```
+
+Raw SQL function strings like `"count(name)"` are rejected. For aggregates and a few other functions, pass a dict instead. The key is the uppercase function name and `as` sets the alias:
+
+```python
+frappe.get_all("Task", fields=["status", {"COUNT": "name", "as": "count"}], group_by="status")
+frappe.get_all("Task", fields=[{"COUNT": "*", "as": "total"}])
+```
+
+Only a fixed set of functions is allowed, including `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `ABS`, `IFNULL`, `CONCAT`, and the date parts `YEAR`, `MONTH`, and `QUARTER`. Arbitrary SQL is not. For anything beyond this, use the [Query Builder](/server-side/query-builder).
 
 ### pluck
 
@@ -88,6 +97,24 @@ frappe.get_all("Task", filters=[
 
 The optional 4-element form `[doctype, fieldname, operator, value]` lets you filter on a parent or child doctype explicitly.
 
+### Filtering across a Link field
+
+If a field is a Link, you can filter on a field of the linked doctype with dot notation: `link_field.target_field`. The query joins the linked table for you. For example, if `Task` has a `customer` Link field, filter on the customer's territory like this:
+
+```python
+# dict form
+frappe.get_all("Task", filters={"customer.territory": "Australia"})
+
+# list form
+frappe.get_all("Task", filters=[["customer.territory", "=", "Australia"]])
+```
+
+The same dot notation works in `fields` to pull a value from the linked record:
+
+```python
+frappe.get_all("Task", fields=["name", "customer.territory"])
+```
+
 ### Supported operators
 
 `=`, `!=`, `<`, `>`, `<=`, `>=`, `like`, `not like`, `ilike`, `in`, `not in`, `between`, `is`, `regex`, and `timespan`.
@@ -131,7 +158,7 @@ frappe.db.exists({"doctype": "Task", "status": "Open"})
 
 `frappe.db.exists` returns the matching document name (truthy) or `None`.
 
-## Single values
+## Reading specific field values
 
 When you need one or a few fields from one record, `frappe.db.get_value` is faster than loading a document or a list:
 

@@ -4,17 +4,17 @@ title: List View
 
 # List View
 
-You customize a DocType's list view by setting `frappe.listview_settings[doctype]` to an object of hooks. Put this in a client script file for the DocType (the same file as your [form script](/client-side/form-api)). Frappe reads these settings when it builds the list.
+You customize a DocType's list view by setting `frappe.listview_settings[doctype]` to an object of hooks. Put this in the DocType's list view script file, named `{doctype}_list.js` (for example `task_list.js`). This is a separate file from the [form script](/client-side/form-api), which is named `{doctype}.js`. Frappe reads these settings when it builds the list.
 
 ```javascript
 frappe.listview_settings["Task"] = {
-    add_fields: ["status", "priority"],
-    get_indicator(doc) {
-        if (doc.status === "Completed") {
-            return [__("Completed"), "green", "status,=,Completed"];
-        }
-        return [__("Open"), "orange", "status,=,Open"];
-    },
+  add_fields: ["status", "priority"],
+  get_indicator(doc) {
+    if (doc.status === "Completed") {
+      return [__("Completed"), "green", "status,=,Completed"];
+    }
+    return [__("Open"), "orange", "status,=,Open"];
+  },
 };
 ```
 

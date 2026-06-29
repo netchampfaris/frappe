@@ -8,10 +8,10 @@ A control is the rendered input for one field. On a form, every field has a cont
 
 ```javascript
 frappe.ui.form.on("Task", {
-    refresh(frm) {
-        // focus the subject input
-        frm.fields_dict.subject.$input.focus();
-    },
+  refresh(frm) {
+    // focus the subject input
+    frm.fields_dict.subject.$input.focus();
+  },
 });
 ```
 
@@ -34,8 +34,8 @@ Useful methods:
 
 ```javascript
 let field = frm.get_field("priority");
-field.df.label;        // "Priority"
-field.get_value();     // "High"
+field.df.label; // "Priority"
+field.get_value(); // "High"
 field.set_focus();
 ```
 
@@ -47,9 +47,9 @@ For a Table field, the control has a `grid` object. The grid manages the rows sh
 
 ```javascript
 let grid = frm.fields_dict.items.grid;
-grid.get_selected_children();   // selected row docs
-grid.add_new_row();             // append an empty row
-grid.refresh();                 // redraw the grid
+grid.get_selected_children(); // selected row docs
+grid.add_new_row(); // append an empty row
+grid.refresh(); // redraw the grid
 
 // get the control for a field inside a grid row
 let row = grid.grid_rows[0];
@@ -64,35 +64,35 @@ On a custom Desk page or anywhere you control the DOM, build a standalone contro
 
 ```javascript
 let control = frappe.ui.form.make_control({
-    df: {
-        fieldtype: "Link",
-        fieldname: "customer",
-        label: __("Customer"),
-        options: "Customer",
-    },
-    parent: $("#my-container").get(0),
-    render_input: true,
+  df: {
+    fieldtype: "Link",
+    fieldname: "customer",
+    label: __("Customer"),
+    options: "Customer",
+  },
+  parent: $("#my-container").get(0),
+  render_input: true,
 });
 control.refresh();
 
-control.get_value();         // read what the user entered
-control.set_value("ACME");   // set it
+control.get_value(); // read what the user entered
+control.set_value("ACME"); // set it
 ```
 
 The `df` accepts the same properties as a field in a DocType, so you can use `options`, `reqd`, `default`, `get_query` for Link filters, and `change` for a callback when the value changes.
 
 ```javascript
 let control = frappe.ui.form.make_control({
-    df: {
-        fieldtype: "Select",
-        fieldname: "status",
-        options: ["Open", "Closed"],
-        change() {
-            console.log(control.get_value());
-        },
+  df: {
+    fieldtype: "Select",
+    fieldname: "status",
+    options: ["Open", "Closed"],
+    change() {
+      console.log(control.get_value());
     },
-    parent: wrapper,
-    render_input: true,
+  },
+  parent: wrapper,
+  render_input: true,
 });
 control.refresh();
 ```

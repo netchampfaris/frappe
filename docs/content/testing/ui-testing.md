@@ -14,17 +14,17 @@ like this:
 
 ```javascript
 context("ToDo", () => {
-    before(() => {
-        cy.login();
-        cy.visit("/app/todo");
-    });
+  before(() => {
+    cy.login();
+    cy.visit("/app/todo");
+  });
 
-    it("creates a new ToDo", () => {
-        cy.click_listview_primary_button("ToDo");
-        cy.fill_field("description", "Write docs", "Text Editor");
-        cy.click_doc_primary_button("Save");
-        cy.get(".title-text").should("contain", "Write docs");
-    });
+  it("creates a new ToDo", () => {
+    cy.click_listview_primary_button("ToDo");
+    cy.fill_field("description", "Write docs", "Text Editor");
+    cy.click_doc_primary_button("Save");
+    cy.get(".title-text").should("contain", "Write docs");
+  });
 });
 ```
 

@@ -93,13 +93,38 @@ def get_library_config():
 
 Nothing is written to Redis here; the cache lives in `frappe.local.request_cache`. It is a good fit for read-heavy helpers called from many places in one request.
 
+## @site_cache
+
+`@site_cache` keeps a function's result in the worker process across requests, without touching Redis. It avoids the cost of serializing and deserializing values, but the cache is not shared between workers, so use it only for read-mostly data where a small staleness window per worker is fine. The key includes the current site, so values are scoped per site.
+
+```python
+from frappe.utils.caching import site_cache
+
+@site_cache
+def get_default_currency():
+    return frappe.db.get_single_value("System Settings", "currency")
+```
+
+You can pass `ttl` (seconds before the entry expires) and `maxsize` (most entries to keep, with the oldest evicted first):
+
+```python
+@site_cache(ttl=300, maxsize=100)
+def get_exchange_rate(from_currency, to_currency):
+    return fetch_rate_from_api(from_currency, to_currency)
+```
+
+Clear it manually when the underlying data changes:
+
+```python
+get_default_currency.clear_cache()
+```
+
 ## Choosing a cache
 
 - `frappe.cache` (`get_value` / `hget`): shared across all workers and requests through Redis. Use for data that should survive between requests.
 - `@redis_cache`: the same Redis store, but as a decorator on a function.
+- `@site_cache`: in-memory per worker, across requests. Faster than Redis but not shared between workers.
 - `@request_cache`: in-memory, one request only. Cheapest, but does not persist.
-
-A related decorator, `@site_cache`, keeps a value in the worker process across requests without touching Redis. It is faster than Redis but is not shared between workers, so use it only for read-mostly data where a small staleness window per worker is fine.
 
 ## See also
 

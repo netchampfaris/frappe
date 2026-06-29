@@ -45,8 +45,8 @@ On a form, `frm.get_formatted(fieldname)` gives the formatted value of a field s
 For numbers specifically, `format_number(value, format, decimals)` and `format_currency(value, currency, decimals)` are global helpers.
 
 ```javascript
-format_number(1234.567, null, 2);   // "1,234.57"
-format_currency(1234.5, "USD");     // "$ 1,234.50"
+format_number(1234.567, null, 2); // "1,234.57"
+format_currency(1234.5, "USD"); // "$ 1,234.50"
 ```
 
 `flt(value, decimals)` parses anything into a float (returning 0 for junk), and `cint(value)` parses into an integer. Both are global. Use them before doing math on field values, which may arrive as strings.
@@ -61,19 +61,19 @@ let count = cint(frm.doc.items_count);
 `frappe.datetime` handles dates in the system format (`YYYY-MM-DD` and `YYYY-MM-DD HH:mm:ss`). Use these strings when reading and writing field values.
 
 ```javascript
-frappe.datetime.now_date();      // "2026-06-27"
-frappe.datetime.now_datetime();  // "2026-06-27 14:30:00"
-frappe.datetime.nowdate();       // same as now_date()
-frappe.datetime.get_today();     // same as now_date()
+frappe.datetime.now_date(); // "2026-06-27"
+frappe.datetime.now_datetime(); // "2026-06-27 14:30:00"
+frappe.datetime.nowdate(); // same as now_date()
+frappe.datetime.get_today(); // same as now_date()
 ```
 
 Arithmetic and comparison helpers:
 
 ```javascript
-frappe.datetime.add_days("2026-06-27", 7);     // 7 days later
-frappe.datetime.add_months("2026-06-27", 1);   // 1 month later
+frappe.datetime.add_days("2026-06-27", 7); // 7 days later
+frappe.datetime.add_months("2026-06-27", 1); // 1 month later
 frappe.datetime.get_day_diff("2026-06-30", "2026-06-27"); // 3
-frappe.datetime.month_start();                 // first day of this month
+frappe.datetime.month_start(); // first day of this month
 frappe.datetime.month_end();
 ```
 
@@ -81,7 +81,7 @@ Convert between the system format and the user's display format:
 
 ```javascript
 frappe.datetime.str_to_user("2026-06-27 14:30:00"); // user date and time format
-frappe.datetime.user_to_str("27-06-2026");          // back to system format
+frappe.datetime.user_to_str("27-06-2026"); // back to system format
 ```
 
 `comment_when(datetime)` returns a relative phrase like "2 hours ago", used in timelines.
@@ -116,7 +116,7 @@ frappe.utils.is_html(value);
 
 ```javascript
 frappe.run_serially([
-    () => frappe.db.set_value("Task", "T1", "status", "Completed"),
-    () => frappe.db.set_value("Task", "T2", "status", "Completed"),
+  () => frappe.db.set_value("Task", "T1", "status", "Completed"),
+  () => frappe.db.set_value("Task", "T2", "status", "Completed"),
 ]);
 ```

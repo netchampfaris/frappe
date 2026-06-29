@@ -54,8 +54,13 @@ Two helpers come up a lot:
 Put CSS in the **CSS** field. The renderer tags each field group with `data-fieldname` and `data-fieldtype`, gives values the class `value`, and gives section and column breaks the classes `section-break` and `column-break`, so you can target them:
 
 ```css
-[data-fieldtype="Int"] .value { text-align: left; }
-.section-break { padding: 30px 0; border-bottom: 1px solid #eee; }
+[data-fieldtype="Int"] .value {
+  text-align: left;
+}
+.section-break {
+  padding: 30px 0;
+  border-bottom: 1px solid #eee;
+}
 ```
 
 ## Print Format Builder

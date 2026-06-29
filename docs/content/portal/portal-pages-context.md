@@ -1,8 +1,8 @@
 ---
-title: Portal Pages Context
+title: Portal Pages
 ---
 
-# Portal Pages Context
+# Portal Pages
 
 A portal page is a file in the `www/` folder of any app. Drop an `.html` or `.md` file in there and it becomes a public URL. The file path maps directly to the route, so `your_app/www/about.html` is served at `/about`.
 
@@ -19,7 +19,7 @@ your_app/
 
 An `index.html` (or `index.md`) is served at the folder route. So `support/index.html` answers `/support`, not `/support/index`.
 
-Frappe also scans `templates/pages/` for the same reason, but `www/` is the folder you will use most. Both are listed in `get_start_folders()` in `frappe/website/router.py`.
+`www/` is the canonical folder for portal pages. Frappe scans it in `get_start_folders()` (see `frappe/website/router.py`).
 
 ## A minimal page
 
@@ -34,9 +34,7 @@ Start with plain HTML. Frappe wraps it in the default web layout (`templates/web
 To extend a different layout or override blocks, use `{% extends %}` yourself. When the source already extends a template, Frappe does not wrap it again.
 
 ```html
-{% extends "templates/web.html" %}
-
-{% block page_content %}
+{% extends "templates/web.html" %} {% block page_content %}
 <h1>About Us</h1>
 <p>We build things.</p>
 {% endblock %}

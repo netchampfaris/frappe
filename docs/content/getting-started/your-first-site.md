@@ -45,22 +45,15 @@ You can install multiple apps in one command:
 bench --site library.localhost install-app erpnext library_management
 ```
 
-### Set a default site
-
-So you don't have to type `--site` every time:
-
-```bash
-bench use library.localhost
-```
-
 ## Enable developer mode
 
 **Developer mode** makes the framework write DocType definitions to disk as JSON
 in your app and skips certain caches, so your schema changes are tracked in
-version control. Enable it per site:
+version control. Set it in the bench's common site config so it applies to every
+site on the bench:
 
 ```bash
-bench --site library.localhost set-config developer_mode 1
+bench set-config -g developer_mode 1
 ```
 
 Then clear the cache so the change takes effect:
@@ -70,7 +63,7 @@ bench --site library.localhost clear-cache
 ```
 
 > Turn developer mode **off** in production. It is meant for development only.
-> See [Developer Mode](/contributing/developer-mode) for details.
+> See [Developer Mode](/tutorial/developer-mode) for details.
 
 ## Start and log in
 
@@ -86,7 +79,9 @@ Open the site and log in as `Administrator` with the password you set:
 http://library.localhost:8000
 ```
 
-If the hostname doesn't resolve, register it locally:
+Site names that end in `.localhost` resolve to `127.0.0.1` automatically, so no
+extra setup is needed. If you use a different hostname (for example
+`library.test`), register it locally:
 
 ```bash
 bench --site library.localhost add-to-hosts

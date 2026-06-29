@@ -79,8 +79,102 @@ Several fields control the look without any code:
 - `meta_title`, `meta_description`, `meta_image`: page metadata for sharing and SEO.
 - `hide_navbar`, `hide_footer`, `show_sidebar` with a linked "Website Sidebar".
 
-For scripts and styling beyond these, see [Web Form Customization](/portal/web-form-customization).
+For scripts and styling beyond these, see [Customization](#customization).
+
+## Customization
+
+When the built-in options are not enough, add a client script for behavior and custom CSS for styling. Both are edited from the Web Form itself.
+
+### Client script
+
+Put JavaScript in the "Client script" field. The form exposes itself as `frappe.web_form`, and your script runs after the form is built (`frappe.init_client_script` is called from `make()` in the web form's JS class). The form object extends `frappe.ui.FieldGroup`, so you get the usual field helpers.
+
+```javascript
+frappe.ready(() => {
+  // react to a field change
+  frappe.web_form.on("country", (field, value) => {
+    frappe.web_form.set_df_property("state", "hidden", value !== "India");
+  });
+});
+```
+
+Common methods on `frappe.web_form`:
+
+- `get_value(fieldname)` and `get_values()`: read field values.
+- `set_value(fieldname, value)`: set a value.
+- `set_df_property(fieldname, property, value)`: change a field at runtime, for example `"hidden"`, `"reqd"`, or `"read_only"`.
+- `on(fieldname, handler)`: run a handler when a field changes. The handler receives the field and its value.
+
+### Validation
+
+Set `frappe.web_form.validate` to a function that returns a falsy value to block the save. It runs in `save()` before the record is sent.
+
+```javascript
+frappe.web_form.validate = () => {
+  let data = frappe.web_form.get_values();
+  if (data.end_date < data.start_date) {
+    frappe.msgprint(__("End date cannot be before start date"));
+    return false;
+  }
+  return true;
+};
+```
+
+### Events and lifecycle hooks
+
+The form triggers events you can subscribe to, and supports two lifecycle callbacks: `after_load` and `after_save`.
+
+```javascript
+// run after the form loads
+frappe.web_form.events.on("after_load", () => {
+  console.log("form ready");
+});
+
+// run after a successful save
+frappe.web_form.after_save = () => {
+  frappe.msgprint(__("Thanks!"));
+};
+```
+
+`after_load` fires once the form is built, and `after_save` fires in `save()` once the record is stored. Each has a matching event (`events.trigger("after_load")` and `events.trigger("after_save")`) and a matching callback you can set directly on `frappe.web_form`.
+
+### Styling
+
+Put CSS in the "Custom CSS" field. It is added to that form's page as a style block. The form markup gives you classes to target, like `.web-form-wrapper`, `.web-form`, and `.web-form-footer`.
+
+```css
+.web-form-wrapper {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.web-form .form-section {
+  margin-bottom: 2rem;
+}
+```
+
+### Including code app-wide
+
+To inject JS or CSS into web forms across an app (not just one form), use the `webform_include_js` and `webform_include_css` hooks. They are keyed by DocType, and `webform_include_js` also matches every form with `*`. The files are rendered with the form context and appended to the form's own script and style.
+
+```python
+# your_app/hooks.py
+webform_include_js = {"Support Ticket": "public/js/support_ticket_web_form.js"}
+webform_include_css = {"Support Ticket": "public/css/support_ticket_web_form.css"}
+```
 
 ## Standard vs custom Web Forms
 
 A Web Form created in developer mode with "Is Standard" checked is written to disk in your app (the `on_update` method exports a `.json`, `.js`, and `.py` file). Standard Web Forms ship with the app and can run a server-side `get_context` and a client script from those files. Non-standard Web Forms live only in the database and are edited entirely from the Desk.
+
+For a standard Web Form, the `.py` file can define `get_context(context)` to add server-side context, which `add_custom_context_and_script()` merges in.
+
+```python
+# your_app/your_app/doctype/web_form/support_ticket/support_ticket.py
+import frappe
+
+def get_context(context):
+    context.categories = frappe.get_all("Ticket Category", pluck="name")
+```
+
+The `.js` file is rendered as a template and injected as the page script, so the same `frappe.web_form` API applies there. A `.css` file with the form's scrubbed name in its app folder is picked up the same way.

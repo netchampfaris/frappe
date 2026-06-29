@@ -50,15 +50,15 @@ curl -G https://example.com/api/resource/ToDo \
 
 ### Operators
 
-| Operator        | Meaning                  | Example value                         |
-| --------------- | ------------------------ | ------------------------------------- |
-| `=` / `!=`      | equals / not equals      | `["status","=","Open"]`               |
-| `>` `<` `>=` `<=` | comparison             | `["creation",">","2026-01-01"]`       |
-| `like`          | pattern (use `%`)        | `["description","like","%milk%"]`     |
-| `not like`      | negated pattern          | `["description","not like","%spam%"]` |
-| `in` / `not in` | membership (array value) | `["status","in",["Open","Closed"]]`   |
-| `between`       | range (2-element array)  | `["creation","between",["2026-01-01","2026-02-01"]]` |
-| `is`            | set / not set            | `["assigned_by","is","set"]`          |
+| Operator          | Meaning                  | Example value                                        |
+| ----------------- | ------------------------ | ---------------------------------------------------- |
+| `=` / `!=`        | equals / not equals      | `["status","=","Open"]`                              |
+| `>` `<` `>=` `<=` | comparison               | `["creation",">","2026-01-01"]`                      |
+| `like`            | pattern (use `%`)        | `["description","like","%milk%"]`                    |
+| `not like`        | negated pattern          | `["description","not like","%spam%"]`                |
+| `in` / `not in`   | membership (array value) | `["status","in",["Open","Closed"]]`                  |
+| `between`         | range (2-element array)  | `["creation","between",["2026-01-01","2026-02-01"]]` |
+| `is`              | set / not set            | `["assigned_by","is","set"]`                         |
 
 ```bash
 # Items created this year whose description mentions "milk"
@@ -105,7 +105,12 @@ curl -G https://example.com/api/v2/document/ToDo \
 ```
 
 ```json
-{ "data": [/* up to 20 rows */], "has_next_page": true }
+{
+  "data": [
+    /* up to 20 rows */
+  ],
+  "has_next_page": true
+}
 ```
 
 Internally v2 fetches one extra row to compute `has_next_page`, then trims it from

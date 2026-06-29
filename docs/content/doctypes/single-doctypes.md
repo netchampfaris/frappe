@@ -14,8 +14,13 @@ Set the `issingle` flag to `1` to make a DocType single.
   "name": "Shop Settings",
   "issingle": 1,
   "fields": [
-    {"fieldname": "currency", "label": "Default Currency", "fieldtype": "Link", "options": "Currency"},
-    {"fieldname": "tax_rate", "label": "Tax Rate", "fieldtype": "Percent"}
+    {
+      "fieldname": "currency",
+      "label": "Default Currency",
+      "fieldtype": "Link",
+      "options": "Currency"
+    },
+    { "fieldname": "tax_rate", "label": "Tax Rate", "fieldtype": "Percent" }
   ]
 }
 ```
@@ -54,7 +59,7 @@ settings.tax_rate = 18
 settings.save()
 ```
 
-For a quick one-field update you can use `db_set`, or `frappe.db.set_single_value`:
+For a quick one-field update you can use `frappe.db.set_single_value`:
 
 ```python
 frappe.db.set_single_value("Shop Settings", "tax_rate", 18)

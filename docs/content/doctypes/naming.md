@@ -15,7 +15,7 @@ Naming is resolved in `frappe/model/naming.py` (`set_new_name`). The rules below
 Use the value of another field as the name.
 
 ```text
-autoname: field:email
+field:email
 ```
 
 The field must be filled, or Frappe throws "`<label>` is required". A unique index is created on that field automatically.
@@ -25,19 +25,19 @@ The field must be filled, or Frappe throws "`<label>` is required". A unique ind
 Generate sequential names from a prefix with a counter. The document needs a `naming_series` field (usually a Select) and the running number comes from the `tabSeries` table.
 
 ```text
-autoname: naming_series:
+naming_series:
 ```
 
 A series key like `SINV-.YYYY.-.#####` produces `SINV-2024-00001`, `SINV-2024-00002`, … The special parts:
 
-| Part | Expands to |
-|------|-----------|
-| `.#####` | Zero-padded counter (number of `#` = digits). |
-| `.YYYY.` / `.YY.` | 4- or 2-digit year. |
-| `.MM.` / `.DD.` | Month / day. |
-| `.WW.` | ISO week number. |
-| `.JJJ.` | Day of year. |
-| `.timestamp.` | Current timestamp. |
+| Part              | Expands to                                    |
+| ----------------- | --------------------------------------------- |
+| `.#####`          | Zero-padded counter (number of `#` = digits). |
+| `.YYYY.` / `.YY.` | 4- or 2-digit year.                           |
+| `.MM.` / `.DD.`   | Month / day.                                  |
+| `.WW.`            | ISO week number.                              |
+| `.JJJ.`           | Day of year.                                  |
+| `.timestamp.`     | Current timestamp.                            |
 
 Parts are separated by dots. The text before the counter (e.g. `SINV-2024-`) is stored as the prefix whose counter lives in `tabSeries`.
 
@@ -46,7 +46,7 @@ Parts are separated by dots. The text before the counter (e.g. `SINV-2024-`) is 
 Build the name from a template mixing literal text, date parts and field values in braces.
 
 ```text
-autoname: format:TASK-{customer}-{####}
+format:TASK-{customer}-{####}
 ```
 
 `{customer}` is replaced by the document's `customer` value and `{####}` by a counter. You can also reference date parts like `{YYYY}`.
@@ -56,7 +56,7 @@ autoname: format:TASK-{customer}-{####}
 Ask the user to type a name when creating the document.
 
 ```text
-autoname: prompt
+prompt
 ```
 
 The entered value arrives in `__newname` and is validated before being set as `name`.
@@ -66,7 +66,7 @@ The entered value arrives in `__newname` and is validated before being set as `n
 Assign a random hash. This is the default fallback when no rule is set.
 
 ```text
-autoname: hash
+hash
 ```
 
 ### Autoincrement
@@ -74,7 +74,7 @@ autoname: hash
 Use a database sequence to produce monotonically increasing integer names. Set this at creation time; it **cannot be changed** afterwards.
 
 ```text
-autoname: autoincrement
+autoincrement
 ```
 
 Internally this calls `frappe.db.get_next_sequence_val(doctype)`.
@@ -84,7 +84,7 @@ Internally this calls `frappe.db.get_next_sequence_val(doctype)`.
 Assign a UUID (v7) as the name.
 
 ```text
-autoname: UUID
+UUID
 ```
 
 ## Naming from the controller

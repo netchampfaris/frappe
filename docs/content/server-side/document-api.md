@@ -41,7 +41,23 @@ last = frappe.get_last_doc("Task", filters={"status": "Open"})
 
 ## Creating a document
 
-Build a new document from a dict and `insert()` it. `insert` runs `before_insert`, `validate`, `on_update`, and `after_insert`, checks `create` permission, and validates links and mandatory fields.
+`frappe.new_doc(doctype, field=value, ...)` returns a new document with defaults applied and the given fields set. Call `insert()` to save it. `insert` runs `before_insert`, `validate`, `on_update`, and `after_insert`, checks `create` permission, and validates links and mandatory fields.
+
+```python
+doc = frappe.new_doc("Task", subject="Write docs", status="Open")
+doc.insert()
+doc.name  # autoname is assigned after insert
+```
+
+You can also set fields one at a time after creating the document:
+
+```python
+doc = frappe.new_doc("Task")
+doc.subject = "Write docs"
+doc.insert()
+```
+
+`frappe.get_doc` accepts a dict with the `doctype` key too, which is useful when you already have the field values as a dict:
 
 ```python
 doc = frappe.get_doc({
@@ -49,15 +65,6 @@ doc = frappe.get_doc({
     "subject": "Write docs",
     "status": "Open",
 })
-doc.insert()
-doc.name  # autoname is assigned after insert
-```
-
-`frappe.new_doc(doctype)` returns an empty document with defaults applied. This is handy when you set fields one at a time:
-
-```python
-doc = frappe.new_doc("Task")
-doc.subject = "Write docs"
 doc.insert()
 ```
 

@@ -33,18 +33,32 @@ frappe.local.site     # e.g. "mysite.localhost"
 
 ### Things you reach for constantly
 
-| What you want | Use |
-| --- | --- |
-| A full document object (with child tables) | [`frappe.get_doc`](/server-side/document-api) |
-| A list of rows | [`frappe.get_all` / `frappe.get_list`](/server-side/querying-data) |
-| One or a few field values | [`frappe.db.get_value`](/server-side/database-api) |
-| A complex SQL-like query | [`frappe.qb`](/server-side/query-builder) |
-| Translate a string | `frappe._("Some text")` |
-| Raise a user-facing error | `frappe.throw(frappe._("Not allowed"))` |
-| Show a non-blocking message | `frappe.msgprint(frappe._("Done"))` |
-| Current user / roles | `frappe.session.user`, `frappe.get_roles()` |
+| What you want                              | Use                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------ |
+| A full document object (with child tables) | [`frappe.get_doc`](/server-side/document-api)                      |
+| A list of rows                             | [`frappe.get_all` / `frappe.get_list`](/server-side/querying-data) |
+| One or a few field values                  | [`frappe.db.get_value`](/server-side/database-api)                 |
+| A complex SQL-like query                   | [`frappe.qb`](/server-side/query-builder)                          |
+| Translate a string                         | `_("Some text")`                                                   |
+| Raise a user-facing error                  | `frappe.throw(_("Not allowed"))`                                   |
+| Show a non-blocking message                | `frappe.msgprint(_("Done"))`                                       |
+| Current user / roles                       | `frappe.session.user`, `frappe.get_roles()`                        |
 
 `frappe.throw` raises a `frappe.ValidationError` by default; pass `exc=` to raise a different exception class. The raised exception, if unhandled, rolls back the transaction at the request boundary.
+
+### Translating strings
+
+Wrap any user-facing string in `_()` so it can be translated. Import it once at the top of the file:
+
+```python
+from frappe import _
+
+frappe.throw(_("Not allowed"))
+frappe.msgprint(_("Done"))
+
+# use .format() for placeholders, not f-strings, so the source string stays translatable
+frappe.throw(_("User {0} cannot be disabled").format(user))
+```
 
 ## Anatomy of an app on the server
 

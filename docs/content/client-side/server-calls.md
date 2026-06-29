@@ -6,11 +6,13 @@ title: Server Calls
 
 Client code talks to the server by calling whitelisted Python methods. The two main helpers are `frappe.call` (callback style) and `frappe.xcall` (promise style). For reading and writing documents there is `frappe.db`, a thin wrapper over the standard client endpoints.
 
+These helpers are part of the Desk JavaScript bundle, so they are only available on Desk pages (served at `/desk`). For calls from outside Desk, use the [REST API](/rest-api/overview).
+
 ```javascript
 // promise style, returns the method's return value directly
 let count = await frappe.xcall("frappe.client.get_count", {
-    doctype: "Task",
-    filters: { status: "Open" },
+  doctype: "Task",
+  filters: { status: "Open" },
 });
 ```
 
@@ -20,15 +22,15 @@ let count = await frappe.xcall("frappe.client.get_count", {
 
 ```javascript
 frappe.call({
-    method: "myapp.api.do_something",
-    args: { task: "TASK-0001", reason: "late" },
-    callback(r) {
-        // r.message is the method's return value
-        console.log(r.message);
-    },
-    error(r) {
-        // called on a server error
-    },
+  method: "myapp.api.do_something",
+  args: { task: "TASK-0001", reason: "late" },
+  callback(r) {
+    // r.message is the method's return value
+    console.log(r.message);
+  },
+  error(r) {
+    // called on a server error
+  },
 });
 ```
 
@@ -46,13 +48,13 @@ Useful options:
 
 ```javascript
 frappe.call({
-    method: "myapp.api.generate_report",
-    args: { month: "2026-06" },
-    freeze: true,
-    freeze_message: __("Generating report..."),
-    callback(r) {
-        frappe.msgprint(r.message);
-    },
+  method: "myapp.api.generate_report",
+  args: { month: "2026-06" },
+  freeze: true,
+  freeze_message: __("Generating report..."),
+  callback(r) {
+    frappe.msgprint(r.message);
+  },
 });
 ```
 
@@ -62,12 +64,12 @@ frappe.call({
 
 ```javascript
 try {
-    let result = await frappe.xcall("myapp.api.do_something", {
-        task: "TASK-0001",
-    });
-    console.log(result);
+  let result = await frappe.xcall("myapp.api.do_something", {
+    task: "TASK-0001",
+  });
+  console.log(result);
 } catch (err) {
-    // server errors reject the promise
+  // server errors reject the promise
 }
 ```
 
@@ -81,10 +83,10 @@ try {
 
 ```javascript
 let tasks = await frappe.db.get_list("Task", {
-    filters: { status: "Open" },
-    fields: ["name", "subject", "priority"],
-    order_by: "creation desc",
-    limit: 50,
+  filters: { status: "Open" },
+  fields: ["name", "subject", "priority"],
+  order_by: "creation desc",
+  limit: 50,
 });
 ```
 
@@ -97,11 +99,10 @@ let { message } = await frappe.db.get_value("Task", "TASK-0001", "status");
 message.status;
 
 // multiple fields, matched by filters
-let r = await frappe.db.get_value(
-    "Task",
-    { subject: "Write docs" },
-    ["name", "status"]
-);
+let r = await frappe.db.get_value("Task", { subject: "Write docs" }, [
+  "name",
+  "status",
+]);
 ```
 
 `frappe.db.get_single_value(doctype, field)` reads a field from a [Single DocType](/doctypes/single-doctypes).
@@ -128,13 +129,13 @@ await frappe.db.set_value("Task", "TASK-0001", "status", "Completed");
 
 // update several fields at once
 await frappe.db.set_value("Task", "TASK-0001", {
-    status: "Completed",
-    priority: "Low",
+  status: "Completed",
+  priority: "Low",
 });
 
 let doc = await frappe.db.insert({
-    doctype: "Task",
-    subject: "New task",
+  doctype: "Task",
+  subject: "New task",
 });
 
 await frappe.db.delete_doc("Task", "TASK-0001");

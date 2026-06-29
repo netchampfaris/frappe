@@ -1,5 +1,5 @@
 // Auto-generated data-driven IA sidebar tree consumed by defineDocsConfig.
-import type { SidebarSection } from 'frappe-ui/vitepress'
+import type { SidebarSection } from "frappe-ui/vitepress";
 
 export const sidebar: SidebarSection[] = [
   {
@@ -18,10 +18,17 @@ export const sidebar: SidebarSection[] = [
     text: "Tutorial (Build an App)",
     items: [
       { text: "Setup", link: "/tutorial/setup" },
+      { text: "Developer Mode", link: "/tutorial/developer-mode" },
       { text: "Create the DocType", link: "/tutorial/create-the-doctype" },
-      { text: "Controllers and Validation", link: "/tutorial/controllers-and-validation" },
+      {
+        text: "Controllers & Business Logic",
+        link: "/tutorial/controllers-and-validation",
+      },
       { text: "Form Scripts", link: "/tutorial/form-scripts" },
-      { text: "Permissions and Roles", link: "/tutorial/permissions-and-roles" },
+      {
+        text: "Permissions and Roles",
+        link: "/tutorial/permissions-and-roles",
+      },
       { text: "Reports And Print", link: "/tutorial/reports-and-print" },
       { text: "Whats Next", link: "/tutorial/whats-next" },
     ],
@@ -35,13 +42,22 @@ export const sidebar: SidebarSection[] = [
       { text: "Child Tables", link: "/doctypes/child-tables" },
       { text: "Single DocTypes", link: "/doctypes/single-doctypes" },
       { text: "Virtual DocTypes", link: "/doctypes/virtual-doctypes" },
-      { text: "Controllers & Lifecycle", link: "/doctypes/controllers-lifecycle" },
+      {
+        text: "Controllers & Lifecycle",
+        link: "/doctypes/controllers-lifecycle",
+      },
       { text: "Docstatus", link: "/doctypes/docstatus" },
       { text: "Links & Actions", link: "/doctypes/links-actions" },
       { text: "Customization", link: "/doctypes/customization" },
-      { text: "Modules & App Structure", link: "/doctypes/modules-app-structure" },
+      {
+        text: "Modules & App Structure",
+        link: "/doctypes/modules-app-structure",
+      },
       { text: "Layout View Settings", link: "/doctypes/layout-view-settings" },
-      { text: "Data Masking Audit Trail", link: "/doctypes/data-masking-audit-trail" },
+      {
+        text: "Data Masking Audit Trail",
+        link: "/doctypes/data-masking-audit-trail",
+      },
     ],
   },
   {
@@ -60,7 +76,6 @@ export const sidebar: SidebarSection[] = [
       { text: "Jinja SSR", link: "/server-side/jinja-ssr" },
       { text: "Caching", link: "/server-side/caching" },
       { text: "Logging Errors", link: "/server-side/logging-errors" },
-      { text: "Search", link: "/server-side/search" },
       { text: "Utilities", link: "/server-side/utilities" },
     ],
   },
@@ -70,14 +85,23 @@ export const sidebar: SidebarSection[] = [
       { text: "Overview", link: "/rest-api/overview" },
       { text: "Authentication", link: "/rest-api/authentication" },
       { text: "Listing Documents", link: "/rest-api/listing-documents" },
-      { text: "Creating, Updating & Deleting", link: "/rest-api/creating-updating" },
+      {
+        text: "Creating, Updating & Deleting",
+        link: "/rest-api/creating-updating",
+      },
       { text: "Calling Methods", link: "/rest-api/calling-methods" },
-      { text: "Filters, Fields & Pagination", link: "/rest-api/filters-fields-pagination" },
+      {
+        text: "Filters, Fields & Pagination",
+        link: "/rest-api/filters-fields-pagination",
+      },
       { text: "Webhooks", link: "/rest-api/webhooks" },
       { text: "OAuth2", link: "/rest-api/oauth2" },
       { text: "Social Login OIDC", link: "/rest-api/social-login-oidc" },
       { text: "Connected Apps", link: "/rest-api/connected-apps" },
-      { text: "Third Party Integrations", link: "/rest-api/third-party-integrations" },
+      {
+        text: "Third Party Integrations",
+        link: "/rest-api/third-party-integrations",
+      },
       { text: "Rate Limiting", link: "/rest-api/rate-limiting" },
     ],
   },
@@ -89,7 +113,7 @@ export const sidebar: SidebarSection[] = [
       { text: "Server Calls", link: "/client-side/server-calls" },
       { text: "List View", link: "/client-side/list-view" },
       { text: "Dialog API", link: "/client-side/dialog-api" },
-      { text: "Charts Scanner", link: "/client-side/charts-scanner" },
+      { text: "Charts, Barcode & QR", link: "/client-side/charts-scanner" },
       { text: "Common Utilities", link: "/client-side/common-utilities" },
     ],
   },
@@ -97,7 +121,6 @@ export const sidebar: SidebarSection[] = [
     text: "Desk & UI",
     items: [
       { text: "Overview", link: "/desk/overview" },
-      { text: "Workspaces", link: "/desk/workspaces" },
       { text: "Reports", link: "/desk/reports" },
       { text: "Print Formats", link: "/desk/print-formats" },
       { text: "Client Server Scripts", link: "/desk/client-server-scripts" },
@@ -108,11 +131,13 @@ export const sidebar: SidebarSection[] = [
   {
     text: "Portal & Web Forms",
     items: [
-      { text: "Portal Pages Context", link: "/portal/portal-pages-context" },
+      { text: "Portal Pages", link: "/portal/portal-pages-context" },
       { text: "Generators Routing", link: "/portal/generators-routing" },
       { text: "Web Forms", link: "/portal/web-forms" },
-      { text: "Web Form Customization", link: "/portal/web-form-customization" },
-      { text: "Portal Roles and Redirects", link: "/portal/portal-roles-redirects" },
+      {
+        text: "Portal Roles and Redirects",
+        link: "/portal/portal-roles-redirects",
+      },
     ],
   },
   {
@@ -120,10 +145,17 @@ export const sidebar: SidebarSection[] = [
     items: [
       { text: "Permission Model", link: "/security/permission-model" },
       { text: "User Role Management", link: "/security/user-role-management" },
-      { text: "Permission Query Conditions", link: "/security/permission-query-conditions" },
-      { text: "Sharing User Permissions", link: "/security/sharing-user-permissions" },
+      {
+        text: "Permission Query Conditions",
+        link: "/security/permission-query-conditions",
+      },
+      { text: "Document Sharing", link: "/security/document-sharing" },
+      { text: "User Permissions", link: "/security/user-permissions" },
       { text: "Audit Trail", link: "/security/audit-trail" },
-      { text: "Security Best Practices", link: "/security/security-best-practices" },
+      {
+        text: "Security Best Practices",
+        link: "/security/security-best-practices",
+      },
     ],
   },
   {
@@ -131,14 +163,26 @@ export const sidebar: SidebarSection[] = [
     items: [
       { text: "Bench Overview", link: "/administration/bench-overview" },
       { text: "Site Management", link: "/administration/site-management" },
-      { text: "Configuration", link: "/administration/configuration" },
+      { text: "Site Config", link: "/administration/configuration" },
       { text: "Production Setup", link: "/administration/production-setup" },
       { text: "HTTPS", link: "/administration/https" },
-      { text: "Multitenancy Domains", link: "/administration/multitenancy-domains" },
-      { text: "Database Administration", link: "/administration/database-administration" },
-      { text: "Zero Downtime Migrations", link: "/administration/zero-downtime-migrations" },
+      {
+        text: "Multitenancy Domains",
+        link: "/administration/multitenancy-domains",
+      },
+      {
+        text: "Database Administration",
+        link: "/administration/database-administration",
+      },
+      {
+        text: "Zero Downtime Migrations",
+        link: "/administration/zero-downtime-migrations",
+      },
       { text: "Monitoring", link: "/administration/monitoring" },
-      { text: "Performance Optimization", link: "/administration/performance-optimization" },
+      {
+        text: "Performance Optimization",
+        link: "/administration/performance-optimization",
+      },
     ],
   },
   {
@@ -149,24 +193,21 @@ export const sidebar: SidebarSection[] = [
       { text: "Integration Testing", link: "/testing/integration-testing" },
       { text: "UI Testing", link: "/testing/ui-testing" },
       { text: "Debugging", link: "/testing/debugging" },
-      { text: "Profiling and Monitoring", link: "/testing/profiling-monitoring" },
+      {
+        text: "Profiling and Monitoring",
+        link: "/testing/profiling-monitoring",
+      },
     ],
   },
   {
     text: "Data Import / Export",
     items: [
-      { text: "Bulk Import", link: "/data-import/bulk-import" },
+      { text: "Data Import", link: "/data-import/bulk-import" },
       { text: "Large CSV Import", link: "/data-import/large-csv-import" },
-      { text: "Data Migration Tool", link: "/data-import/data-migration-tool" },
+      {
+        text: "Moving Data Between Sites",
+        link: "/data-import/data-migration-tool",
+      },
     ],
   },
-  {
-    text: "Contributing",
-    items: [
-      { text: "Contributing", link: "/contributing/contributing" },
-      { text: "Developer Mode", link: "/contributing/developer-mode" },
-      { text: "Style Guide", link: "/contributing/style-guide" },
-      { text: "Release Process", link: "/contributing/release-process" },
-    ],
-  },
-]
+];

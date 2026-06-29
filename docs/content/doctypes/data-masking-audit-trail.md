@@ -29,13 +29,13 @@ The Administrator always sees real values and is never masked.
 
 When a query runs through `frappe.db.get_list` (the `DatabaseQuery`), Frappe looks up the DocType's masked fields for the current user and rewrites the matching values. The masking is done by `frappe.model.utils.mask.mask_field_value`, which picks a pattern based on the field type:
 
-| Field | Masked as |
-|-------|-----------|
-| `Data` with option `Phone` | First 3 characters, then `XXXXXX` |
+| Field                      | Masked as                          |
+| -------------------------- | ---------------------------------- |
+| `Data` with option `Phone` | First 3 characters, then `XXXXXX`  |
 | `Data` with option `Email` | `XXXXXX@` plus the original domain |
-| `Date` | `XX-XX-XXXX` |
-| `Time` | `XX:XX` |
-| Anything else | `XXXXXXXX` |
+| `Date`                     | `XX-XX-XXXX`                       |
+| `Time`                     | `XX:XX`                            |
+| Anything else              | `XXXXXXXX`                         |
 
 Empty values are left as-is. The per-user list of masked fields is cached, so the lookup stays cheap on repeated queries.
 
@@ -60,8 +60,8 @@ A Version stores `ref_doctype`, `docname` and a JSON `data` field holding the di
 ```json
 {
   "changed": [["status", "Draft", "Submitted"]],
-  "added": [["items", {"item_code": "A", "qty": 1}]],
-  "removed": [["items", {"item_code": "B"}]],
+  "added": [["items", { "item_code": "A", "qty": 1 }]],
+  "removed": [["items", { "item_code": "B" }]],
   "row_changed": [["items", 0, "row-name", [["qty", 1, 2]]]]
 }
 ```

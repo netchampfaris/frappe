@@ -23,16 +23,16 @@ Create a **Webhook** record (Desk: search "Webhook &gt; New") and set:
 
 `webhook_docevent` is one of:
 
-| Event                    | Fires when                                  |
-| ------------------------ | ------------------------------------------- |
-| `after_insert`           | a new document is created                   |
-| `on_update`              | a document is saved                         |
-| `on_submit`              | a submittable document is submitted         |
-| `on_cancel`              | a submitted document is cancelled           |
-| `on_trash`               | a document is deleted                       |
-| `on_update_after_submit` | a submitted document is edited              |
-| `on_change`              | any change to the document                  |
-| `workflow_transition`    | a workflow state transition occurs          |
+| Event                    | Fires when                          |
+| ------------------------ | ----------------------------------- |
+| `after_insert`           | a new document is created           |
+| `on_update`              | a document is saved                 |
+| `on_submit`              | a submittable document is submitted |
+| `on_cancel`              | a submitted document is cancelled   |
+| `on_trash`               | a document is deleted               |
+| `on_update_after_submit` | a submitted document is edited      |
+| `on_change`              | any change to the document          |
+| `workflow_transition`    | a workflow state transition occurs  |
 
 The submit/cancel events require the DocType to be submittable.
 
@@ -51,11 +51,11 @@ If the expression is falsy, no request is sent.
 
 You choose how the payload is built.
 
-**Mapped fields** (default): add rows under *Data*, each mapping a document
+**Mapped fields** (default): add rows under _Data_, each mapping a document
 fieldname to an outgoing key. The body is a flat JSON object of those keys.
 
 **Custom JSON**: set Request Structure to `JSON` and write a Jinja template in
-*Webhook JSON*, with the document available as `doc`:
+_Webhook JSON_, with the document available as `doc`:
 
 ```jinja
 {
@@ -102,7 +102,7 @@ the parsed JSON may change byte ordering and break the comparison.
 ## Delivery, retries and logs
 
 - Webhooks run in a **background job**, so they don't block the triggering save.
-  Pick the queue with *Background Jobs Queue*; set a *Timeout* (default 5s).
+  Pick the queue with _Background Jobs Queue_; set a _Timeout_ (default 5s).
 - A failed request is **retried up to 3 times** (with a short backoff between
   attempts). A non-2xx response counts as a failure.
 - Every attempt is recorded in **Webhook Request Log** (URL, headers, body,

@@ -14,8 +14,8 @@ Set the `is_virtual` flag to `1` to make a DocType virtual.
   "name": "Redis Queue Job",
   "is_virtual": 1,
   "fields": [
-    {"fieldname": "job_id", "label": "Job ID", "fieldtype": "Data"},
-    {"fieldname": "status", "label": "Status", "fieldtype": "Data"}
+    { "fieldname": "job_id", "label": "Job ID", "fieldtype": "Data" },
+    { "fieldname": "status", "label": "Status", "fieldtype": "Data" }
   ]
 }
 ```
@@ -24,15 +24,15 @@ Set the `is_virtual` flag to `1` to make a DocType virtual.
 
 Because there is no table, Frappe cannot read or write rows for you. Override these methods on the controller. The base `Document` does not implement them for virtual types:
 
-| Method | Called when | Responsibility |
-|--------|-------------|----------------|
-| `load_from_db(self)` | A document is fetched. | Populate `self` from your backend (use `super(Document, self).__init__(values)`). |
-| `db_insert(self, *args, **kwargs)` | A new document is saved. | Persist a new record. |
-| `db_update(self)` | An existing document is saved. | Persist changes. |
-| `delete(self)` | A document is deleted. | Remove the record. |
-| `get_list(filters, page_length, **kwargs)` | The list view loads. | Return a list of row dicts (static method). |
-| `get_count(filters, **kwargs)` | The list view counts. | Return total count (static method). |
-| `get_stats(**kwargs)` | Sidebar stats load. | Return group-by stats (static method). |
+| Method                                     | Called when                    | Responsibility                                                                    |
+| ------------------------------------------ | ------------------------------ | --------------------------------------------------------------------------------- |
+| `load_from_db(self)`                       | A document is fetched.         | Populate `self` from your backend (use `super(Document, self).__init__(values)`). |
+| `db_insert(self, *args, **kwargs)`         | A new document is saved.       | Persist a new record.                                                             |
+| `db_update(self)`                          | An existing document is saved. | Persist changes.                                                                  |
+| `delete(self)`                             | A document is deleted.         | Remove the record.                                                                |
+| `get_list(filters, page_length, **kwargs)` | The list view loads.           | Return a list of row dicts (static method).                                       |
+| `get_count(filters, **kwargs)`             | The list view counts.          | Return total count (static method).                                               |
+| `get_stats(**kwargs)`                      | Sidebar stats load.            | Return group-by stats (static method).                                            |
 
 ## A minimal example
 

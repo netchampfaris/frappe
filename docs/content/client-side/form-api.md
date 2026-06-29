@@ -8,12 +8,12 @@ Form scripts run in the browser when a user opens a record in Desk. The entry po
 
 ```javascript
 frappe.ui.form.on("Task", {
-    refresh(frm) {
-        frm.add_custom_button("Mark Done", () => {
-            frm.set_value("status", "Completed");
-            frm.save();
-        });
-    },
+  refresh(frm) {
+    frm.add_custom_button("Mark Done", () => {
+      frm.set_value("status", "Completed");
+      frm.save();
+    });
+  },
 });
 ```
 
@@ -25,18 +25,18 @@ You can register many events at once by passing a dict:
 
 ```javascript
 frappe.ui.form.on("Task", {
-    refresh(frm) {
-        // form is loaded or refreshed
-    },
-    status(frm) {
-        // the "status" field changed
-    },
-    validate(frm) {
-        // runs before save, throw to stop the save
-        if (!frm.doc.subject) {
-            frappe.throw(__("Subject is required"));
-        }
-    },
+  refresh(frm) {
+    // form is loaded or refreshed
+  },
+  status(frm) {
+    // the "status" field changed
+  },
+  validate(frm) {
+    // runs before save, throw to stop the save
+    if (!frm.doc.subject) {
+      frappe.throw(__("Subject is required"));
+    }
+  },
 });
 ```
 
@@ -44,17 +44,17 @@ Common form events are `setup` (once, before the form is first drawn), `onload` 
 
 ```javascript
 frappe.ui.form.on("Task Item", {
-    qty(frm, cdt, cdn) {
-        let row = frappe.get_doc(cdt, cdn);
-        frappe.model.set_value(cdt, cdn, "amount", row.qty * row.rate);
-    },
-    items_add(frm, cdt, cdn) {
-        // a new row was added to the "items" table
-    },
+  qty(frm, cdt, cdn) {
+    let row = frappe.get_doc(cdt, cdn);
+    frappe.model.set_value(cdt, cdn, "amount", row.qty * row.rate);
+  },
+  items_add(frm, cdt, cdn) {
+    // a new row was added to the "items" table
+  },
 });
 ```
 
-The child table add and remove events are named `<fieldname>_add` and `<fieldname>_remove`, registered on the parent DocType.
+The child table add and remove events are named `<fieldname>_add` and `<fieldname>_remove`, where `<fieldname>` is the table field on the parent. Like the other child table events, they are registered against the child DocType, as shown above with `items_add`.
 
 ## The frm object
 
@@ -68,8 +68,8 @@ The child table add and remove events are named `<fieldname>_add` and `<fieldnam
 frm.set_value("status", "Completed");
 
 frm.set_value({
-    status: "Completed",
-    completed_on: frappe.datetime.now_date(),
+  status: "Completed",
+  completed_on: frappe.datetime.now_date(),
 });
 ```
 
@@ -81,8 +81,8 @@ To set a value on a child row, use `frappe.model.set_value(cdt, cdn, fieldname, 
 
 ```javascript
 let row = frm.add_child("items", {
-    item_code: "Pen",
-    qty: 2,
+  item_code: "Pen",
+  qty: 2,
 });
 frm.refresh_field("items");
 ```
@@ -101,6 +101,12 @@ frm.refresh_field("items");
 frm.set_df_property("priority", "options", "Low\nMedium\nHigh");
 frm.set_df_property("description", "reqd", 1);
 frm.set_df_property("amount", "read_only", 1);
+```
+
+For a Select field, the options can also be passed as an array:
+
+```javascript
+frm.set_df_property("priority", "options", ["Low", "Medium", "High"]);
 ```
 
 For a field in a child table, pass the grid field name, the child fieldname, and the row name:
@@ -122,16 +128,20 @@ frm.toggle_reqd("description", frm.doc.status === "Cancelled");
 `frm.add_custom_button(label, action, group)` adds a button to the form toolbar. Pass a `group` name to nest buttons under a dropdown. `frm.clear_custom_buttons()` removes them, and `frm.remove_custom_button(label, group)` removes one.
 
 ```javascript
-frm.add_custom_button(__("Create Invoice"), () => {
+frm.add_custom_button(
+  __("Create Invoice"),
+  () => {
     frappe.new_doc("Sales Invoice", { customer: frm.doc.customer });
-}, __("Create"));
+  },
+  __("Create")
+);
 ```
 
 `frm.set_intro(text, color)` shows a message banner at the top of the form. Colors are indicator names like `"blue"`, `"orange"`, or `"red"`.
 
 ```javascript
 if (frm.doc.status === "Overdue") {
-    frm.set_intro(__("This task is overdue"), "red");
+  frm.set_intro(__("This task is overdue"), "red");
 }
 ```
 
@@ -141,9 +151,9 @@ if (frm.doc.status === "Overdue") {
 
 ```javascript
 frm.set_query("project", () => {
-    return {
-        filters: { status: "Open" },
-    };
+  return {
+    filters: { status: "Open" },
+  };
 });
 ```
 
@@ -151,7 +161,7 @@ For a Link field inside a child table, pass the child table fieldname first:
 
 ```javascript
 frm.set_query("item_code", "items", (doc, cdt, cdn) => {
-    return { filters: { is_sales_item: 1 } };
+  return { filters: { is_sales_item: 1 } };
 });
 ```
 
@@ -165,7 +175,7 @@ frm.set_query("item_code", "items", (doc, cdt, cdn) => {
 
 ```javascript
 frm.call("recalculate_totals").then((r) => {
-    // frm is already refreshed with the server's changes
+  // frm is already refreshed with the server's changes
 });
 ```
 

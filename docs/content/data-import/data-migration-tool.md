@@ -1,8 +1,8 @@
 ---
-title: Data Migration Tool
+title: Moving Data Between Sites
 ---
 
-# Data Migration Tool
+# Moving Data Between Sites
 
 When you need to move data between sites or systems, the right tool depends on
 what you are moving. For end-user records (Customers, Items, Sales Invoices), use

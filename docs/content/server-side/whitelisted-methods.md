@@ -86,17 +86,28 @@ class LibraryLoan(Document):
 
 When called this way, the framework loads the document with `check_permission=True` (the user must be able to read it) before running the method.
 
+Over HTTP, controller methods go through the built-in `run_doc_method` endpoint. Pass the doctype as `dt`, the document name as `dn`, and the method name:
+
+```bash
+curl -X POST https://mysite.localhost/api/method/run_doc_method \
+  -H "Authorization: token <api_key>:<api_secret>" \
+  -H "Content-Type: application/json" \
+  -d '{"dt": "Library Loan", "dn": "LOAN-0001", "method": "mark_returned"}'
+```
+
 ## Calling from the client
 
-From browser JavaScript, use `frappe.call` for module-level functions:
+`frappe.call` is only available inside Desk (the `/app` interface). `frm.call` is narrower still: it only exists on a form, so you can use it inside Desk form scripts. Outside Desk (a custom portal page, a separate frontend) call the method over REST instead.
+
+From browser JavaScript inside Desk, use `frappe.call` for module-level functions:
 
 ```javascript
 frappe.call({
-    method: "library.library.api.get_overdue_loans",
-    args: { member: "MEMBER-0001" },
-    callback: (r) => {
-        console.log(r.message); // the function's return value
-    },
+  method: "library.library.api.get_overdue_loans",
+  args: { member: "MEMBER-0001" },
+  callback: (r) => {
+    console.log(r.message); // the function's return value
+  },
 });
 ```
 
@@ -106,7 +117,7 @@ To call a whitelisted **controller method**, use the form's helper, which sends 
 
 ```javascript
 frm.call("mark_returned").then((r) => {
-    frm.reload_doc();
+  frm.reload_doc();
 });
 ```
 
@@ -139,6 +150,8 @@ override_whitelisted_methods = {
     "frappe.client.get_count": "library.overrides.get_count",
 }
 ```
+
+Override with care. Once a method is mapped, every caller silently runs your replacement instead of the original, which makes failures hard to trace: the code at the dotted path is not what actually ran. Keep the override's behavior close to the original and document why it exists.
 
 See [Hooks](/server-side/hooks#override-whitelisted-methods).
 

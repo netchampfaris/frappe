@@ -8,11 +8,11 @@ Every document has a `docstatus` field that tracks where it is in its lifecycle.
 
 ## The three states
 
-| docstatus | State | Meaning |
-|-----------|-------|---------|
-| `0` | Draft | Editable. Can be saved freely. |
-| `1` | Submitted | Posted and locked. Only `allow_on_submit` fields can change. |
-| `2` | Cancelled | Reversed. Permanently read-only. |
+| docstatus | State     | Meaning                                                      |
+| --------- | --------- | ------------------------------------------------------------ |
+| `0`       | Draft     | Editable. Can be saved freely.                               |
+| `1`       | Submitted | Posted and locked. Only `allow_on_submit` fields can change. |
+| `2`       | Cancelled | Reversed. Permanently read-only.                             |
 
 These are defined in `frappe/model/docstatus.py` as `DocStatus.DRAFT`, `DocStatus.SUBMITTED` and `DocStatus.CANCELLED`. The `docstatus` value behaves like an int and exposes helpers:
 

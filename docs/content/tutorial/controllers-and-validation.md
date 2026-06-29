@@ -1,8 +1,8 @@
 ---
-title: Controllers and Validation
+title: Controllers & Business Logic
 ---
 
-# Controllers and Validation
+# Controllers & Business Logic
 
 The **controller** is the Python class behind a DocType. For Article it lives in
 `article.py` and subclasses `Document`. Frappe calls specially named methods on it

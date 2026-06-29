@@ -32,10 +32,11 @@ bench use library.localhost
 ```
 
 Turn on developer mode so the framework writes your DocType definitions to disk
-as JSON, then clear the cache:
+as JSON, then clear the cache. Developer mode is a bench-level setting, so use
+the `-g` flag to write it to the bench's `common_site_config.json`:
 
 ```bash
-bench --site library.localhost set-config developer_mode 1
+bench set-config -g developer_mode 1
 bench --site library.localhost clear-cache
 ```
 

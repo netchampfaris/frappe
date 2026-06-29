@@ -13,75 +13,88 @@ Most value-storing field types are listed in `frappe/model/__init__.py` as `data
 
 ### Text & content
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Data` | Short single-line text (max 140 chars). Most common field. |
-| `Small Text` | Short multi-line text. |
-| `Text` | Longer multi-line text. |
-| `Long Text` | Very large text. |
-| `Text Editor` | Rich text (HTML, WYSIWYG). |
-| `Markdown Editor` | Markdown content. |
-| `HTML Editor` | Raw HTML editing. |
-| `Code` | Code with syntax highlighting (`options` sets the language). |
-| `JSON` | Arbitrary JSON. |
-| `Password` | Encrypted text, masked in the UI. |
-| `Read Only` | Display-only text. |
+| Fieldtype         | Stores                                                       |
+| ----------------- | ------------------------------------------------------------ |
+| `Data`            | Short single-line text (max 140 chars). Most common field.   |
+| `Small Text`      | Short multi-line text.                                       |
+| `Text`            | Longer multi-line text.                                      |
+| `Long Text`       | Very large text.                                             |
+| `Text Editor`     | Rich text (HTML, WYSIWYG).                                   |
+| `Markdown Editor` | Markdown content.                                            |
+| `HTML Editor`     | Raw HTML editing.                                            |
+| `Code`            | Code with syntax highlighting (`options` sets the language). |
+| `JSON`            | Arbitrary JSON.                                              |
+| `Password`        | Encrypted text, masked in the UI.                            |
+| `Read Only`       | Display-only text.                                           |
 
 ### Numbers
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Int` | Integer. |
-| `Long Int` | Large integer (bigint). |
-| `Float` | Floating point. `precision` controls decimal places. |
-| `Currency` | Money value; rendered with currency symbol. |
-| `Percent` | Percentage. |
-| `Check` | Boolean stored as `0`/`1`, rendered as a checkbox. |
-| `Rating` | Star rating, stored as a float between 0 and 1. |
-| `Duration` | A length of time in seconds. |
+| Fieldtype  | Stores                                               |
+| ---------- | ---------------------------------------------------- |
+| `Int`      | Integer.                                             |
+| `Long Int` | Large integer (bigint).                              |
+| `Float`    | Floating point. `precision` controls decimal places. |
+| `Currency` | Money value; rendered with currency symbol.          |
+| `Percent`  | Percentage.                                          |
+| `Check`    | Boolean stored as `0`/`1`, rendered as a checkbox.   |
+| `Rating`   | Star rating, stored as a float between 0 and 1.      |
+| `Duration` | A length of time in seconds.                         |
 
 ### Dates & time
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Date` | Date only. |
+| Fieldtype  | Stores         |
+| ---------- | -------------- |
+| `Date`     | Date only.     |
 | `Datetime` | Date and time. |
-| `Time` | Time only. |
+| `Time`     | Time only.     |
 
 ### Relationships
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Link` | Reference to another document. `options` = target DocType. |
-| `Dynamic Link` | Reference where the target DocType is chosen at runtime. `options` = fieldname holding the doctype name. |
-| `Table` | Child table rows. `options` = child DocType. |
-| `Table MultiSelect` | Multi-select stored as a child table. `options` = child DocType. |
+| Fieldtype           | Stores                                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Link`              | Reference to another document. `options` = target DocType.                                               |
+| `Dynamic Link`      | Reference where the target DocType is chosen at runtime. `options` = fieldname holding the doctype name. |
+| `Table`             | Child table rows. `options` = child DocType.                                                             |
+| `Table MultiSelect` | Multi-select stored as a child table. `options` = child DocType.                                         |
 
 See [Links & Actions](/doctypes/links-actions) for Link/Dynamic Link and [Child Tables](/doctypes/child-tables) for Table fields.
 
 ### Choice
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Select` | One value from a fixed list. `options` = newline-separated choices. |
-| `Autocomplete` | Free text with suggestions from `options`. |
+| Fieldtype      | Stores                                                              |
+| -------------- | ------------------------------------------------------------------- |
+| `Select`       | One value from a fixed list. `options` = newline-separated choices. |
+| `Autocomplete` | Free text with suggestions from `options`.                          |
 
 ### Files & media
 
-| Fieldtype | Stores |
-|-----------|--------|
-| `Attach` | File attachment, stores the file URL. |
-| `Attach Image` | Image attachment with preview. |
-| `Signature` | Hand-drawn signature image. |
-| `Barcode` | Barcode value. |
-| `Geolocation` | GeoJSON map data. |
-| `Color` | Color value. |
-| `Icon` | Icon picker value. |
-| `Phone` | Phone number with country code. |
+| Fieldtype      | Stores                                |
+| -------------- | ------------------------------------- |
+| `Attach`       | File attachment, stores the file URL. |
+| `Attach Image` | Image attachment with preview.        |
+| `Signature`    | Hand-drawn signature image.           |
+| `Barcode`      | Barcode value.                        |
+| `Geolocation`  | GeoJSON map data.                     |
+| `Color`        | Color value.                          |
+| `Icon`         | Icon picker value.                    |
+| `Phone`        | Phone number with country code.       |
 
 ### Layout-only (no value)
 
-These render structure and store nothing (`display_fieldtypes`): `Section Break`, `Column Break`, `Tab Break`, `Heading`, `HTML`, `Button`, `Image`, `Fold`. Use them to organise the form. (`Table` and `Table MultiSelect` are also "no value" columns, since their data lives in child rows.) See [Layout & View Settings](/doctypes/layout-view-settings).
+These render structure and store nothing (`display_fieldtypes`). Use them to organise the form.
+
+| Fieldtype       | Renders                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| `Section Break` | Starts a new section.                                               |
+| `Column Break`  | Starts a new column within a section.                               |
+| `Tab Break`     | Starts a new tab.                                                   |
+| `Heading`       | A section heading.                                                  |
+| `HTML`          | Arbitrary HTML (`options` holds the markup).                        |
+| `Button`        | A button that triggers a client-side action.                        |
+| `Image`         | Displays an image from another field (`options` = image fieldname). |
+| `Fold`          | A fold that hides fields below it until expanded.                   |
+
+`Table` and `Table MultiSelect` are also "no value" columns, since their data lives in child rows. See [Layout & View Settings](/doctypes/layout-view-settings).
 
 ## Common field properties
 
@@ -98,24 +111,24 @@ In the DocType JSON each field is an object. The properties you'll set most ofte
 }
 ```
 
-| Property | Purpose |
-|----------|---------|
-| `fieldname` | Column name and Python/JS property. Lowercase, `snake_case`. |
-| `label` | Human-readable label shown in the form. |
-| `fieldtype` | One of the types above. |
-| `options` | Meaning depends on type: target DocType (Link/Table), choices (Select), language (Code), data validation (Data). |
-| `reqd` | `1` makes the field mandatory. |
-| `default` | Default value for new documents. |
-| `unique` | `1` enforces a unique constraint on the column. |
-| `read_only` | `1` makes it non-editable in the UI. |
-| `hidden` | `1` hides it from the form. |
-| `description` | Help text shown under the field. |
-| `precision` | Decimal places for Float/Currency/Percent. |
-| `in_list_view` | `1` shows the field as a column in the list view. |
-| `in_standard_filter` | `1` adds it to the list view filter bar. |
-| `search_index` | `1` adds a DB index for faster lookups. |
-| `no_copy` | `1` skips the field when a document is duplicated/amended. |
-| `set_only_once` | `1` allows the value to be set on insert but never changed afterwards. |
+| Property             | Purpose                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `fieldname`          | Column name and Python/JS property. Lowercase, `snake_case`.                                                     |
+| `label`              | Human-readable label shown in the form.                                                                          |
+| `fieldtype`          | One of the types above.                                                                                          |
+| `options`            | Meaning depends on type: target DocType (Link/Table), choices (Select), language (Code), data validation (Data). |
+| `reqd`               | `1` makes the field mandatory.                                                                                   |
+| `default`            | Default value for new documents.                                                                                 |
+| `unique`             | `1` enforces a unique constraint on the column.                                                                  |
+| `read_only`          | `1` makes it non-editable in the UI.                                                                             |
+| `hidden`             | `1` hides it from the form.                                                                                      |
+| `description`        | Help text shown under the field.                                                                                 |
+| `precision`          | Decimal places for Float/Currency/Percent.                                                                       |
+| `in_list_view`       | `1` shows the field as a column in the list view.                                                                |
+| `in_standard_filter` | `1` adds it to the list view filter bar.                                                                         |
+| `search_index`       | `1` adds a DB index for faster lookups.                                                                          |
+| `no_copy`            | `1` skips the field when a document is duplicated/amended.                                                       |
+| `set_only_once`      | `1` allows the value to be set on insert but never changed afterwards.                                           |
 
 ### `depends_on`: conditional display
 

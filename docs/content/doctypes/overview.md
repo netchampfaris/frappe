@@ -53,15 +53,15 @@ A DocType is made up of:
 
 Every document gets a set of standard fields automatically. You never declare them. The most important is `name`, the primary key.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Primary key, unique per DocType. How you load a doc. |
-| `owner` | Link (User) | User who created the document. |
-| `creation` | Datetime | When it was created. |
-| `modified` | Datetime | Last modified timestamp (used for concurrency checks). |
-| `modified_by` | Link (User) | User who last modified it. |
-| `docstatus` | Int | `0` Draft, `1` Submitted, `2` Cancelled. See [Docstatus](/doctypes/docstatus). |
-| `idx` | Int | Sort/row index. |
+| Field         | Type        | Description                                                                    |
+| ------------- | ----------- | ------------------------------------------------------------------------------ |
+| `name`        | string      | Primary key, unique per DocType. How you load a doc.                           |
+| `owner`       | Link (User) | User who created the document.                                                 |
+| `creation`    | Datetime    | When it was created.                                                           |
+| `modified`    | Datetime    | Last modified timestamp (used for concurrency checks).                         |
+| `modified_by` | Link (User) | User who last modified it.                                                     |
+| `docstatus`   | Int         | `0` Draft, `1` Submitted, `2` Cancelled. See [Docstatus](/doctypes/docstatus). |
+| `idx`         | Int         | Sort/row index.                                                                |
 
 These are defined in `frappe/model/__init__.py` as `default_fields`. Child table rows also carry `parent`, `parenttype` and `parentfield` (see [Child Tables](/doctypes/child-tables)).
 

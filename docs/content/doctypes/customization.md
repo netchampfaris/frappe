@@ -4,39 +4,19 @@ title: Customization
 
 # Customization
 
-Frappe lets you extend and tweak DocTypes **without editing their source JSON**. This matters when the DocType belongs to another app (like Frappe or ERPNext) and you want your changes to survive upgrades. There are three tools: **Custom Fields**, **Customize Form**, and **Property Setters**. All of them are stored as data in your site and applied on top of the standard schema at runtime.
-
-## Custom Fields
-
-A **Custom Field** adds a new field to an existing DocType. It's a record of the `Custom Field` DocType.
-
-```python
-import frappe
-
-frappe.get_doc({
-    "doctype": "Custom Field",
-    "dt": "Customer",              # the DocType to extend
-    "fieldname": "loyalty_tier",
-    "label": "Loyalty Tier",
-    "fieldtype": "Select",
-    "options": "Bronze\nSilver\nGold",
-    "insert_after": "customer_name"
-}).insert()
-```
-
-`insert_after` controls where the field appears in the form. The new column is added to the DocType's table, and the field behaves exactly like a standard one.
-
-To ship custom fields with your app (so they're created on install/migrate), declare them in `hooks.py` via `fixtures`, or create them in a patch. See [Hooks](/server-side/hooks).
+Frappe lets you extend and tweak DocTypes **without editing their source JSON**. This matters when the DocType belongs to another app (like Frappe or ERPNext) and you want your changes to survive upgrades. The main tool is **Customize Form**, which stores your changes as data in your site and applies them on top of the standard schema at runtime.
 
 ## Customize Form
 
-**Customize Form** is the UI for overriding properties of an existing DocType's standard fields and adding custom fields, all in one screen (Settings, then Customize Form, or the `Customize Form` DocType). Use it to:
+**Customize Form** is the UI for adding new fields to an existing DocType and overriding properties of its standard fields, all in one screen (Settings, then Customize Form, or the `Customize Form` DocType). Use it to:
 
+- Add new fields and reorder fields.
 - Make a field mandatory, hidden, read-only, or change its label.
-- Reorder fields and add Custom Fields.
 - Change DocType-level options like the title field, search fields, sort order, and whether it's submittable or allows rename.
 
 Behind the scenes Customize Form writes **Property Setters** (for property overrides) and **Custom Fields** (for new fields). It never modifies the original DocType JSON.
+
+To ship these customizations with your app (so they're created on install/migrate), declare the `Custom Field` and `Property Setter` records in `hooks.py` via `fixtures`. See [Hooks](/server-side/hooks).
 
 ## Property Setters
 
@@ -72,12 +52,11 @@ Each Property Setter targets exactly one property; create one per override.
 
 ## Which tool to use
 
-| Goal | Use |
-|------|-----|
-| Add a field to an existing DocType | Custom Field |
-| Change a property of a standard field (reqd, hidden, label…) | Property Setter (via Customize Form) |
-| Do both interactively | Customize Form |
-| Add validation / business logic to another app's DocType | `doc_events` in [Hooks](/server-side/hooks), not customization |
+| Goal                                                         | Use                                                            |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| Add a field to an existing DocType                           | Customize Form                                                 |
+| Change a property of a standard field (reqd, hidden, label…) | Customize Form, or a Property Setter directly                  |
+| Add validation / business logic to another app's DocType     | `doc_events` in [Hooks](/server-side/hooks), not customization |
 
 Customization changes **schema and properties**. To add **behaviour**, hook the lifecycle instead. See [Controllers & Lifecycle](/doctypes/controllers-lifecycle) and [Hooks](/server-side/hooks).
 

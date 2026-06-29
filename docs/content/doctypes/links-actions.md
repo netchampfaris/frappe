@@ -66,12 +66,12 @@ Here `reference_name` links to a document of whatever DocType is in `reference_d
 
 A link entry has:
 
-| Field | Meaning |
-|-------|---------|
-| `link_doctype` | The related DocType to show. |
-| `link_fieldname` | The Link field on that DocType pointing back here. |
-| `group` | Optional heading to group connections under. |
-| `is_child_table` / `table_fieldname` | For relations that go through a child table. |
+| Field                                | Meaning                                            |
+| ------------------------------------ | -------------------------------------------------- |
+| `link_doctype`                       | The related DocType to show.                       |
+| `link_fieldname`                     | The Link field on that DocType pointing back here. |
+| `group`                              | Optional heading to group connections under.       |
+| `is_child_table` / `table_fieldname` | For relations that go through a child table.       |
 
 For example, on a Customer form a connection to "Sales Order" via its `customer` field lets you see and create that customer's orders without leaving the form.
 
@@ -79,13 +79,13 @@ For example, on a Customer form a connection to "Sales Order" via its `customer`
 
 **DocType Actions** add custom buttons to the form's Actions menu without writing client script. They live in the `actions` child table of the DocType. Each action has:
 
-| Field | Meaning |
-|-------|---------|
-| `label` | Button text. |
-| `group` | Optional submenu grouping. |
-| `action_type` | `Server Action` or `Route`. |
-| `action` | The dotted path of a server method, or a route to navigate to. |
-| `hidden` | Hide the action. |
+| Field         | Meaning                                                        |
+| ------------- | -------------------------------------------------------------- |
+| `label`       | Button text.                                                   |
+| `group`       | Optional submenu grouping.                                     |
+| `action_type` | `Server Action` or `Route`.                                    |
+| `action`      | The dotted path of a server method, or a route to navigate to. |
+| `hidden`      | Hide the action.                                               |
 
 - **Server Action** calls a whitelisted server-side method with the current document.
 - **Route** navigates the user to another page or report.

@@ -7,9 +7,8 @@ title: Dialog API
 Frappe gives you a few ways to show modals and messages from client code. For a quick message or a yes/no question, use `frappe.msgprint` and `frappe.confirm`. For a one-off form, use `frappe.prompt`. For a custom modal with several fields and your own buttons, build a `frappe.ui.Dialog`.
 
 ```javascript
-frappe.confirm(
-    __("Delete this task?"),
-    () => frappe.db.delete_doc("Task", "TASK-0001"),
+frappe.confirm(__("Delete this task?"), () =>
+  frappe.db.delete_doc("Task", "TASK-0001")
 );
 ```
 
@@ -21,9 +20,9 @@ frappe.confirm(
 frappe.msgprint(__("Saved successfully"));
 
 frappe.msgprint({
-    title: __("Heads up"),
-    message: __("This task is overdue."),
-    indicator: "red",
+  title: __("Heads up"),
+  message: __("This task is overdue."),
+  indicator: "red",
 });
 ```
 
@@ -37,7 +36,7 @@ frappe.show_alert({ message: __("Copied"), indicator: "green" }, 5);
 
 ```javascript
 if (!frm.doc.subject) {
-    frappe.throw(__("Subject is required"));
+  frappe.throw(__("Subject is required"));
 }
 ```
 
@@ -47,9 +46,9 @@ if (!frm.doc.subject) {
 
 ```javascript
 frappe.confirm(
-    __("Submit this invoice?"),
-    () => frm.save("Submit"),
-    () => console.log("cancelled"),
+  __("Submit this invoice?"),
+  () => frm.save("Submit"),
+  () => console.log("cancelled")
 );
 ```
 
@@ -61,15 +60,20 @@ frappe.confirm(
 
 ```javascript
 frappe.prompt(
-    [
-        { fieldname: "reason", fieldtype: "Small Text", label: __("Reason"), reqd: 1 },
-        { fieldname: "notify", fieldtype: "Check", label: __("Notify owner") },
-    ],
-    (values) => {
-        console.log(values.reason, values.notify);
+  [
+    {
+      fieldname: "reason",
+      fieldtype: "Small Text",
+      label: __("Reason"),
+      reqd: 1,
     },
-    __("Close Task"),
-    __("Submit"),
+    { fieldname: "notify", fieldtype: "Check", label: __("Notify owner") },
+  ],
+  (values) => {
+    console.log(values.reason, values.notify);
+  },
+  __("Close Task"),
+  __("Submit")
 );
 ```
 
@@ -81,26 +85,26 @@ For full control, build a `frappe.ui.Dialog`. It holds its own set of fields (it
 
 ```javascript
 let d = new frappe.ui.Dialog({
-    title: __("Assign Task"),
-    fields: [
-        {
-            label: __("Assign To"),
-            fieldname: "user",
-            fieldtype: "Link",
-            options: "User",
-            reqd: 1,
-        },
-        {
-            label: __("Comment"),
-            fieldname: "comment",
-            fieldtype: "Small Text",
-        },
-    ],
-    primary_action_label: __("Assign"),
-    primary_action(values) {
-        console.log(values.user, values.comment);
-        d.hide();
+  title: __("Assign Task"),
+  fields: [
+    {
+      label: __("Assign To"),
+      fieldname: "user",
+      fieldtype: "Link",
+      options: "User",
+      reqd: 1,
     },
+    {
+      label: __("Comment"),
+      fieldname: "comment",
+      fieldtype: "Small Text",
+    },
+  ],
+  primary_action_label: __("Assign"),
+  primary_action(values) {
+    console.log(values.user, values.comment);
+    d.hide();
+  },
 });
 
 d.show();
@@ -119,8 +123,8 @@ The `primary_action` callback receives the dialog values. Useful methods on the 
 // react to a field change inside the dialog
 let user_field = d.get_field("user");
 user_field.df.onchange = () => {
-    let user = d.get_value("user");
-    d.set_df_property("comment", "hidden", !user);
+  let user = d.get_value("user");
+  d.set_df_property("comment", "hidden", !user);
 };
 ```
 

@@ -27,13 +27,13 @@ The API has two halves:
 Use the **resource** endpoints for standard document operations: list,
 read, create, update, delete. The HTTP verb selects the operation:
 
-| Verb     | Endpoint                          | Action                          |
-| -------- | --------------------------------- | ------------------------------- |
-| `GET`    | `/api/resource/<DocType>`         | [List documents](/rest-api/listing-documents) |
-| `POST`   | `/api/resource/<DocType>`         | [Create a document](/rest-api/creating-updating) |
-| `GET`    | `/api/resource/<DocType>/<name>`  | Read one document               |
-| `PUT`    | `/api/resource/<DocType>/<name>`  | [Update a document](/rest-api/creating-updating) |
-| `DELETE` | `/api/resource/<DocType>/<name>`  | Delete a document               |
+| Verb     | Endpoint                         | Action                                           |
+| -------- | -------------------------------- | ------------------------------------------------ |
+| `GET`    | `/api/resource/<DocType>`        | [List documents](/rest-api/listing-documents)    |
+| `POST`   | `/api/resource/<DocType>`        | [Create a document](/rest-api/creating-updating) |
+| `GET`    | `/api/resource/<DocType>/<name>` | Read one document                                |
+| `PUT`    | `/api/resource/<DocType>/<name>` | [Update a document](/rest-api/creating-updating) |
+| `DELETE` | `/api/resource/<DocType>/<name>` | Delete a document                                |
 
 Use the **method** endpoints when you need behaviour that isn't plain CRUD, like a
 report, a bulk action, or a custom calculation. Any function decorated with
@@ -63,9 +63,10 @@ Frappe ships two API versions. The router mounts them like this (see
 /api/v2/...        -> v2
 ```
 
-So `/api/resource/ToDo` and `/api/v1/resource/ToDo` are the same thing. **v1 is
-the default and the most widely used.** Most existing clients and the examples
-across these pages use the unversioned v1 paths.
+So `/api/resource/ToDo` and `/api/v1/resource/ToDo` are the same thing. v1 is the
+unversioned default and is still used by most existing clients. **For new
+integrations, prefer v2.** It has cleaner paths, simpler pagination, and built-in
+bulk operations (see below).
 
 ### What v2 changes
 
@@ -81,22 +82,22 @@ v2 uses different path segments and a cleaner contract. The main differences:
 
 v2 route map (from `frappe/api/v2.py`):
 
-| Verb         | v2 Endpoint                                      | Action                |
-| ------------ | ------------------------------------------------ | --------------------- |
-| `GET`        | `/api/v2/document/<DocType>`                     | List documents        |
-| `POST`       | `/api/v2/document/<DocType>`                     | Create a document     |
-| `GET`        | `/api/v2/document/<DocType>/<name>`              | Read one document     |
-| `PUT`/`PATCH`| `/api/v2/document/<DocType>/<name>`              | Update a document     |
-| `DELETE`     | `/api/v2/document/<DocType>/<name>`              | Delete a document     |
-| `GET`/`POST` | `/api/v2/document/<DocType>/<name>/method/<m>`   | Run a doc method      |
-| `POST`       | `/api/v2/document/<DocType>/bulk_update`         | Bulk update           |
-| `POST`       | `/api/v2/document/<DocType>/bulk_delete`         | Bulk delete           |
-| `GET`        | `/api/v2/doctype/<DocType>/count`                | Count records         |
-| `GET`        | `/api/v2/doctype/<DocType>/meta`                 | Get DocType meta      |
-| `GET`/`POST` | `/api/v2/method/<dotted.path>`                   | Call a method         |
+| Verb          | v2 Endpoint                                    | Action            |
+| ------------- | ---------------------------------------------- | ----------------- |
+| `GET`         | `/api/v2/document/<DocType>`                   | List documents    |
+| `POST`        | `/api/v2/document/<DocType>`                   | Create a document |
+| `GET`         | `/api/v2/document/<DocType>/<name>`            | Read one document |
+| `PUT`/`PATCH` | `/api/v2/document/<DocType>/<name>`            | Update a document |
+| `DELETE`      | `/api/v2/document/<DocType>/<name>`            | Delete a document |
+| `GET`/`POST`  | `/api/v2/document/<DocType>/<name>/method/<m>` | Run a doc method  |
+| `POST`        | `/api/v2/document/<DocType>/bulk_update`       | Bulk update       |
+| `POST`        | `/api/v2/document/<DocType>/bulk_delete`       | Bulk delete       |
+| `GET`         | `/api/v2/doctype/<DocType>/count`              | Count records     |
+| `GET`         | `/api/v2/doctype/<DocType>/meta`               | Get DocType meta  |
+| `GET`/`POST`  | `/api/v2/method/<dotted.path>`                 | Call a method     |
 
-Unless you specifically need v2 features, prefer the stable v1 paths. The rest of
-this section documents v1 and notes the v2 equivalent where it matters.
+Use v2 for new code. v1 is still supported and the examples across these pages
+use the v1 paths, which map to the v2 endpoints above.
 
 ## Response shape
 

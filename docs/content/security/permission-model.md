@@ -6,21 +6,23 @@ title: Permission Model
 
 Frappe decides what a user can do by matching the user's roles against permission rules defined on each DocType. A rule says "this role can do these things at this permission level". When a user tries to read, write, or submit a document, Frappe collects all rules that apply to the user's roles and checks if any of them grant that action.
 
+This page uses one running example: a library app with a `Book` DocType and three roles, `Librarian`, `Library Member`, and `Library Manager`. Each section is explained against that example.
+
 You can check a permission in code with `frappe.has_permission`:
 
 ```python
 # can the current user write to this Book?
 frappe.has_permission("Book", "write", doc="LIB-BOOK-0001")
 
-# does the user have create access on the doctype at all?
-frappe.has_permission("Task", "create")
+# does the user have create access on the Book doctype at all?
+frappe.has_permission("Book", "create")
 ```
 
 If you pass `doc`, Frappe also checks User Permissions, document sharing, and `if_owner` rules. Without `doc`, it only checks role-level access on the DocType.
 
 ## Roles
 
-A role is a named bucket of access, like "Sales User" or "Librarian". Users are assigned roles, and permission rules are written against roles, never against individual users directly. To get a user's roles:
+A role is a named bucket of access, like "Librarian" or "Library Member". Users are assigned roles, and permission rules are written against roles, never against individual users directly. To get a user's roles:
 
 ```python
 frappe.get_roles("jane@example.com")
@@ -62,7 +64,14 @@ update_permission_property("Book", "Librarian", 0, "write", value=1)
 
 Permission levels let you protect specific fields, not just whole documents. Every field has a `permlevel`, which defaults to `0`. A permission rule also has a `permlevel`. A user can see or edit a field only if they have a rule at that field's level.
 
-Level `0` covers the document as a whole. Higher levels (1, 2, ...) are usually used to lock down a handful of sensitive fields. For example, set a "Credit Limit" field to permlevel 1, then add a `DocPerm` row at permlevel 1 with `write` only for "Sales Manager". Everyone keeps normal access to the rest of the document, but only managers can change that one field.
+Level `0` covers the document as a whole. Higher levels (1, 2, ...) are usually used to lock down a handful of sensitive fields.
+
+Take the `Book` DocType. Most fields, like `title` and `author`, stay at permlevel 0, so the `Librarian` rule at permlevel 0 covers them. Now say the `purchase_price` field should be visible and editable only to the `Library Manager`. Set that field's `permlevel` to 1, then add a second `DocPerm` row:
+
+- permlevel 0, role `Librarian`, with `read` and `write`. This covers `title`, `author`, and the rest.
+- permlevel 1, role `Library Manager`, with `read` and `write`. This covers `purchase_price`.
+
+A `Librarian` has no rule at permlevel 1, so they never see `purchase_price`. A `Library Manager` who also has the permlevel 0 rule (through their roles) can edit the whole document including the price. Field-level access is decided this way: for each field, Frappe checks whether the user has a matching rule at that field's level.
 
 Most permission checks in code run against level 0. Field-level access is applied when the form loads and when a document is saved.
 
@@ -91,6 +100,6 @@ These are the actions a rule can grant. The full list lives in `frappe.permissio
 
 A rule with `if_owner` checked applies only to documents the user created (where `owner` equals the user). This is how you let people manage their own records without seeing everyone else's.
 
-A common setup: give the "All" role `read` and `write` with `if_owner` on a "Leave Application" DocType. Users can then read and edit their own applications, but not those of other people. When `if_owner` rules exist, Frappe still grants `read` and `select` so the user can open list views, then filters the list down to documents they own.
+A common setup: give the `Library Member` role `read` and `write` with `if_owner` on a "Book Review" DocType. Members can then read and edit their own reviews, but not those of other people. When `if_owner` rules exist, Frappe still grants `read` and `select` so the user can open list views, then filters the list down to documents they own.
 
 The `owner` field is set automatically to the creating user and cannot be changed, so `if_owner` is a reliable boundary.

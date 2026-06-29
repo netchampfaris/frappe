@@ -46,13 +46,13 @@ bench --site mysite.localhost purge-jobs --queue default
 
 Logs live in the `logs/` folder of the bench. The useful ones:
 
-| File | What it holds |
-| --- | --- |
-| `logs/web.log`, `logs/web.error.log` | web server (gunicorn) output |
-| `logs/worker.log`, `logs/worker.error.log` | background worker output |
-| `logs/schedule.log` | scheduler output |
-| `logs/frappe.log` | application logs from `frappe.logger()` |
-| `logs/monitor.json.log` | per-request and per-job timing (when enabled) |
+| File                                       | What it holds                                 |
+| ------------------------------------------ | --------------------------------------------- |
+| `logs/web.log`, `logs/web.error.log`       | web server (gunicorn) output                  |
+| `logs/worker.log`, `logs/worker.error.log` | background worker output                      |
+| `logs/schedule.log`                        | scheduler output                              |
+| `logs/frappe.log`                          | application logs from `frappe.logger()`       |
+| `logs/monitor.json.log`                    | per-request and per-job timing (when enabled) |
 
 These are rotating files, so older entries roll into numbered files like
 `web.log.1`. There is also a per-site `logs/` folder under each site for site
@@ -89,6 +89,21 @@ add_data_to_monitor(customer="ACME", items=12)
 
 There is overhead to recording every transaction, so enable the Monitor when you
 are investigating, or accept the cost knowingly if you want it always on.
+
+## The Recorder
+
+The Recorder profiles individual requests so you can find slow pages and bad
+queries. Where the Monitor logs one line per request, the Recorder captures every
+SQL query a request runs, its duration, and the `EXPLAIN` output, and it can
+suggest indexes.
+
+Open it in the Desk at **Recorder** and click **Start Recording**. Use the app
+while it records, then **Stop**. Each captured request shows up in the list with
+its query count and time. Open one to see the queries it ran. **Clear** discards
+the captured data.
+
+Recording adds overhead and turns itself off after about ten minutes, so use it
+for a focused investigation rather than leaving it on.
 
 ## Error Log
 

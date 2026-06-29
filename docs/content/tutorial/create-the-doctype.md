@@ -32,15 +32,15 @@ Add these fields in the **Fields** table. For each row set the **Type**, the
 `fieldname`) is generated from the label, so `Article Name` becomes
 `article_name`.
 
-| Label | Type | Options / Notes |
-|-------|------|-----------------|
-| Article Name | Data | Tick **Mandatory** |
-| Image | Attach Image | |
-| Author | Data | |
-| Description | Text Editor | |
-| ISBN | Data | |
-| Publisher | Data | |
-| Status | Select | Options (one per line): `Available`, `Issued`. Set **Default** to `Available` |
+| Label        | Type         | Options / Notes                                                               |
+| ------------ | ------------ | ----------------------------------------------------------------------------- |
+| Article Name | Data         | Tick **Mandatory**                                                            |
+| Image        | Attach Image |                                                                               |
+| Author       | Data         |                                                                               |
+| Description  | Text Editor  |                                                                               |
+| ISBN         | Data         |                                                                               |
+| Publisher    | Data         |                                                                               |
+| Status       | Select       | Options (one per line): `Available`, `Issued`. Set **Default** to `Available` |
 
 In the **Select** field's **Options**, put each choice on its own line:
 
@@ -84,17 +84,28 @@ like this (trimmed):
 
 ```json
 {
- "doctype": "DocType",
- "name": "Article",
- "module": "Library Management",
- "title_field": "article_name",
- "autoname": "field:article_name",
- "fields": [
-  {"fieldname": "article_name", "label": "Article Name", "fieldtype": "Data", "reqd": 1},
-  {"fieldname": "author", "label": "Author", "fieldtype": "Data"},
-  {"fieldname": "isbn", "label": "ISBN", "fieldtype": "Data"},
-  {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Available\nIssued", "default": "Available"}
- ]
+  "doctype": "DocType",
+  "name": "Article",
+  "module": "Library Management",
+  "title_field": "article_name",
+  "autoname": "field:article_name",
+  "fields": [
+    {
+      "fieldname": "article_name",
+      "label": "Article Name",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    { "fieldname": "author", "label": "Author", "fieldtype": "Data" },
+    { "fieldname": "isbn", "label": "ISBN", "fieldtype": "Data" },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "options": "Available\nIssued",
+      "default": "Available"
+    }
+  ]
 }
 ```
 
@@ -129,22 +140,22 @@ You need two more DocTypes for the later pages. Create them the same way.
 
 **Library Member** with fields:
 
-| Label | Type | Options / Notes |
-|-------|------|-----------------|
+| Label     | Type | Options / Notes                   |
+| --------- | ---- | --------------------------------- |
 | Full Name | Data | Mandatory, set as **Title Field** |
-| Email | Data | |
-| Phone | Data | |
+| Email     | Data |                                   |
+| Phone     | Data |                                   |
 
 Set its **Naming Rule** to **By fieldname** on `full_name`.
 
 **Library Transaction** with fields:
 
-| Label | Type | Options / Notes |
-|-------|------|-----------------|
-| Article | Link | Options: `Article`. Mandatory |
-| Library Member | Link | Options: `Library Member`. Mandatory |
-| Type | Select | Options: `Issue`, `Return`. Mandatory |
-| Date | Date | |
+| Label          | Type   | Options / Notes                       |
+| -------------- | ------ | ------------------------------------- |
+| Article        | Link   | Options: `Article`. Mandatory         |
+| Library Member | Link   | Options: `Library Member`. Mandatory  |
+| Type           | Select | Options: `Issue`, `Return`. Mandatory |
+| Date           | Date   |                                       |
 
 A **Link** field stores the `name` of a record in another DocType and renders as
 a searchable dropdown. Set Library Transaction's **Naming Rule** to

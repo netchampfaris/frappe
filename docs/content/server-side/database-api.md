@@ -68,7 +68,9 @@ frappe.db.delete("Task", {"status": "Cancelled"})
 
 ## Raw SQL
 
-When you need something the [Query Builder](/server-side/query-builder) can't express, `frappe.db.sql` runs a raw query. **Always parameterize** your values to avoid SQL injection. Never interpolate values into the string:
+Raw SQL is the last resort. Most of the time the [Document API](/server-side/document-api), the value helpers above, and the [Query Builder](/server-side/query-builder) cover what you need. Reach for `frappe.db.sql` only for the rare advanced cases the query builder can't express, such as hand-tuned query optimization.
+
+When you do need it, `frappe.db.sql` runs a raw query. **Always parameterize** your values to avoid SQL injection. Never interpolate values into the string:
 
 ```python
 # positional parameters with %s
@@ -112,6 +114,26 @@ except SomeError:
 ```
 
 You can release a savepoint explicitly with `frappe.db.release_savepoint("before_risky_step")`.
+
+The `savepoint` context manager wraps a block in a savepoint and rolls back to it if a matching exception is raised. It handles the naming, rollback, and release for you:
+
+```python
+from frappe.database import savepoint
+
+for doc in docs:
+    with savepoint(catch=frappe.DuplicateEntryError):
+        doc.insert()
+```
+
+It also works as a decorator that wraps the whole function:
+
+```python
+from frappe.database import savepoint
+
+@savepoint(catch=frappe.DuplicateEntryError)
+def process(doc):
+    doc.insert()
+```
 
 ## See also
 

@@ -160,6 +160,7 @@ The Desk has an **RQ Job** and **RQ Worker** view (search "RQ Job" in the awesom
 from frappe.utils.background_jobs import get_jobs, get_job_status
 
 get_jobs()                      # pending jobs grouped by site
+get_jobs(site="mysite")         # pending jobs for one site
 get_job_status("rebuild-book-index")
 ```
 

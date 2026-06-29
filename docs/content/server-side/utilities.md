@@ -115,9 +115,67 @@ get_link_to_form("Library Loan", "LOAN-0001")
 # <a href="...">LOAN-0001</a>
 ```
 
+## More common helpers
+
+`format_date` renders a date string in the user's date format, instead of the stored `yyyy-mm-dd`.
+
+```python
+from frappe.utils import format_date
+
+format_date("2024-05-01")              # "05-01-2024" (depends on user format)
+format_date("2024-05-01", "dd MMM yyyy")  # "01 May 2024"
+```
+
+`pretty_date` turns a datetime into a relative string like "2 days ago", handy for activity feeds.
+
+```python
+from frappe.utils import pretty_date
+
+pretty_date("2024-05-01 10:00:00")     # "2 days ago"
+```
+
+`comma_and` and `comma_or` join a list into a readable phrase.
+
+```python
+from frappe.utils import comma_and, comma_or
+
+comma_and(["a", "b", "c"])             # "'a', 'b' and 'c'"
+comma_or(["a", "b", "c"])              # "'a', 'b' or 'c'"
+```
+
+`strip_html` removes HTML tags from a string, useful when turning rich text into plain text.
+
+```python
+from frappe.utils import strip_html
+
+strip_html("<h1>Hello</h1>")           # "Hello"
+```
+
+`validate_email_address` returns the valid addresses from a string. Pass `throw=True` to raise on an invalid one.
+
+```python
+from frappe.utils import validate_email_address
+
+validate_email_address("john@example.com, bad")   # "john@example.com"
+validate_email_address("bad", throw=True)          # raises InvalidEmailAddressError
+```
+
+`random_string` returns a random alphanumeric string of the given length, for tokens and test data.
+
+```python
+from frappe.utils import random_string
+
+random_string(10)                      # e.g. "a8Kf2Lm9Qz"
+```
+
 ## Finding more
 
-These are the helpers you will reach for daily, but there are many more in `frappe/utils/__init__.py` and `frappe/utils/data.py`: `get_datetime`, `format_date`, `pretty_date`, `add_to_date`, `cstr`, and so on. When you need a small transformation, check there before writing your own; it probably exists and already handles the edge cases.
+These are some of the helpers you will reach for often, but there are many more in `frappe/utils/__init__.py` and `frappe/utils/data.py`: `get_datetime`, `now_datetime`, `add_to_date`, `get_fullname`, and so on. When you need a small transformation, check there before writing your own; it probably exists and already handles the edge cases.
+
+For the full list, browse the source on GitHub:
+
+- [frappe/utils/data.py](https://github.com/frappe/frappe/blob/develop/frappe/utils/data.py)
+- [frappe/utils/**init**.py](https://github.com/frappe/frappe/blob/develop/frappe/utils/__init__.py)
 
 ## See also
 

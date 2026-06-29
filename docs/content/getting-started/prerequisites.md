@@ -22,18 +22,18 @@ For a no-setup option, Docker works on all three. See
 
 ## Required software
 
-| Dependency | Recommended version | Notes |
-| ---------- | ------------------- | ----- |
-| Python     | 3.10 or newer | The framework is a Python package |
-| Node.js    | 18 or newer (use an LTS) | For building assets and the realtime server |
-| Yarn       | 1.x (classic) | JS package manager used for builds |
-| Redis      | 6 or newer | Cache, queue, and pub/sub |
-| MariaDB    | 10.6 or newer | Default database |
-| PostgreSQL | 13 or newer | Optional alternative to MariaDB |
-| Git        | any recent | Apps are cloned and version-controlled with Git |
-| wkhtmltopdf | 0.12.x (with patched Qt) | For PDF/print generation |
+| Dependency  | Recommended version      | Notes                                           |
+| ----------- | ------------------------ | ----------------------------------------------- |
+| Python      | 3.14 (>=3.14,< 3.15)     | The framework is a Python package               |
+| Node.js     | 24 or newer              | For building assets and the realtime server     |
+| Yarn        | 1.x (classic)            | JS package manager used for builds              |
+| Redis       | 6 or newer               | Cache, queue, and pub/sub                       |
+| MariaDB     | 10.6 or newer            | Default database                                |
+| PostgreSQL  | 13 or newer              | Optional alternative to MariaDB                 |
+| Git         | any recent               | Apps are cloned and version-controlled with Git |
+| wkhtmltopdf | 0.12.x (with patched Qt) | For PDF/print generation                        |
 
-> Frappe's current development version targets Python 3.10+. When in doubt, match
+> Frappe's current development version targets Python 3.14. When in doubt, match
 > the versions used by the official Docker images and the Bench install scripts.
 
 ## Database choice
@@ -51,6 +51,32 @@ configuration details.
 Different apps may need different Node versions. Install
 [`nvm`](https://github.com/nvm-sh/nvm) so you can switch between Node versions per
 project.
+
+## Installing the dependencies
+
+On **Ubuntu or Debian**, install the system packages with `apt`, then Node with
+`nvm`:
+
+```bash
+sudo apt update
+sudo apt install -y git python3-dev python3-venv python3-pip \
+  redis-server mariadb-server libmariadb-dev \
+  wkhtmltopdf xvfb libfontconfig
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install 24
+npm install -g yarn
+```
+
+On **macOS**, use [Homebrew](https://brew.sh):
+
+```bash
+brew install python git redis mariadb node@24 wkhtmltopdf
+npm install -g yarn
+```
+
+These commands cover the common setup. Package names and extra steps (for example
+the MariaDB `utf8mb4` config) can vary by distribution and version.
 
 ## The Bench CLI
 

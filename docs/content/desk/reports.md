@@ -75,14 +75,14 @@ The matching `.js` file defines `frappe.query_reports["Report Name"]` with the f
 
 ```javascript
 frappe.query_reports["My Tasks"] = {
-    filters: [
-        {
-            fieldname: "status",
-            label: "Status",
-            fieldtype: "Select",
-            options: ["", "Open", "Working", "Completed"],
-        },
-    ],
+  filters: [
+    {
+      fieldname: "status",
+      label: "Status",
+      fieldtype: "Select",
+      options: ["", "Open", "Working", "Completed"],
+    },
+  ],
 };
 ```
 

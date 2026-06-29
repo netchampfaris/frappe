@@ -23,13 +23,13 @@ user's data.
 The provider endpoints are whitelisted methods (see
 `frappe/integrations/oauth2.py`):
 
-| Purpose       | Endpoint                                                      |
-| ------------- | ------------------------------------------------------------ |
-| Authorization | `/api/method/frappe.integrations.oauth2.authorize`           |
-| Token         | `/api/method/frappe.integrations.oauth2.get_token`           |
-| Userinfo      | `/api/method/frappe.integrations.oauth2.openid_profile`      |
-| Revocation    | `/api/method/frappe.integrations.oauth2.revoke_token`        |
-| Introspection | `/api/method/frappe.integrations.oauth2.introspect_token`    |
+| Purpose       | Endpoint                                                  |
+| ------------- | --------------------------------------------------------- |
+| Authorization | `/api/method/frappe.integrations.oauth2.authorize`        |
+| Token         | `/api/method/frappe.integrations.oauth2.get_token`        |
+| Userinfo      | `/api/method/frappe.integrations.oauth2.openid_profile`   |
+| Revocation    | `/api/method/frappe.integrations.oauth2.revoke_token`     |
+| Introspection | `/api/method/frappe.integrations.oauth2.introspect_token` |
 
 For OpenID Connect, the discovery document is served at
 `/.well-known/openid-configuration`, and (when enabled in **OAuth Settings**) the
@@ -152,7 +152,7 @@ freshly issued `client_id` and `client_secret`.
 
 ## Frappe as an OAuth2 client
 
-To call an external OAuth-protected API *from* Frappe, use the **Connected App**
+To call an external OAuth-protected API _from_ Frappe, use the **Connected App**
 DocType, Frappe's built-in OAuth client. Create a Connected App and set:
 
 - **Provider Name** and the provider's **Authorization URI** and **Token URI**.

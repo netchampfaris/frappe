@@ -5,13 +5,14 @@ title: Database Administration
 # Database Administration
 
 Each Frappe site has one database. MariaDB is the default and the most tested
-choice. PostgreSQL is supported but considered experimental, and SQLite exists for
-small or throwaway sites. You pick the engine when you create the site and it
-stays in `site_config.json` as `db_type`.
+choice. PostgreSQL and SQLite are both supported but experimental and still being
+worked on. You pick the engine when you create the site and it stays in
+`site_config.json` as `db_type`.
 
 ```bash
 bench new-site mysite.localhost --db-type mariadb
 bench new-site mysite.localhost --db-type postgres
+bench new-site mysite.localhost --db-type sqlite
 ```
 
 ## Choosing an engine
@@ -20,8 +21,8 @@ bench new-site mysite.localhost --db-type postgres
   Frappe and ERPNext deployments run on MariaDB.
 - **PostgreSQL**: supported but experimental. Some features and third-party apps
   assume MariaDB, so test thoroughly before committing to it.
-- **SQLite**: file-based, no server to run. Fine for tiny or single-user sites,
-  not for production load.
+- **SQLite**: file-based, no server to run. Still experimental and being worked
+  on, so it is not ready for production use.
 
 ## Opening a SQL shell
 
@@ -63,8 +64,8 @@ these keys in `site_config.json`:
 
 ```json
 {
- "read_from_replica": 1,
- "replica_host": "10.0.0.5"
+  "read_from_replica": 1,
+  "replica_host": "10.0.0.5"
 }
 ```
 
@@ -74,12 +75,12 @@ primary. If the replica needs different credentials, set
 
 ```json
 {
- "read_from_replica": 1,
- "replica_host": "10.0.0.5",
- "different_credentials_for_replica": 1,
- "replica_db_user": "readonly",
- "replica_db_password": "s3cret",
- "replica_db_port": 3306
+  "read_from_replica": 1,
+  "replica_host": "10.0.0.5",
+  "different_credentials_for_replica": 1,
+  "replica_db_user": "readonly",
+  "replica_db_password": "s3cret",
+  "replica_db_port": 3306
 }
 ```
 
@@ -101,6 +102,30 @@ schema, indexes, and row counts for a DocType without opening a SQL shell:
 bench --site mysite.localhost describe-database-table --doctype User
 ```
 
-To reclaim space from deleted columns and orphaned tables, see
-`bench --site mysite.localhost trim-database --help` and `trim-tables --help`.
-These are destructive, take a backup first.
+## Trimming tables
+
+Deleting a field from a DocType does not drop its column, and deleting a DocType
+does not drop its table. Over time this leaves unused columns and orphaned tables
+behind. Two commands clean this up.
+
+`trim-tables` removes columns for fields that no longer exist in their DocType:
+
+```bash
+bench --site mysite.localhost trim-tables
+```
+
+`trim-database` drops `tab` tables that belong to DocTypes that no longer exist:
+
+```bash
+bench --site mysite.localhost trim-database
+```
+
+Both run a dry run with `--dry-run` so you can see what would change without
+touching anything:
+
+```bash
+bench --site mysite.localhost trim-tables --dry-run
+```
+
+These commands are destructive. By default they take a backup of the affected
+tables first; pass `--no-backup` to skip it only if you already have a backup.

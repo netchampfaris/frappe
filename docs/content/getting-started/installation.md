@@ -4,9 +4,9 @@ title: Installation
 
 # Installation
 
-There are three ways to install Frappe: with the **Bench CLI** (recommended for
-development), with **Docker** (fastest to a running instance), or **manually**.
-This page walks through the Bench path and points to the others.
+There are two ways to install Frappe for development: with the **Bench CLI**
+(recommended) or with **Docker**. This page walks through the Bench path and
+points to the other.
 
 Make sure you have the [Prerequisites](/getting-started/prerequisites) installed
 first.
@@ -82,8 +82,12 @@ Downloading an app does not activate it; you install it onto a specific site wit
 bench --site mysite.localhost install-app erpnext
 ```
 
-The `--site` flag selects which site the command targets. Set a default site so
-you can omit it:
+The `--site` flag selects which site the command targets. Pass it explicitly on
+each command so it is always clear which site you are acting on.
+
+A `bench use` command exists to set a default site and drop the flag, but relying
+on it makes it easy to run a command against the wrong site, so prefer passing
+`--site`:
 
 ```bash
 bench use mysite.localhost
@@ -110,16 +114,11 @@ http://mysite.localhost:8000
 For a containerized setup, use the official
 [`frappe_docker`](https://github.com/frappe/frappe_docker) repository. It
 provides Compose files for both development (a dev container with bench inside)
-and production (separate web, worker, database, and Redis containers). This is the
-quickest way to a running instance and avoids installing dependencies on your
-host. Follow the README in that repository.
+and production (separate web, worker, database, and Redis containers). It avoids
+installing dependencies on your host. Follow the README in that repository.
 
-## Manual installation
-
-If you prefer not to use Bench, you can install the dependencies, create the
-virtualenv, install the `frappe` package, and wire up MariaDB/PostgreSQL, Redis,
-Nginx, and a process supervisor yourself. This is more involved and mainly useful
-for custom production setups; see [Production Setup](/administration/production-setup).
+For a manual, non-Bench setup, see
+[Production Setup](/administration/production-setup).
 
 ## Next steps
 

@@ -32,29 +32,29 @@ Define any of these methods on your controller; Frappe calls them automatically.
 
 When `doc.insert()` runs:
 
-| Hook | Use it to |
-|------|-----------|
-| `before_insert` | Set up values before anything else; runs only on new docs. |
-| `before_validate` | Normalise/clean data before validation. |
-| `validate` | Validate the document; throw to abort. |
-| `before_save` | Final tweaks just before writing to the DB. |
-| *(row written to DB)* | |
-| `after_insert` | React to the new record now that it has a `name`. |
-| `on_update` | React to the saved state (also runs on every later save). |
-| `on_change` | Runs after every change (save, submit, cancel, `db_set`). |
+| Hook                  | Use it to                                                  |
+| --------------------- | ---------------------------------------------------------- |
+| `before_insert`       | Set up values before anything else; runs only on new docs. |
+| `before_validate`     | Normalise/clean data before validation.                    |
+| `validate`            | Validate the document; throw to abort.                     |
+| `before_save`         | Final tweaks just before writing to the DB.                |
+| _(row written to DB)_ |                                                            |
+| `after_insert`        | React to the new record now that it has a `name`.          |
+| `on_update`           | React to the saved state (also runs on every later save).  |
+| `on_change`           | Runs after every change (save, submit, cancel, `db_set`).  |
 
 ### On save (an existing document)
 
 When `doc.save()` runs on a document that already exists:
 
-| Hook | Use it to |
-|------|-----------|
-| `before_validate` | Normalise data before validation. |
-| `validate` | Validate; throw to abort. |
-| `before_save` | Final tweaks before the DB write. |
-| *(row updated in DB)* | |
-| `on_update` | React to the saved changes. |
-| `on_change` | Runs after the change. |
+| Hook                  | Use it to                         |
+| --------------------- | --------------------------------- |
+| `before_validate`     | Normalise data before validation. |
+| `validate`            | Validate; throw to abort.         |
+| `before_save`         | Final tweaks before the DB write. |
+| _(row updated in DB)_ |                                   |
+| `on_update`           | React to the saved changes.       |
+| `on_change`           | Runs after the change.            |
 
 `before_save` and `on_update` are the save-time equivalents of `before_insert`/`after_insert`, but `before_save`/`on_update` run on **both** insert and update, while `before_insert`/`after_insert` run **only** on insert.
 
@@ -62,26 +62,26 @@ When `doc.save()` runs on a document that already exists:
 
 For [submittable DocTypes](/doctypes/docstatus), when `doc.submit()` runs (docstatus 0 → 1):
 
-| Hook | Use it to |
-|------|-----------|
-| `before_validate` | Normalise data. |
-| `validate` | Validate. |
-| `before_submit` | Last checks before the document becomes submitted. |
-| *(row updated, docstatus = 1)* | |
-| `on_update` | Runs on submit too. |
-| `on_submit` | Post the document's effects (ledger entries, stock, etc.). |
-| `on_change` | Runs after the change. |
+| Hook                           | Use it to                                                  |
+| ------------------------------ | ---------------------------------------------------------- |
+| `before_validate`              | Normalise data.                                            |
+| `validate`                     | Validate.                                                  |
+| `before_submit`                | Last checks before the document becomes submitted.         |
+| _(row updated, docstatus = 1)_ |                                                            |
+| `on_update`                    | Runs on submit too.                                        |
+| `on_submit`                    | Post the document's effects (ledger entries, stock, etc.). |
+| `on_change`                    | Runs after the change.                                     |
 
 ### On cancel
 
 When `doc.cancel()` runs (docstatus 1 → 2):
 
-| Hook | Use it to |
-|------|-----------|
-| `before_cancel` | Checks before cancelling. |
-| *(row updated, docstatus = 2)* | |
-| `on_cancel` | Reverse the effects created in `on_submit`. |
-| `on_change` | Runs after the change. |
+| Hook                           | Use it to                                   |
+| ------------------------------ | ------------------------------------------- |
+| `before_cancel`                | Checks before cancelling.                   |
+| _(row updated, docstatus = 2)_ |                                             |
+| `on_cancel`                    | Reverse the effects created in `on_submit`. |
+| `on_change`                    | Runs after the change.                      |
 
 After `on_cancel`, Frappe verifies no other active documents link to this one before completing.
 
@@ -89,24 +89,24 @@ After `on_cancel`, Frappe verifies no other active documents link to this one be
 
 Submitted documents are read-only except for fields marked `allow_on_submit`. Editing such a field and saving (docstatus stays 1) triggers:
 
-| Hook | Use it to |
-|------|-----------|
-| `before_update_after_submit` | Validate the limited edit. |
-| `on_update_after_submit` | React to the post-submit change. |
+| Hook                         | Use it to                        |
+| ---------------------------- | -------------------------------- |
+| `before_update_after_submit` | Validate the limited edit.       |
+| `on_update_after_submit`     | React to the post-submit change. |
 
 ### On delete
 
 When `doc.delete()` / `frappe.delete_doc()` runs:
 
-| Hook | Use it to |
-|------|-----------|
-| `on_trash` | Clean up related data before the row is removed. |
-| `after_delete` | Final cleanup after deletion. |
+| Hook           | Use it to                                        |
+| -------------- | ------------------------------------------------ |
+| `on_trash`     | Clean up related data before the row is removed. |
+| `after_delete` | Final cleanup after deletion.                    |
 
 ### On load
 
-| Hook | Use it to |
-|------|-----------|
+| Hook     | Use it to                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------- |
 | `onload` | Prepare data for the form when a document is opened (e.g. `self.set_onload("key", value)`). |
 
 ### Discard (drafts)

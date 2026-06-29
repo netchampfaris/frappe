@@ -11,22 +11,30 @@ A DocType controls two things about how its data looks: the **form layout** (how
 
 Fields render top to bottom in the order they appear in the DocType. You shape that flow with three layout field types. They store no data; they only group the fields that follow them.
 
-| Fieldtype | What it does |
-|-----------|--------------|
+| Fieldtype       | What it does                                                                        |
+| --------------- | ----------------------------------------------------------------------------------- |
 | `Section Break` | Starts a new section (a horizontal block). Its `label` becomes the section heading. |
-| `Column Break` | Splits the current section into columns. Fields after it move to the next column. |
-| `Tab Break` | Starts a new tab at the top of the form. Fields after it live under that tab. |
+| `Column Break`  | Splits the current section into columns. Fields after it move to the next column.   |
+| `Tab Break`     | Starts a new tab at the top of the form. Fields after it live under that tab.       |
 
 A typical layout in JSON looks like this:
 
 ```json
 [
-  {"fieldname": "details_tab", "fieldtype": "Tab Break", "label": "Details"},
-  {"fieldname": "customer", "fieldtype": "Link", "options": "Customer"},
-  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
-  {"fieldname": "posting_date", "fieldtype": "Date"},
-  {"fieldname": "items_section", "fieldtype": "Section Break", "label": "Items"},
-  {"fieldname": "items", "fieldtype": "Table", "options": "Sales Invoice Item"}
+  { "fieldname": "details_tab", "fieldtype": "Tab Break", "label": "Details" },
+  { "fieldname": "customer", "fieldtype": "Link", "options": "Customer" },
+  { "fieldname": "column_break_1", "fieldtype": "Column Break" },
+  { "fieldname": "posting_date", "fieldtype": "Date" },
+  {
+    "fieldname": "items_section",
+    "fieldtype": "Section Break",
+    "label": "Items"
+  },
+  {
+    "fieldname": "items",
+    "fieldtype": "Table",
+    "options": "Sales Invoice Item"
+  }
 ]
 ```
 
@@ -50,14 +58,14 @@ A `Section Break` can start collapsed. Turn on `collapsible` on the section brea
 
 These properties live on each field and decide whether and when it shows up.
 
-| Property | Effect |
-|----------|--------|
-| `hidden` | Hides the field in the form. The value is still stored and submitted. |
-| `depends_on` | Show the field only when an `eval:` expression is true, for example `eval:doc.has_discount`. |
-| `read_only` | Render the field but block edits. |
-| `read_only_depends_on` | Make the field read-only when the `eval:` expression is true. |
-| `mandatory_depends_on` | Make the field required when the `eval:` expression is true. |
-| `permlevel` | Field permission level. Fields above level 0 are only visible to roles granted read access at that level. See [Customization](/doctypes/customization). |
+| Property               | Effect                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hidden`               | Hides the field in the form. The value is still stored and submitted.                                                                                   |
+| `depends_on`           | Show the field only when an `eval:` expression is true, for example `eval:doc.has_discount`.                                                            |
+| `read_only`            | Render the field but block edits.                                                                                                                       |
+| `read_only_depends_on` | Make the field read-only when the `eval:` expression is true.                                                                                           |
+| `mandatory_depends_on` | Make the field required when the `eval:` expression is true.                                                                                            |
+| `permlevel`            | Field permission level. Fields above level 0 are only visible to roles granted read access at that level. See [Customization](/doctypes/customization). |
 
 `depends_on` expressions run on the client. They start with `eval:` and have access to `doc` (the current document):
 
@@ -73,14 +81,14 @@ These properties live on each field and decide whether and when it shows up.
 
 The list view shows records in a table. You pick which columns appear and which filters are offered using field properties.
 
-| Property | Effect |
-|----------|--------|
-| `in_list_view` | Show this field as a column in the list view. For child tables this becomes "In Grid View". |
-| `columns` | Column width in the list view, counted in grid units. Total across fields should stay under 11. |
-| `in_standard_filter` | Add this field to the filter bar at the top of the list. |
-| `in_global_search` | Include this field's value in global search. Not allowed for fields with no value, such as layout breaks. |
-| `in_preview` | Show this field in the hover preview popup. |
-| `in_filter` | Index the field so it can be used as a filter (older setting). |
+| Property             | Effect                                                                                                    |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| `in_list_view`       | Show this field as a column in the list view. For child tables this becomes "In Grid View".               |
+| `columns`            | Column width in the list view, counted in grid units. Total across fields should stay under 11.           |
+| `in_standard_filter` | Add this field to the filter bar at the top of the list.                                                  |
+| `in_global_search`   | Include this field's value in global search. Not allowed for fields with no value, such as layout breaks. |
+| `in_preview`         | Show this field in the hover preview popup.                                                               |
+| `in_filter`          | Index the field so it can be used as a filter (older setting).                                            |
 
 Frappe validates these when you save the DocType. `in_list_view` is rejected for field types that cannot render in a list (such as text editors and layout breaks), and `in_global_search` is rejected for fields that hold no value.
 
@@ -99,16 +107,16 @@ Frappe validates these when you save the DocType. `in_list_view` is rejected for
 
 A few settings on the DocType itself control how records are presented across views.
 
-| Setting | Effect |
-|---------|--------|
-| `title_field` | Field shown as the record's title instead of `name`. |
-| `show_title_field_in_link` | Show the title field (not the id) when this DocType is referenced in a Link field. Requires `title_field`. |
-| `image_field` | Attach Image field used as the record's image in card and image views. |
-| `search_fields` | Comma-separated fields searched in the link/search dropdown. |
-| `sort_field` and `sort_order` | Default sort field and direction (`ASC` or `DESC`) for the list. |
-| `default_view` | The view the list opens in by default. |
-| `force_re_route_to_default_view` | Always send users to `default_view`, even if they navigate to another view. |
-| `show_preview_popup` | Show a preview popup on hover in lists and link fields. |
+| Setting                          | Effect                                                                                                     |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `title_field`                    | Field shown as the record's title instead of `name`.                                                       |
+| `show_title_field_in_link`       | Show the title field (not the id) when this DocType is referenced in a Link field. Requires `title_field`. |
+| `image_field`                    | Attach Image field used as the record's image in card and image views.                                     |
+| `search_fields`                  | Comma-separated fields searched in the link/search dropdown.                                               |
+| `sort_field` and `sort_order`    | Default sort field and direction (`ASC` or `DESC`) for the list.                                           |
+| `default_view`                   | The view the list opens in by default.                                                                     |
+| `force_re_route_to_default_view` | Always send users to `default_view`, even if they navigate to another view.                                |
+| `show_preview_popup`             | Show a preview popup on hover in lists and link fields.                                                    |
 
 ## Other views
 

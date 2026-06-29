@@ -14,16 +14,16 @@ A **Client Script** is JavaScript that runs in Desk for one DocType. It is the s
 
 ```javascript
 frappe.ui.form.on("Task", {
-    refresh(frm) {
-        if (frm.doc.status === "Overdue") {
-            frm.dashboard.set_headline("This task is overdue");
-        }
-    },
-    status(frm) {
-        if (frm.doc.status === "Completed") {
-            frm.set_value("progress", 100);
-        }
-    },
+  refresh(frm) {
+    if (frm.doc.status === "Overdue") {
+      frm.dashboard.set_headline("This task is overdue");
+    }
+  },
+  status(frm) {
+    if (frm.doc.status === "Completed") {
+      frm.set_value("progress", 100);
+    }
+  },
 });
 ```
 
@@ -31,11 +31,11 @@ For a list view, use the `frappe.listview_settings` form:
 
 ```javascript
 frappe.listview_settings["Task"] = {
-    get_indicator(doc) {
-        if (doc.status === "Overdue") {
-            return [__("Overdue"), "red", "status,=,Overdue"];
-        }
-    },
+  get_indicator(doc) {
+    if (doc.status === "Overdue") {
+      return [__("Overdue"), "red", "status,=,Overdue"];
+    }
+  },
 };
 ```
 

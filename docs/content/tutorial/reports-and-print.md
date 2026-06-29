@@ -81,11 +81,11 @@ In the **HTML** field, write the template. `doc` is the document being printed, 
 
 ```html
 <div class="member-card">
-	<h2>{{ doc.full_name }}</h2>
-	<p><strong>Member ID:</strong> {{ doc.name }}</p>
-	<p><strong>Email:</strong> {{ doc.email or "Not provided" }}</p>
-	<p><strong>Phone:</strong> {{ doc.phone or "Not provided" }}</p>
-	<p><strong>Joined:</strong> {{ frappe.utils.formatdate(doc.creation) }}</p>
+  <h2>{{ doc.full_name }}</h2>
+  <p><strong>Member ID:</strong> {{ doc.name }}</p>
+  <p><strong>Email:</strong> {{ doc.email or "Not provided" }}</p>
+  <p><strong>Phone:</strong> {{ doc.phone or "Not provided" }}</p>
+  <p><strong>Joined:</strong> {{ frappe.utils.formatdate(doc.creation) }}</p>
 </div>
 ```
 

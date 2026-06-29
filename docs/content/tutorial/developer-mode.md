@@ -6,19 +6,25 @@ title: Developer Mode
 
 Developer mode is a flag in your site config that tells Frappe you are building an app, not just using one. Its main job is to write metadata changes back to disk as JSON files so they can be committed to your app and shared.
 
-Turn it on with bench.
+Turn it on with bench. The `-g` flag writes it to the bench's
+`common_site_config.json` so it applies to every site on the bench, which is what
+you want on a development bench.
 
 ```bash
-bench --site mysite.localhost set-config developer_mode 1
-bench --site mysite.localhost clear-cache
+bench set-config -g developer_mode 1
+bench clear-cache
 ```
-
-This sets `developer_mode` in the site's `site_config.json`.
 
 ```json
 {
- "developer_mode": 1
+  "developer_mode": 1
 }
+```
+
+To scope it to a single site instead, drop `-g` and pass `--site`:
+
+```bash
+bench --site mysite.localhost set-config developer_mode 1
 ```
 
 ## What it enables

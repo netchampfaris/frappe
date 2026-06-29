@@ -23,21 +23,23 @@ is the event name, and `frm` is the current form.
 
 ```javascript
 frappe.ui.form.on("Article", {
-	refresh(frm) {
-		if (frm.doc.status === "Issued") {
-			frm.dashboard.set_headline("This article is currently issued.");
-		}
+  refresh(frm) {
+    if (frm.doc.status === "Issued") {
+      frm.dashboard.set_headline("This article is currently issued.");
+    }
 
-		frm.add_custom_button("View Transactions", () => {
-			frappe.set_route("List", "Library Transaction", { article: frm.doc.name });
-		});
-	},
+    frm.add_custom_button("View Transactions", () => {
+      frappe.set_route("List", "Library Transaction", {
+        article: frm.doc.name,
+      });
+    });
+  },
 
-	isbn(frm) {
-		if (frm.doc.isbn) {
-			frm.set_value("isbn", frm.doc.isbn.replace(/-/g, ""));
-		}
-	},
+  isbn(frm) {
+    if (frm.doc.isbn) {
+      frm.set_value("isbn", frm.doc.isbn.replace(/-/g, ""));
+    }
+  },
 });
 ```
 
@@ -56,14 +58,14 @@ Three things are happening:
 
 ## Load the new script
 
-Client script changes are served as static assets, so build them once:
+A doctype's `.js` file is read straight from disk and sent with the form on every
+load, so you do not need `bench build` for it. Just hard-refresh the Article form
+in the browser to pick up your changes.
 
-```bash
-bench build --app library_management
-```
-
-During development you can run `bench watch` instead to rebuild on every change.
-Then hard-refresh the Article form in the browser.
+`bench build` is only needed for JavaScript and CSS you place in an app's `public`
+folder and reference as bundles (for example through the `app_include_js` or
+`web_include_js` hooks). Those files are bundled by the asset build, while form
+scripts next to the controller are not.
 
 ## Try it
 

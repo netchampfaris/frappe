@@ -57,11 +57,11 @@ The older format is a `test_records.json` file in the same folder:
 
 ```json
 [
-    {
-        "doctype": "Note",
-        "name": "_Test Note 1",
-        "title": "Test Note Title"
-    }
+  {
+    "doctype": "Note",
+    "name": "_Test Note 1",
+    "title": "Test Note Title"
+  }
 ]
 ```
 

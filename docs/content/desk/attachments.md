@@ -50,7 +50,7 @@ doc.get("image")
 Because the field value is the URL, you can render it directly in templates and print formats. For example, in a Jinja template:
 
 ```html
-<img src="{{ doc.image }}">
+<img src="{{ doc.image }}" />
 ```
 
 ## Public vs private

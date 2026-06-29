@@ -16,19 +16,24 @@ A child DocType is an ordinary DocType with the `istable` flag set to `1`. It ne
   "name": "Invoice Item",
   "istable": 1,
   "fields": [
-    {"fieldname": "item", "label": "Item", "fieldtype": "Link", "options": "Item"},
-    {"fieldname": "qty", "label": "Qty", "fieldtype": "Float"},
-    {"fieldname": "rate", "label": "Rate", "fieldtype": "Currency"}
+    {
+      "fieldname": "item",
+      "label": "Item",
+      "fieldtype": "Link",
+      "options": "Item"
+    },
+    { "fieldname": "qty", "label": "Qty", "fieldtype": "Float" },
+    { "fieldname": "rate", "label": "Rate", "fieldtype": "Currency" }
   ]
 }
 ```
 
 Each child row carries three extra system fields linking it back to its parent:
 
-| Field | Meaning |
-|-------|---------|
-| `parent` | `name` of the parent document. |
-| `parenttype` | DocType of the parent. |
+| Field         | Meaning                                                |
+| ------------- | ------------------------------------------------------ |
+| `parent`      | `name` of the parent document.                         |
+| `parenttype`  | DocType of the parent.                                 |
 | `parentfield` | The Table fieldname on the parent that holds this row. |
 
 These let the same child DocType be reused by multiple parents.

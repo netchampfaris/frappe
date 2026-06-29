@@ -36,7 +36,6 @@ apps/library_management/
 │   ├── hooks.py                   # how the app plugs into Frappe
 │   ├── modules.txt                # list of modules in this app
 │   ├── patches.txt                # data-migration patches, run on `bench migrate`
-│   ├── config/                    # desktop/docs config
 │   ├── public/                    # static assets (js, css, images)
 │   ├── templates/                 # Jinja templates for web pages
 │   ├── www/                       # file-based website routes
@@ -60,8 +59,8 @@ __version__ = "0.0.1"
 
 ### `hooks.py`
 
-The heart of the app. It starts with metadata and then declares how the app
-extends Frappe. The generated header looks like:
+The app's configuration file. It starts with metadata and then declares how the
+app extends Frappe. The generated header looks like:
 
 ```python
 app_name = "library_management"

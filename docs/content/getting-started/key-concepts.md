@@ -11,6 +11,9 @@ links to a deeper page. If you read only one thing before building, read this.
 
 ```text
 Bench  →  the environment (virtualenv, config, processes)
+ ├─ Site  →  one instance with its own database and files
+ │   ├─ database  →  all tables and records for the site
+ │   └─ files  →  uploads and other site files
  └─ App  →  installable package of code
      └─ Module  →  grouping of related DocTypes inside an app
          └─ DocType  →  the definition of a data model (schema + behavior)
@@ -24,10 +27,10 @@ set of **Apps**.
 
 ### DocType
 
-The central concept. A **DocType** is the *definition* of a data model: its
+The central concept. A **DocType** is the _definition_ of a data model: its
 fields, options, permissions, and naming rules. Creating a DocType generates a
 database table, [REST endpoints](/rest-api/overview), and a Desk form/list automatically. DocTypes are
-stored as JSON in your app (in [developer mode](/contributing/developer-mode)).
+stored as JSON in your app (in [developer mode](/tutorial/developer-mode)).
 → [DocTypes Overview](/doctypes/overview), [Fields](/doctypes/fields)
 
 ### Document
@@ -81,7 +84,7 @@ asset includes, route rules, and more.
 
 ### Desk
 
-The built-in admin UI at `/app`. It auto-generates forms, list views, reports, and
+The built-in admin UI at `/desk`. It auto-generates forms, list views, reports, and
 dashboards from your DocTypes, and is where you customize and administer the
 system. It runs on JavaScript and talks to the server over the REST API.
 → [Desk Overview](/desk/overview), [Form API](/client-side/form-api)

@@ -65,7 +65,64 @@ entry, which stores the same id.
 ## The Recorder
 
 For drilling into the SQL a single request runs, use the Recorder in Desk. It
-captures every query for the requests you make while it is on, with timings and
-call counts, so you can spot N+1 query patterns. Open it from the Desk URL
-`/app/recorder`, start recording, perform the action, then stop and inspect the
-captured requests.
+captures every query for the requests and background jobs that run while it is
+on, with timings and call counts, so you can spot N+1 query patterns. Only the
+Administrator can use it, and it turns itself off after 10 minutes so a
+forgotten session does not keep adding overhead.
+
+Open it from the Desk URL `/app/recorder`, click **Start**, perform the action,
+then click **Stop** and inspect the captured requests.
+
+### What you can capture
+
+**Start** opens a Configure Recorder dialog. The options are:
+
+- **Record Web Requests** with a request path filter. The filter defaults to
+  `/`, which records everything. Set it to something like `/api/method/erpnext`
+  to record only matching paths and avoid slowing down other traffic.
+- **Record Background Jobs** with a jobs filter, for example `email_queue.pull`.
+- **Record SQL queries**, on by default.
+- **Generate EXPLAIN for SQL queries**, on by default. This runs `EXPLAIN` on
+  each SELECT, UPDATE, and DELETE so you can see the query plan.
+- **Capture callstack of SQL queries**, on by default. This records where each
+  query was fired from.
+- **Run cProfile**, off by default. This adds Python profiling output to each
+  capture. It adds a lot of overhead, so disable stack capturing when you use
+  it.
+
+### What each capture shows
+
+The list sorts captured requests by duration. Open one to see the path, total
+duration, number of queries, and time spent in queries. The SQL queries table
+lists every query with its duration, and marks how many exact and normalized
+duplicates each query has. Normalized counts group queries that differ only in
+their literal values, which is how you spot the same query running in a loop.
+Expand a query row to see its stack trace and `EXPLAIN` output.
+
+### Suggested indexes
+
+Open a capture and click **Suggest Optimizations**. The Recorder analyzes the
+recorded queries and proposes up to three indexes that would cut the most query
+time. Select the ones you want in the Suggested Indexes table and click **Add
+Indexes** to create them.
+
+### Recording from code
+
+To capture the queries a single function runs without going through Desk, wrap
+it with the `record_queries` decorator:
+
+```python
+from frappe.recorder import record_queries
+
+@record_queries
+def my_function():
+    ...
+```
+
+After it runs, open the Recorder list to view the captured queries.
+
+### Sharing captures
+
+From the Recorder list you can **Export** all captures to a JSON file and
+**Import** one back on another site, which is useful for sharing a slow request
+with someone else. **Clear** removes all captures.

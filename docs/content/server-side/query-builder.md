@@ -11,63 +11,83 @@ It's the recommended alternative to writing raw [`frappe.db.sql`](/server-side/d
 ## A first query
 
 ```python
-task = frappe.qb.DocType("Task")
+Task = frappe.qb.DocType("Task")
 
 result = (
-    frappe.qb.from_(task)
-    .select(task.name, task.subject)
-    .where(task.status == "Open")
+    frappe.qb.from_(Task)
+    .select(Task.name, Task.subject)
+    .where(Task.status == "Open")
     .run(as_dict=True)
 )
 ```
 
-- `frappe.qb.DocType("Task")` gives you a table object for `tabTask`. Its columns are attributes (`task.subject`).
+- `frappe.qb.DocType("Task")` gives you a table object for `tabTask`. Its columns are attributes (`Task.subject`).
 - `.from_()`, `.select()`, `.where()`, `.orderby()`, `.limit()` build the query.
 - `.run()` executes it and returns the rows. Without `.run()` you have a query object, and `str(query)` shows the SQL.
 
 `.run()` accepts the familiar options: `as_dict=True` for dicts, `as_list=True`, `pluck="name"`, and `debug=True` to print the generated SQL.
+
+## Building from filters with `get_query`
+
+If you already think in terms of `get_all`-style `fields` and `filters`, `frappe.qb.get_query` builds the query object for you. It takes the same `fields`, `filters`, `order_by`, `group_by`, `limit`, and `offset` arguments and returns a query object you can extend or run:
+
+```python
+query = frappe.qb.get_query(
+    "Task",
+    fields=["name", "subject"],
+    filters={"status": "Open"},
+    order_by="creation desc",
+    limit=10,
+)
+
+result = query.run(as_dict=True)
+```
+
+Because it returns a query object, you can keep chaining query builder methods before calling `.run()`.
+
+Unlike `frappe.get_list`, `get_query` does not apply permissions by default (`ignore_permissions=True`). Pass `ignore_permissions=False` to enforce them.
 
 ## Filtering
 
 Conditions use normal Python operators on column objects:
 
 ```python
-task = frappe.qb.DocType("Task")
+Task = frappe.qb.DocType("Task")
 
 (
-    frappe.qb.from_(task)
-    .select(task.name)
-    .where(task.status == "Open")
-    .where(task.priority != "Low")   # chained .where() = AND
+    frappe.qb.from_(Task)
+    .select(Task.name)
+    .where(Task.status == "Open")
+    .where(Task.priority != "Low")   # chained .where() = AND
 )
 ```
 
 Combine conditions with `&` (AND) and `|` (OR), and wrap each operand in parentheses:
 
 ```python
-.where((task.status == "Open") & (task.priority == "High"))
-.where((task.status == "Open") | (task.status == "Working"))
+.where((Task.status == "Open") & (Task.priority == "High"))
+.where((Task.status == "Open") | (Task.status == "Working"))
 ```
 
 Other useful conditions:
 
 ```python
-task.subject.like("%docs%")
-task.priority.isin(["High", "Urgent"])
-task.priority.notin(["Low"])
-task.completed_on.isnull()
-task.creation[start:end]          # BETWEEN
+Task.subject.like("%docs%")
+Task.priority.isin(["High", "Urgent"])
+Task.priority.notin(["Low"])
+Task.completed_on.isnull()
+Task.creation[start:end]          # BETWEEN
 ```
 
 ## Selecting, ordering, limiting
 
 ```python
-task = frappe.qb.DocType("Task")
+Task = frappe.qb.DocType("Task")
 
 (
-    frappe.qb.from_(task)
-    .select(task.name, task.subject)
-    .orderby(task.creation, order=frappe.qb.desc)
+    frappe.qb.from_(Task)
+    .select(Task.name, Task.subject)
+    .orderby(Task.creation, order=frappe.qb.desc)
     .limit(10)
     .offset(20)
 )
@@ -80,15 +100,15 @@ Use `frappe.qb.asc` / `frappe.qb.desc` for ordering direction.
 Create one table object per DocType and join on matching columns:
 
 ```python
-task = frappe.qb.DocType("Task")
-project = frappe.qb.DocType("Project")
+Task = frappe.qb.DocType("Task")
+Project = frappe.qb.DocType("Project")
 
 result = (
-    frappe.qb.from_(task)
-    .left_join(project)
-    .on(task.project == project.name)
-    .select(task.name, task.subject, project.project_name)
-    .where(project.status == "Open")
+    frappe.qb.from_(Task)
+    .left_join(Project)
+    .on(Task.project == Project.name)
+    .select(Task.name, Task.subject, Project.project_name)
+    .where(Project.status == "Open")
     .run(as_dict=True)
 )
 ```
@@ -102,21 +122,21 @@ SQL functions live in `frappe.query_builder.functions`. They emit the correct di
 ```python
 from frappe.query_builder.functions import Count, Sum, Max
 
-task = frappe.qb.DocType("Task")
+Task = frappe.qb.DocType("Task")
 
 # count grouped by status
 (
-    frappe.qb.from_(task)
-    .select(task.status, Count(task.name).as_("count"))
-    .groupby(task.status)
+    frappe.qb.from_(Task)
+    .select(Task.status, Count(Task.name).as_("count"))
+    .groupby(Task.status)
     .run(as_dict=True)
 )
 
 # aggregate
 total = (
-    frappe.qb.from_(task)
-    .select(Sum(task.actual_time))
-    .where(task.status == "Completed")
+    frappe.qb.from_(Task)
+    .select(Sum(Task.actual_time))
+    .where(Task.status == "Completed")
     .run()
 )[0][0]
 ```
@@ -128,18 +148,18 @@ Other commonly used helpers: `Min`, `Avg`, `Coalesce`, `IfNull`, `Concat`, `Date
 `frappe.qb` can also build `UPDATE` and `DELETE` statements. These bypass the controller lifecycle and will not run `validate` or document events, so prefer the [Document API](/server-side/document-api) for normal writes.
 
 ```python
-task = frappe.qb.DocType("Task")
+Task = frappe.qb.DocType("Task")
 
 # update
 (
-    frappe.qb.update(task)
-    .set(task.status, "Cancelled")
-    .where(task.project == "PROJ-0001")
+    frappe.qb.update(Task)
+    .set(Task.status, "Cancelled")
+    .where(Task.project == "PROJ-0001")
     .run()
 )
 
 # delete
-frappe.qb.from_(task).delete().where(task.status == "Cancelled").run()
+frappe.qb.from_(Task).delete().where(Task.status == "Cancelled").run()
 ```
 
 ## Permissions

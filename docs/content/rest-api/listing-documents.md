@@ -16,10 +16,7 @@ curl https://example.com/api/resource/ToDo \
 
 ```json
 {
-  "data": [
-    { "name": "abc123" },
-    { "name": "def456" }
-  ]
+  "data": [{ "name": "abc123" }, { "name": "def456" }]
 }
 ```
 
@@ -28,14 +25,14 @@ get more, pass query parameters.
 
 ## Common parameters
 
-| Parameter           | Purpose                                            | Example                               |
-| ------------------- | -------------------------------------------------- | ------------------------------------- |
-| `fields`            | JSON array of fields to return                     | `["name","status","description"]`     |
-| `filters`           | JSON conditions to match                           | `[["status","=","Open"]]`             |
-| `limit_page_length` | Max rows (use `0` for all)                         | `50`                                  |
-| `limit_start`       | Offset for pagination                              | `40`                                  |
-| `order_by`          | Sort expression                                    | `creation desc`                       |
-| `as_dict`           | Return objects (default) vs lists                  | `1`                                   |
+| Parameter           | Purpose                           | Example                           |
+| ------------------- | --------------------------------- | --------------------------------- |
+| `fields`            | JSON array of fields to return    | `["name","status","description"]` |
+| `filters`           | JSON conditions to match          | `[["status","=","Open"]]`         |
+| `limit_page_length` | Max rows (use `0` for all)        | `50`                              |
+| `limit_start`       | Offset for pagination             | `40`                              |
+| `order_by`          | Sort expression                   | `creation desc`                   |
+| `as_dict`           | Return objects (default) vs lists | `1`                               |
 
 `fields`, `filters`, `limit_page_length`, `limit_start` and `order_by` are passed
 straight through to `frappe.get_list`. See
@@ -115,17 +112,6 @@ v2 also gives you a dedicated count endpoint:
 ```bash
 curl https://example.com/api/v2/doctype/ToDo/count \
   -H "Authorization: token <api_key>:<api_secret>"
-```
-
-## Counting in v1
-
-v1 has no count route on the resource path; call `frappe.client.get_count`:
-
-```bash
-curl -G https://example.com/api/method/frappe.client.get_count \
-  -H "Authorization: token <api_key>:<api_secret>" \
-  --data-urlencode 'doctype=ToDo' \
-  --data-urlencode 'filters=[["status","=","Open"]]'
 ```
 
 ## See also
