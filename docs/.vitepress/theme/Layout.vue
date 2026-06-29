@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue";
-import { useData } from "vitepress";
 import { theme as DefaultTheme } from "frappe-ui/vitepress";
-import Home from "./Home.vue";
 
-const { frontmatter } = useData();
 const SharedLayout = DefaultTheme.Layout;
 
 // Per-page review notes panel, dev server only. The dynamic import sits in a
@@ -16,8 +13,7 @@ const ReviewNotes = import.meta.env.DEV
 </script>
 
 <template>
-	<Home v-if="frontmatter.layout === 'home'" />
 	<!-- Doc pages use the theme's default Navbar (rendered by the shared Layout). -->
-	<component :is="SharedLayout" v-else />
+	<component :is="SharedLayout" />
 	<component :is="ReviewNotes" v-if="ReviewNotes" />
 </template>
