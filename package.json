@@ -2,7 +2,7 @@
   "name": "frappe-framework",
   "scripts": {
     "build": "node esbuild",
-    "production": "node esbuild --production && cd docs && yarn build",
+    "production": "node esbuild --production && yarn --cwd docs install --frozen-lockfile --production=false && yarn --cwd docs build:frappe",
     "watch": "node esbuild --watch",
     "coverage:report": "npx nyc report --reporter=clover"
   },
