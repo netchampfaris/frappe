@@ -65,6 +65,8 @@ website_route_rules = [
 	{"from_route": "/desk/<path:app_path>", "to_route": "desk"},
 ]
 
+page_renderer = ["frappe.website.page_renderers.docs_page.DocsPage"]
+
 website_redirects = [
 	{"source": r"/app/(.*)", "target": r"/desk/\1", "forward_query_parameters": True},
 	{"source": "/apps", "target": "/desk"},
