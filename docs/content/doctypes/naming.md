@@ -125,14 +125,15 @@ You can define several rules for one DocType. `set_naming_from_document_naming_r
 
 When a document is inserted, `set_new_name` applies the first matching rule:
 
-1. If `autoname` is `autoincrement`, use the DB sequence (returns immediately).
-2. If `autoname` is `UUID`, generate a UUID (returns immediately).
-3. If amending a cancelled doc, append an amendment suffix.
-4. For Single DocTypes, the name is always the DocType name.
-5. Apply any matching **Document Naming Rule** (a runtime-configurable DocType).
-6. Call the controller's `autoname()` method if defined.
-7. Apply the `autoname` option (`field:`, `naming_series:`, `format:`, `prompt`, expression).
-8. Fall back to a random `hash`.
+1. Run the controller's `before_naming` hook, if defined.
+2. If `autoname` is `autoincrement`, use the DB sequence (returns immediately).
+3. If `autoname` is `UUID`, generate a UUID (returns immediately).
+4. If amending a cancelled doc, append an amendment suffix.
+5. For Single DocTypes, the name is always the DocType name.
+6. Apply any matching **Document Naming Rule** (a runtime-configurable DocType).
+7. Call the controller's `autoname()` method if defined.
+8. Apply the `autoname` option (`field:`, `naming_series:`, `format:`, `prompt`, expression).
+9. Fall back to a random `hash`.
 
 ## Renaming
 

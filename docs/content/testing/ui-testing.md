@@ -20,7 +20,7 @@ context("ToDo", () => {
   });
 
   it("creates a new ToDo", () => {
-    cy.click_listview_primary_button("ToDo");
+    cy.click_listview_primary_button("Add ToDo");
     cy.fill_field("description", "Write docs", "Text Editor");
     cy.click_doc_primary_button("Save");
     cy.get(".title-text").should("contain", "Write docs");
@@ -48,7 +48,9 @@ Useful options:
 - `--headless` runs without opening the interactive Cypress window, which is what
   CI uses.
 - `--browser chrome` picks the browser (Chrome is the default).
-- `--spec <path>` runs a single spec file.
+- `--spec <path>` runs a single spec file. Only takes effect together with
+  `--headless`; without it, `--spec` is silently ignored and the full Cypress
+  window opens with every spec.
 - `--parallel` runs specs in parallel.
 - `--with-coverage` generates a coverage report.
 
@@ -68,8 +70,9 @@ Frappe registers helper commands on `cy` so specs read clearly. Common ones:
 - `cy.visit("/app/todo")` opens a Desk route.
 - `cy.fill_field(fieldname, value, fieldtype)` fills a form field.
 - `cy.get_field(fieldname)` returns a field's control.
-- `cy.click_listview_primary_button(doctype)` and `cy.click_doc_primary_button()`
-  click the main action buttons.
+- `cy.click_listview_primary_button(label)` and `cy.click_doc_primary_button(label)`
+  click the primary action button matching that label (it matches on visible
+  text, not the doctype), for example `cy.click_listview_primary_button("Add ToDo")`.
 - `cy.insert_doc(doctype, args)` and `cy.remove_doc(doctype, name)` create and
   delete documents over the API for test setup.
 - `cy.clear_filters()` resets list view filters so state does not bleed into the

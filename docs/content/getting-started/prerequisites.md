@@ -82,9 +82,22 @@ the MariaDB `utf8mb4` config) can vary by distribution and version.
 
 Most installations use **Bench**, the command-line tool that creates and manages
 Frappe environments. It is a separate package from the framework and has its own
-prerequisites (Python, the items above). You install it with `pip`:
+prerequisites (Python, the items above).
+
+On current Ubuntu/Debian and Homebrew Python, a plain `pip install` fails with an
+"externally-managed-environment" error. Install it with [`pipx`](https://pipx.pypa.io)
+instead, which installs `bench` into its own isolated environment:
 
 ```bash
+python3 -m pip install --user pipx
+pipx install frappe-bench
+```
+
+If you would rather manage a virtualenv yourself, that works too:
+
+```bash
+python3 -m venv ~/frappe-venv
+source ~/frappe-venv/bin/activate
 pip install frappe-bench
 ```
 

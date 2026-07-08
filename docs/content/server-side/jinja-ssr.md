@@ -28,7 +28,7 @@ frappe.render_template(
 )
 ```
 
-Frappe guesses whether the first argument is a path or raw content. If it ends in `.html` or `.md` and is a single line, it is treated as a path. Pass `is_path=True` to be explicit.
+Frappe guesses whether the first argument is a path or raw content. If it is a single line and ends in a known template extension (`html`, `css`, `scss`, `py`, `md`, `json`, `js`, `xml`, or `txt`), it is treated as a path. Pass `is_path=True` to be explicit.
 
 ```jinja
 {# library/templates/emails/due_reminder.html #}

@@ -96,9 +96,35 @@ frappe.call("library.api.start_sync").then(() => {
 
 ## How it works
 
-`publish_realtime` serializes the event and publishes it to a Redis channel named `events`, tagged with the room and the site. A separate Node process (the Socket.IO server, started by `bench start`) subscribes to that channel and forwards each message to the right browser connections. "Rooms" are how it targets a user, a document, or the whole site.
+`publish_realtime` serializes the event and publishes it to a Redis channel named `events`, tagged with the room and the site. A separate realtime server subscribes to that channel and forwards each message to the right browser connections. "Rooms" are how it targets a user, a document, or the whole site.
 
-Because it relies on Redis and the Socket.IO server, realtime is best-effort. If a user is offline, they miss the message. Do not use it as the only way to deliver something important; store it in the database too.
+The realtime server is a standalone Python process, `python -m frappe.realtime.server`. It runs on gevent, speaks Socket.IO to the browser, and is fully separate from the web (gunicorn) process. (Older setups may still run the legacy Node.js Socket.IO server instead; the Redis-based publish API is the same either way.)
+
+Because it relies on Redis and the realtime server, realtime is best-effort. If a user is offline, they miss the message. Do not use it as the only way to deliver something important; store it in the database too.
+
+## Custom realtime handlers
+
+Besides listening for events published from Python, an app can define its own server-side handlers for events emitted *by the client*. Add them in:
+
+```text
+your_app/your_app/realtime/handlers.py
+```
+
+```python
+import frappe
+from frappe.realtime import Socket, realtime
+
+@realtime.on("project_subscribe")
+def project_subscribe(socket: Socket, project: str) -> None:
+    if socket.has_permission("Project", project):
+        socket.join(f"project:{project}")
+```
+
+The realtime server imports `<app>/realtime/handlers.py` for every installed app at startup. The first argument is always the connecting `Socket`; the rest are the payload the client sent. A handler runs only for sockets on sites that have its owning app installed.
+
+By default a handler does not open a database connection (`frappe_context=False`); use `socket.has_permission(doctype, name)` for permission checks, which asks the web process over HTTP instead. Pass `frappe_context=True` to get a full Frappe context (`frappe.has_permission`, DB queries, and so on) inside the handler, at the cost of a DB connection per event.
+
+See `frappe/realtime/README.md` for the full guide, including the `publish_to_*` helpers and room mapping.
 
 ## See also
 

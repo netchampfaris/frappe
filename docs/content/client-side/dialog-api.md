@@ -148,13 +148,13 @@ The `size` option accepts `"small"`, `"large"`, or `"extra-large"`. Set `static:
 frappe.new_doc("Task");
 ```
 
-`route_options` is an object of field values to pre-fill. It works for Link, Select, Data, and Dynamic Link fields.
+`route_options` is an object of field values to pre-fill. It sets any field on the new document, except fields marked `no_copy`.
 
 ```javascript
 frappe.new_doc("Task", { subject: "New Task" });
 ```
 
-`init_callback` runs once just before the user can edit the new document. For a Quick Entry form it receives the dialog object; for the full form it receives the new doc. Use it to set fields that `route_options` cannot, such as Text Editor fields or child rows.
+`init_callback` runs once just before the user can edit the new document. For a Quick Entry form it receives the dialog object; for the full form it receives the new doc. Use it to set fields that `route_options` cannot, such as child table rows.
 
 ```javascript
 frappe.new_doc("Task", { subject: "New Task" }, (doc) => {

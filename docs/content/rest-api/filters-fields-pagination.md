@@ -68,6 +68,18 @@ curl -G https://example.com/api/resource/ToDo \
   --data-urlencode 'filters=[["creation",">","2026-01-01"],["description","like","%milk%"]]'
 ```
 
+### OR-ing conditions
+
+`filters` conditions are AND-ed. Use `or_filters` (v1 only, same shapes as
+`filters`) for conditions that should be OR-ed instead; both can be passed
+together, with `filters` AND-ed against the OR-ed group:
+
+```bash
+curl -G https://example.com/api/resource/ToDo \
+  -H "Authorization: token <api_key>:<api_secret>" \
+  --data-urlencode 'or_filters=[["priority","=","High"],["priority","=","Urgent"]]'
+```
+
 ## Ordering
 
 `order_by` is a SQL-style expression: a field name optionally followed by `asc` or

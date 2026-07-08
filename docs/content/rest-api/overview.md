@@ -80,21 +80,26 @@ v2 uses different path segments and a cleaner contract. The main differences:
   without a separate count call.
 - It adds first-class **bulk** operations plus `count` and `meta` endpoints.
 
-v2 route map (from `frappe/api/v2.py`):
+v2 route map (from `frappe/api/v2.py`; not exhaustive):
 
-| Verb          | v2 Endpoint                                    | Action            |
-| ------------- | ---------------------------------------------- | ----------------- |
-| `GET`         | `/api/v2/document/<DocType>`                   | List documents    |
-| `POST`        | `/api/v2/document/<DocType>`                   | Create a document |
-| `GET`         | `/api/v2/document/<DocType>/<name>`            | Read one document |
-| `PUT`/`PATCH` | `/api/v2/document/<DocType>/<name>`            | Update a document |
-| `DELETE`      | `/api/v2/document/<DocType>/<name>`            | Delete a document |
-| `GET`/`POST`  | `/api/v2/document/<DocType>/<name>/method/<m>` | Run a doc method  |
-| `POST`        | `/api/v2/document/<DocType>/bulk_update`       | Bulk update       |
-| `POST`        | `/api/v2/document/<DocType>/bulk_delete`       | Bulk delete       |
-| `GET`         | `/api/v2/doctype/<DocType>/count`              | Count records     |
-| `GET`         | `/api/v2/doctype/<DocType>/meta`               | Get DocType meta  |
-| `GET`/`POST`  | `/api/v2/method/<dotted.path>`                 | Call a method     |
+| Verb          | v2 Endpoint                                    | Action                        |
+| ------------- | ----------------------------------------------- | ------------------------------ |
+| `GET`         | `/api/v2/document/<DocType>`                   | List documents                 |
+| `POST`        | `/api/v2/document/<DocType>`                   | Create a document              |
+| `GET`         | `/api/v2/document/<DocType>/<name>`            | Read one document              |
+| `PUT`/`PATCH` | `/api/v2/document/<DocType>/<name>`            | Update a document              |
+| `DELETE`      | `/api/v2/document/<DocType>/<name>`            | Delete a document              |
+| `GET`         | `/api/v2/document/<DocType>/<name>/copy`       | Get a clean copy to re-insert  |
+| `GET`/`POST`  | `/api/v2/document/<DocType>/<name>/method/<m>` | Run a doc method                |
+| `POST`        | `/api/v2/document/<DocType>/bulk_update`       | Bulk update (one doctype)      |
+| `POST`        | `/api/v2/document/<DocType>/bulk_delete`       | Bulk delete (one doctype)      |
+| `POST`        | `/api/v2/method/bulk_update`                   | Bulk update across doctypes    |
+| `POST`        | `/api/v2/method/bulk_delete`                   | Bulk delete across doctypes    |
+| `GET`         | `/api/v2/doctype/<DocType>/count`              | Count records                  |
+| `GET`         | `/api/v2/doctype/<DocType>/meta`               | Get DocType meta                |
+| `GET`/`POST`  | `/api/v2/method/<dotted.path>`                 | Call a method                   |
+| `GET`/`POST`  | `/api/v2/method/<DocType>/<method>`            | Call a method via a DocType's controller module |
+| `GET`/`POST`  | `/api/v2/method/run_doc_method`                | Run a controller method on an in-memory document |
 
 Use v2 for new code. v1 is still supported and the examples across these pages
 use the v1 paths, which map to the v2 endpoints above.

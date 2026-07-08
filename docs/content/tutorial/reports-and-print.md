@@ -1,5 +1,5 @@
 ---
-title: Reports And Print
+title: Reports and Print
 ---
 
 # Reports and Print
@@ -16,7 +16,7 @@ the quickest report to build because you write SQL and nothing else.
 Create a new Report:
 
 ```text
-http://library.localhost:8000/app/report/new
+http://library.localhost:8000/desk/report/new
 ```
 
 Set:
@@ -43,11 +43,16 @@ ORDER BY date DESC
 Save and open the report:
 
 ```text
-http://library.localhost:8000/app/query-report/Articles Issued
+http://library.localhost:8000/desk/query-report/Articles Issued
 ```
 
 You see one row per issued transaction, with links you can click through. To let
 the Librarian role run it, add `Librarian` under the report's **Roles** section.
+
+Make sure you are logged in as `Administrator`: a report is only written to disk
+when **Is Standard** is `Yes`, and that field is auto-set only when an
+Administrator saves it with developer mode on. Check the report's **Is
+Standard** field is `Yes` before continuing.
 
 With developer mode on, the report is written to disk under your app:
 
@@ -66,7 +71,7 @@ PDF. You build a custom one for Library Member using Jinja and HTML.
 Create a new Print Format:
 
 ```text
-http://library.localhost:8000/app/print-format/new
+http://library.localhost:8000/desk/print-format/new
 ```
 
 Set:
@@ -93,8 +98,8 @@ The template is standard [Jinja](/server-side/jinja-ssr). `frappe.utils` helpers
 like `formatdate` are available inside it. Use `or` to show a fallback when a
 field is empty.
 
-Save, then open any Library Member, click the print icon (or go to
-`/app/library-member/<name>/print`), and pick **Member Card** from the format
+Save, then open any Library Member and click the Print icon (or go to
+`/desk/print/library-member/<name>`), and pick **Member Card** from the format
 dropdown. Use **PDF** to download it.
 
 For the visual drag-and-drop builder and more on styling, see

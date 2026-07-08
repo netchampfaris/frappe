@@ -70,7 +70,7 @@ the code with the `debug_on` context manager. It prints the traceback and then
 drops you into a post-mortem `pdb` session at the point of failure.
 
 ```python
-from frappe.tests.utils import debug_on
+from frappe.tests import debug_on
 
 
 class TestThing(UnitTestCase):
@@ -81,6 +81,15 @@ class TestThing(UnitTestCase):
 
 By default it triggers on `AssertionError`. Pass other exception types to catch
 them too, for example `@debug_on(ValueError)`.
+
+`UnitTestCase` also exposes it as `self.debug_on()`, so you can use it as a
+context manager inside a test without importing anything:
+
+```python
+def test_thing(self):
+    with self.debug_on():
+        self.assertEqual(compute(), 42)
+```
 
 ## Verbose output
 

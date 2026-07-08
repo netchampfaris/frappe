@@ -57,7 +57,7 @@ Saving the client gives you a **Client ID** and **Client Secret**.
 
 The supported (and recommended) flow is authorization code; the implicit `token`
 response type is intentionally not advertised in the server metadata. PKCE is
-supported (`code_challenge_methods_supported: ["S256"]`).
+supported.
 
 **1. Send the user to the authorization endpoint.** If they're not logged in,
 Frappe redirects them to log in first, then shows a consent screen (unless skipped):
@@ -248,35 +248,13 @@ freshly issued `client_id` and `client_secret`.
 ## Frappe as an OAuth2 client
 
 To call an external OAuth-protected API _from_ Frappe, use the **Connected App**
-DocType, Frappe's built-in OAuth client. Create a Connected App and set:
-
-- **Provider Name** and the provider's **Authorization URI** and **Token URI**.
-- **Client ID** and **Client Secret** issued by that provider.
-- **Scopes** you need.
-
-Frappe fills in the **Redirect URI** for you on save. It points back at your
-site's Connected App callback handler. Register that generated URI with the
-provider. Once a user authorizes, Frappe stores the tokens (in
-**Token Cache**) and refreshes them automatically. In server code you obtain an
-authenticated session for the logged-in user like this:
-
-```python
-import frappe
-
-connected_app = frappe.get_doc("Connected App", "my-provider")
-session = connected_app.get_oauth2_session(user="jane@example.com")
-
-# `session` is a requests-OAuth2 session with the bearer token attached
-resp = session.get("https://provider.example.com/api/me")
-resp.raise_for_status()
-data = resp.json()
-```
-
-This keeps token storage, refresh, and per-user authorization out of your
-application code.
+DocType, Frappe's built-in OAuth client. It stores per-user tokens in a
+**Token Cache** and refreshes them automatically. See
+[Connected Apps](/rest-api/connected-apps) for setup and usage.
 
 ## See also
 
+- [Connected Apps](/rest-api/connected-apps): using Frappe as an OAuth2 client
 - [Authentication](/rest-api/authentication): API keys and bearer tokens
 - [Whitelisted Methods](/server-side/whitelisted-methods): how these endpoints are exposed
 - [Overview](/rest-api/overview): REST endpoint structure

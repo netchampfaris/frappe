@@ -111,7 +111,21 @@ When `doc.delete()` / `frappe.delete_doc()` runs:
 
 ### Discard (drafts)
 
-A draft can be discarded (`doc.discard()`), which fires `before_discard` then `on_discard`.
+A draft can be discarded (`doc.discard()`), which fires `before_discard` then `on_discard`. See [Docstatus](/doctypes/docstatus) for why this is the sanctioned Draft → Cancelled path.
+
+### Naming and rename hooks
+
+| Hook             | Use it to                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------- |
+| `before_naming`  | Adjust or validate data before the name is generated. Runs first in `set_new_name`, before any naming rule. |
+| `before_rename`  | Validate or transform a rename before it happens. Return `{"new": name}` to change the target name.         |
+| `after_rename`   | React once the rename, and all its link updates, are complete.                                              |
+
+`before_rename` and `after_rename` fire from `frappe.rename_doc` / `doc.rename()`, not from insert or save. See [Naming](/doctypes/naming) for the full naming resolution order.
+
+### Direct database updates: `db_set`
+
+`doc.db_set(fieldname, value)` writes a field straight to the database, bypassing `validate` and the save hooks. It still fires `before_change` just before the write and `on_change` just after, the same `on_change` that also runs after save, submit and cancel.
 
 ## Quick reference: order of common operations
 

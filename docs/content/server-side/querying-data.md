@@ -23,7 +23,7 @@ frappe.get_list("Task", filters={"status": "Open"})
 
 > Rule of thumb: use `get_list` for anything driven by an end user (especially inside [whitelisted methods](/server-side/whitelisted-methods)); use `get_all` for internal logic, reports, and background jobs where you control access yourself.
 
-Two other defaults differ: `get_all` returns **all** matching rows by default (no page limit), while `get_list` defaults to `limit_page_length=20`.
+Both return **all** matching rows by default. Neither applies a page limit unless you pass one; see [Ordering, limiting, and paging](#ordering-limiting-and-paging).
 
 ## Selecting fields
 
@@ -132,17 +132,21 @@ frappe.get_all("Task", filters={"creation": ("timespan", "last month")})
 
 ## Ordering, limiting, and paging
 
+By default there's no limit: `get_all`/`get_list` return every matching row. Pass `limit` to cap the page size and `offset` to skip rows for paging:
+
 ```python
 frappe.get_all(
     "Task",
     fields=["name", "subject"],
     order_by="creation desc",
-    limit_start=0,        # offset
-    limit_page_length=20, # page size (alias: limit)
+    limit=20,
+    offset=0,
 )
 ```
 
 `order_by` takes a SQL fragment, e.g. `"priority asc, creation desc"`.
+
+The older `limit_page_length` and `limit_start` kwargs still work as aliases for `limit` and `offset`, but they're deprecated and log a warning; use `limit`/`offset` in new code.
 
 ## Counting and existence
 
@@ -163,22 +167,10 @@ frappe.db.exists({"doctype": "Task", "status": "Open"})
 When you need one or a few fields from one record, `frappe.db.get_value` is faster than loading a document or a list:
 
 ```python
-# one field
 subject = frappe.db.get_value("Task", "TASK-0001", "subject")
-
-# multiple fields -> list
-subject, status = frappe.db.get_value("Task", "TASK-0001", ["subject", "status"])
-
-# as a dict
-row = frappe.db.get_value("Task", "TASK-0001", ["subject", "status"], as_dict=True)
-
-# with filters instead of a name
-name = frappe.db.get_value("Task", {"status": "Open"}, "name")
 ```
 
-`frappe.get_value` is an alias for `frappe.db.get_value`. For cached, permission-free reads of stable records use `frappe.get_cached_value(doctype, name, fieldname)`, and for [Single doctypes](/doctypes/single-doctypes) use `frappe.db.get_single_value("System Settings", "fieldname")`.
-
-Note that `get_value` and `get_all` do **not** decrypt password fields or fetch values the way a loaded `Document` does. Use [`frappe.get_doc`](/server-side/document-api) when you need the full record.
+See [Database API: Reading values](/server-side/database-api#reading-values) for the multi-field, dict, and filter forms, plus `get_single_value` and caching.
 
 ## See also
 

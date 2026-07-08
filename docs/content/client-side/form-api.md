@@ -40,7 +40,7 @@ frappe.ui.form.on("Task", {
 });
 ```
 
-Common form events are `setup` (once, before the form is first drawn), `onload` (each time a record is loaded), `refresh` (after the form renders), `validate` and `before_save` (before save), `after_save`, and any `fieldname` (when that field's value changes). For a child table, register against the child DocType:
+Common form events are `setup` (once, before the form is first drawn), `onload` (each time a record is loaded), `refresh` (after the form renders), `validate` and `before_save` (before save), `after_save`, `before_submit` (before a submit save), `on_submit` (after the document is submitted), `before_cancel` and `after_cancel` (around cancelling a submitted document), and any `fieldname` (when that field's value changes). For a child table, register against the child DocType:
 
 ```javascript
 frappe.ui.form.on("Task Item", {
@@ -59,6 +59,8 @@ The child table add and remove events are named `<fieldname>_add` and `<fieldnam
 ## The frm object
 
 `frm.doc` is the current document, a plain object with the field values. Child tables are arrays on `frm.doc`. `frm.doctype` and `frm.docname` identify the record. `frm.is_new()` is true for an unsaved record, and `frm.is_dirty()` is true when there are unsaved changes.
+
+`frm.trigger(event)` runs another event's handlers programmatically, the same way Frappe runs them internally. For example, `frm.trigger("refresh")` re-runs the `refresh` handlers. `frm.disable_save()` hides the save button and disables saving; call it from `refresh` when a document should not be editable.
 
 ### set_value
 

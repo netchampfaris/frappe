@@ -67,4 +67,11 @@ frappe.get_all(
 )
 ```
 
-The Activity Log also backs the timeline entries you see for comments, assignments, and shares on a document, linked through its `reference_doctype` and `reference_name` fields.
+The timeline entries you see for comments, assignments, and shares on a document are not Activity Log records. They are `Comment` records, filtered by `comment_type` (`Comment`, `Assigned`, `Shared`, and so on) and linked through `reference_doctype` and `reference_name`. `doc.add_comment()` creates the plain comments, and sharing a document adds a `Shared`/`Unshared` comment alongside the `DocShare` record. See [Document Sharing](/security/document-sharing) for how sharing works.
+
+## Related logs
+
+Two more DocTypes round out the audit trail:
+
+- `Deleted Document` archives the full JSON of a document when it is deleted, so you can inspect or restore data that no longer exists in its original table.
+- `Permission Log` (`frappe.core.doctype.permission_log`) records changes to permission-sensitive documents, such as edits to roles and permission rules.

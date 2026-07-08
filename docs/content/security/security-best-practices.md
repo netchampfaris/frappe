@@ -19,6 +19,8 @@ Use the ORM. `frappe.db.get_all`, `frappe.db.get_value`, and friends parameteriz
 frappe.db.get_all("Book", filters={"author": author_name})
 ```
 
+`frappe.db.get_all` (aliased as `frappe.get_all`) ignores user permissions. Use `frappe.get_list` instead when the result must respect what the current user is allowed to see.
+
 Use the Query Builder (`frappe.qb`) for anything more complex. It builds parameterized SQL from Python:
 
 ```python
@@ -71,7 +73,7 @@ def issue_book(book, member):
 
 Things to get right on every whitelisted method:
 
-- Check permissions yourself. Whitelisting does not enforce DocType permissions on the arguments. Call `frappe.has_permission(...)` or `frappe.get_doc(...)` (which checks read access) before acting on a record. Use `frappe.only_for("Role")` to gate a method to a role.
+- Check permissions yourself. Whitelisting does not enforce DocType permissions on the arguments, and `frappe.get_doc(...)` does not check read access by default. Call `frappe.get_doc(..., check_permission=True)`, or `doc.check_permission("read")` on a doc you already have, or `frappe.has_permission(..., throw=True)` before acting on a record. Use `frappe.only_for("Role")` to gate a method to a role.
 - Use `allow_guest=True` only when you truly want unauthenticated access. Without it, the method still requires a logged-in user. With it, anyone can call it, so validate everything.
 - Treat all arguments as strings from the client. Validate and convert them. Do not trust a `doctype` or `name` argument to be one the caller is allowed to touch.
 

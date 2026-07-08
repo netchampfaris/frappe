@@ -1,5 +1,5 @@
 ---
-title: Overview
+title: DocTypes & the Data Model
 ---
 
 # DocTypes & the Data Model

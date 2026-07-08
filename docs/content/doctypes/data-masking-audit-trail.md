@@ -1,5 +1,5 @@
 ---
-title: Data Masking Audit Trail
+title: Data Masking & Audit Trail
 ---
 
 # Data Masking & Audit Trail
@@ -21,7 +21,7 @@ Set `mask` on the field (a checkbox in the DocField, available for value field t
 }
 ```
 
-Then, in the DocType's Role Permissions, the **Mask** permission decides who sees the real value. A role with `mask` access reads the field unmasked. A role without it gets the masked placeholder. The check goes through field permission levels, so it follows the same role-and-level logic as read/write access. See [Customization](/doctypes/customization) for permission levels.
+Then, in the DocType's Role Permissions, the **Mask** permission decides who sees the real value. A role with `mask` access reads the field unmasked. A role without it gets the masked placeholder. The check goes through field permission levels, so it follows the same role-and-level logic as read/write access. See [Permission Model](/security/permission-model) for permission levels.
 
 The Administrator always sees real values and is never masked.
 

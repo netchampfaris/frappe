@@ -175,7 +175,7 @@ These are some of the helpers you will reach for often, but there are many more 
 For the full list, browse the source on GitHub:
 
 - [frappe/utils/data.py](https://github.com/frappe/frappe/blob/develop/frappe/utils/data.py)
-- [frappe/utils/**init**.py](https://github.com/frappe/frappe/blob/develop/frappe/utils/__init__.py)
+- [`frappe/utils/__init__.py`](https://github.com/frappe/frappe/blob/develop/frappe/utils/__init__.py)
 
 ## See also
 

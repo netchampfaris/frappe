@@ -126,6 +126,26 @@ get_default_currency.clear_cache()
 - `@site_cache`: in-memory per worker, across requests. Faster than Redis but not shared between workers.
 - `@request_cache`: in-memory, one request only. Cheapest, but does not persist.
 
+## Document cache
+
+Loading the same document repeatedly in one request (or across requests, for something like settings) is a common source of extra queries. `frappe.get_cached_doc` and `frappe.get_cached_value` cache the document itself in Redis for an hour, keyed by doctype and name.
+
+```python
+# same arguments as frappe.get_doc, but served from cache when available
+settings = frappe.get_cached_doc("Library Settings")
+
+# a single field, without loading the whole document yourself
+name = frappe.get_cached_value("Library Member", member, "full_name")
+```
+
+`get_cached_value` takes the same `fieldname` and `as_dict` arguments as `frappe.db.get_value`, but reads from the cached document instead of hitting the database.
+
+The cache is invalidated automatically when a document is saved, and you can clear it yourself with `frappe.clear_document_cache(doctype, name)`. Leave out `name` to clear every cached document of that doctype.
+
+```python
+frappe.clear_document_cache("Library Settings")
+```
+
 ## See also
 
-- [Database API](/server-side/database-api): `frappe.db.get_value` has its own short-lived cache via `frappe.get_cached_value`.
+- [Database API](/server-side/database-api): `frappe.db.get_value` reads straight from the database, without the document cache.

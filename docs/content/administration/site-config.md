@@ -119,8 +119,11 @@ For a Redis Sentinel setup, the cache connection also reads
 
 ## Worker and process keys
 
-These go in `common_site_config.json` and are read when Bench generates the
-supervisor and nginx configs:
+These go in `common_site_config.json`. `background_workers`, `gunicorn_workers`,
+and the port keys only take effect after Bench regenerates the supervisor and
+nginx configs and you reload them. `scheduler_tick_interval` and
+`max_queued_jobs` are read by Frappe directly at runtime, so changing them just
+needs a `clear-cache` (or process restart), not a config regeneration:
 
 | Key                                | What it does                                                |
 | ---------------------------------- | ----------------------------------------------------------- |
@@ -150,7 +153,7 @@ These live in `site_config.json`:
 | `mute_emails`            | When `1`, outgoing email is not sent.                                                                                                        |
 | `disable_global_search`  | When `1`, turns off global search indexing.                                                                                                  |
 | `disable_website_cache`  | When `1`, skips the website page cache.                                                                                                      |
-| `enable_frappe_logger`   | When `1`, logs request info to `logs/frappe.web.log`.                                                                                        |
+| `enable_frappe_logger`   | When `1`, logs request info to the site's own `sites/<site>/logs/frappe.web.log`.                                                                                        |
 | `error_report_email`     | Default recipient for error reports.                                                                                                         |
 | `data_import_batch_size` | Rows per batch during data import. Defaults to 1000.                                                                                         |
 | `allow_tests`            | When `1`, allows running tests on the site.                                                                                                  |

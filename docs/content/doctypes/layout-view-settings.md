@@ -1,9 +1,9 @@
 ---
-title: Layout View Settings
+title: Layout & View Settings
 tableFirstCol: 18rem
 ---
 
-# Layout View Settings
+# Layout & View Settings
 
 A DocType controls two things about how its data looks: the **form layout** (how fields are arranged on the document page) and the **view settings** (how records appear in the list, report and other views). Both are configured with field properties and a few DocType-level settings, so you set them once and every client gets the same layout.
 
@@ -58,24 +58,13 @@ A `Section Break` can start collapsed. Turn on `collapsible` on the section brea
 
 These properties live on each field and decide whether and when it shows up.
 
-| Property               | Effect                                                                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hidden`               | Hides the field in the form. The value is still stored and submitted.                                                                                   |
-| `depends_on`           | Show the field only when an `eval:` expression is true, for example `eval:doc.has_discount`.                                                            |
-| `read_only`            | Render the field but block edits.                                                                                                                       |
-| `read_only_depends_on` | Make the field read-only when the `eval:` expression is true.                                                                                           |
-| `mandatory_depends_on` | Make the field required when the `eval:` expression is true.                                                                                            |
-| `permlevel`            | Field permission level. Fields above level 0 are only visible to roles granted read access at that level. See [Customization](/doctypes/customization). |
+| Property    | Effect                                                                                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hidden`    | Hides the field in the form. The value is still stored and submitted.                                                                                        |
+| `read_only` | Render the field but block edits.                                                                                                                             |
+| `permlevel` | Field permission level. Fields above level 0 are only visible to roles granted read access at that level. See [Permission Model](/security/permission-model). |
 
-`depends_on` expressions run on the client. They start with `eval:` and have access to `doc` (the current document):
-
-```json
-{
-  "fieldname": "discount_amount",
-  "fieldtype": "Currency",
-  "depends_on": "eval:doc.apply_discount == 1"
-}
-```
+For conditional visibility, read-only and mandatory state (`depends_on`, `read_only_depends_on`, `mandatory_depends_on`), see [Fields](/doctypes/fields).
 
 ## List view settings
 

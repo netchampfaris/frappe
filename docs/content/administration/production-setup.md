@@ -45,15 +45,21 @@ sudo supervisorctl update
 
 ## The processes that run
 
-In production the Procfile is not used. Supervisor runs these instead:
+In production the Procfile is not used. Supervisor runs these instead, each name
+prefixed with your bench's directory name (for example `frappe-bench-`):
 
 - `frappe-web`: the gunicorn web server. The worker count comes from
   `gunicorn_workers` in `common_site_config.json`.
 - `frappe-schedule`: the scheduler, which enqueues scheduled jobs.
-- `frappe-worker`: background job workers, one set per queue. The count comes from
+- `frappe-default-worker`, `frappe-short-worker`, `frappe-long-worker`:
+  background job workers, one program per queue. The count of each comes from
   `background_workers`.
-- `frappe-socketio`: the realtime (websocket) server.
+- `node-socketio`: the realtime (websocket) server.
 - `redis-cache` and `redis-queue`: the Redis instances.
+
+So `supervisorctl status` on a bench named `frappe-bench` shows entries like
+`frappe-bench-web:frappe-bench-frappe-web` and
+`frappe-bench-workers:frappe-bench-frappe-short-worker-0`.
 
 ## Tuning worker counts
 

@@ -30,7 +30,7 @@ frappe.get_roles("jane@example.com")
 
 Some roles are assigned automatically based on the user type:
 
-- `Guest`: every unauthenticated request.
+- `Guest`: every unauthenticated request, but also every logged-in user. Frappe adds `Guest` to everyone's role list regardless of who they are, so a DocPerm rule granted to `Guest` is effectively public: any user, logged in or not, gets it.
 - `All`: every logged-in user, including website users.
 - `Desk User`: every System User (someone with desk access).
 - `Administrator`: the superuser. The Administrator bypasses all permission checks and is granted every right on every DocType.
@@ -102,4 +102,4 @@ A rule with `if_owner` checked applies only to documents the user created (where
 
 A common setup: give the `Library Member` role `read` and `write` with `if_owner` on a "Book Review" DocType. Members can then read and edit their own reviews, but not those of other people. When `if_owner` rules exist, Frappe still grants `read` and `select` so the user can open list views, then filters the list down to documents they own.
 
-The `owner` field is set automatically to the creating user and cannot be changed, so `if_owner` is a reliable boundary.
+The `owner` field is set automatically to the creating user and is not editable through the form, so `if_owner` is a reliable boundary for normal use. Code with direct database access (`db_set`, raw SQL) can still change it.

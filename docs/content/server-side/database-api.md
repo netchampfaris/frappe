@@ -72,6 +72,23 @@ frappe.db.delete("Error Log")
 
 `delete` runs a `DELETE` query, which is DML, so it is part of the current transaction and can be rolled back. To empty a table fast, `frappe.db.truncate("Error Log")` runs `TRUNCATE TABLE`. That is DDL: it commits the current transaction first and **cannot** be rolled back. Use it only for clearing out log tables.
 
+### Bulk inserts
+
+`frappe.db.bulk_insert` writes many rows to a table in one go, skipping the controller lifecycle entirely (no defaults, no validation, no hooks, no autoname). Use it for large, trusted imports where per-row `insert()` would be too slow:
+
+```python
+frappe.db.bulk_insert(
+    "Task",
+    fields=["name", "subject", "status"],
+    values=[
+        ("TASK-0001", "Write docs", "Open"),
+        ("TASK-0002", "Review PR", "Open"),
+    ],
+)
+```
+
+`values` is any iterable of value sequences matching `fields`; rows are inserted in chunks (`chunk_size`, default 1000). Pass `ignore_duplicates=True` to skip rows that would violate a unique constraint instead of raising. Since there's no autoname step, you're responsible for supplying a valid `name` yourself.
+
 ## Raw SQL
 
 Raw SQL is the last resort. Most of the time the [Document API](/server-side/document-api), the value helpers above, and the [Query Builder](/server-side/query-builder) cover what you need. Reach for `frappe.db.sql` only for the rare advanced cases the query builder can't express, such as hand-tuned query optimization.
@@ -96,6 +113,12 @@ Useful options: `as_dict=True` (rows as dicts), `pluck=True` (flat list of the f
 
 Table names are `tab<DocType>` (e.g. `tabTask`, `` `tabSales Invoice` `` for names with spaces). Prefer the query builder, which handles this for you.
 
+If you can't parameterize a value (for example, building a raw condition string for a `permission_query_conditions` hook, see [Permissions in code](/server-side/permissions-in-code#row-level-filtering-permission_query_conditions)), escape it yourself with `frappe.db.escape`:
+
+```python
+condition = f"`tabTask`.owner = {frappe.db.escape(frappe.session.user)}"
+```
+
 ## Transactions
 
 Every HTTP request and background job runs inside **one transaction**. Frappe commits it automatically when the request completes successfully and rolls it back if an unhandled exception propagates. In the vast majority of cases you should **not** call commit or rollback yourself.
@@ -111,10 +134,10 @@ Why avoid manual commits: a mid-request `commit()` makes earlier changes permane
 
 The automatic boundary depends on the context:
 
-- **Web requests**: a `POST` or `PUT` that writes to the database commits at the end of a successful request. `frappe.call` is `POST` by default, so AJAX calls follow this. `GET` requests do not commit. An uncaught exception rolls the transaction back.
+- **Web requests**: `POST`, `PUT`, `PATCH`, and `DELETE` requests commit at the end of a successful request. `frappe.call` is `POST` by default, so AJAX calls follow this. `GET` requests do not commit. An uncaught exception rolls the transaction back.
 - **Background and scheduled jobs**: the transaction commits after the job function completes successfully, and rolls back on an uncaught exception.
 - **Patches**: a patch's `execute` function commits on successful completion and rolls back on an uncaught exception.
-- **Unit tests**: the transaction commits after each test module and again after the whole suite finishes.
+- **Integration tests**: `IntegrationTestCase` commits once during class setup, after creating the class's test record dependencies. It does not commit or roll back between individual tests; the whole class's changes are rolled back together at class teardown.
 
 If you catch an exception yourself, Frappe cannot tell that something went wrong, so you are responsible for calling `frappe.db.rollback()` (or rolling back to a savepoint) where appropriate.
 

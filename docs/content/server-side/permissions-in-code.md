@@ -93,7 +93,7 @@ frappe.get_all("Task", filters={"status": "Open"})
 
 ## Row-level filtering: permission_query_conditions
 
-To restrict **which rows** a user sees in list views and `get_list` queries, register a `permission_query_conditions` hook. The function returns a SQL condition string that is ANDed into the query:
+To restrict **which rows** a user sees in list views and `get_list` queries, register a `permission_query_conditions` hook. The function is called with the user and doctype, and returns a SQL condition string that is ANDed into the query:
 
 ```python
 # hooks.py
@@ -104,17 +104,14 @@ permission_query_conditions = {
 
 ```python
 # library/permissions.py
-import frappe
-
-def loan_query_conditions(user=None, doctype=None):
+def loan_query_conditions(user, doctype=None):
     user = user or frappe.session.user
     if "Librarian" in frappe.get_roles(user):
-        return None  # no extra restriction
-    # always escape user-controlled values
+        return ""  # no extra restriction
     return f"`tabLibrary Loan`.member = {frappe.db.escape(user)}"
 ```
 
-Return `None` (or an empty string) to apply no restriction. Because this is raw SQL, escape every value with `frappe.db.escape`.
+Return an empty string for no restriction, and always escape user-controlled values with `frappe.db.escape`. See [Permission Query Conditions](/security/permission-query-conditions) for the full details, including registering against `"*"` for every doctype.
 
 ## Per-document checks: has_permission hook
 
@@ -135,7 +132,7 @@ def has_loan_permission(doc, ptype, user, debug=False):
     return doc.member == user
 ```
 
-`permission_query_conditions` controls **lists** (what shows up in queries); the `has_permission` hook controls access to an **individual document**. For complete coverage you usually define both, keeping their logic consistent.
+`permission_query_conditions` controls **lists**; `has_permission` controls access to an **individual document**. Keep them consistent, or a user can reach a document they can't see in the list by guessing its name. See [Permission Query Conditions](/security/permission-query-conditions) for more.
 
 ## See also
 

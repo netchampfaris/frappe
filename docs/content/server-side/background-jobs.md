@@ -87,7 +87,7 @@ There are three built-in queues. They differ only in their default timeout:
 
 Pick a queue based on how long the work takes, not how important it is. A long job on the `short` queue will be killed when it hits the timeout. If a job needs more time, set `timeout` explicitly.
 
-Each queue runs on its own worker process. If you flood the `default` queue, `long` jobs still run, because a separate worker handles them.
+Queues can be served by dedicated worker processes. The standard production setup (via `bench setup supervisor`) runs a separate worker per queue, so flooding the `default` queue does not stop `long` jobs from running. In development, `bench start` runs a single worker that consumes all queues, so a flood of one queue delays the others.
 
 Frappe rejects new jobs when a queue gets too full (around 500 pending jobs by default), raising `frappe.QueueOverloaded`. This protects the system from a runaway producer.
 
@@ -127,7 +127,7 @@ scheduler_events = {
 }
 ```
 
-Available frequencies: `all` (every scheduler tick, about once a minute), `hourly`, `daily`, `weekly`, `monthly`, `yearly` (also `annual`), and `cron` for arbitrary expressions. `hourly`, `daily`, `weekly`, and `monthly` have a `_long` variant that runs on the long queue. `hourly` and `daily` also have a `_maintenance` variant for jobs whose exact run time does not matter; these run on the long queue at a per-site random offset. `all` and `cron` have no `_long` or `_maintenance` forms.
+Available frequencies: `all` (every scheduler tick, about every 4 minutes by default, configurable via `scheduler_tick_interval` in site config), `hourly`, `daily`, `weekly`, `monthly`, `yearly` (also `annual`), and `cron` for arbitrary expressions. `hourly`, `daily`, `weekly`, and `monthly` have a `_long` variant that runs on the long queue. `hourly` and `daily` also have a `_maintenance` variant for jobs whose exact run time does not matter; these run on the long queue at a per-site random offset. `all` and `cron` have no `_long` or `_maintenance` forms.
 
 The scheduler must be enabled for the site. Check and toggle it with:
 

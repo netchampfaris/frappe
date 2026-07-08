@@ -102,7 +102,7 @@ class TestSystem(IntegrationTestCase):
 `change_settings` also works as a decorator:
 
 ```python
-from frappe.tests.utils import change_settings
+from frappe.tests import change_settings
 
 
 class TestSystem(IntegrationTestCase):

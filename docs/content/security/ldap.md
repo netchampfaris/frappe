@@ -133,3 +133,9 @@ In the **LDAP Group Mappings** table, add a row per mapping:
 After you enable LDAP, the login page shows a **Login with LDAP** button. Users
 enter the value matched by your search string along with their LDAP password to
 sign in.
+
+## See also
+
+- [Authentication](/rest-api/authentication): API keys and bearer tokens for the REST API
+- [Social Login OIDC](/security/social-login-oidc): logging in via an external OpenID Connect provider
+- [Third Party Integrations](/rest-api/third-party-integrations): other built-in integrations

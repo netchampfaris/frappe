@@ -12,7 +12,7 @@ you want on a development bench.
 
 ```bash
 bench set-config -g developer_mode 1
-bench clear-cache
+bench --site library.localhost clear-cache
 ```
 
 ```json
@@ -40,3 +40,5 @@ Developer mode also changes how errors are reported. Frappe shows fuller traceba
 Use developer mode on your local development bench while you build DocTypes and other metadata for an app. The exported JSON files are what get version-controlled and installed on other sites.
 
 Do not enable developer mode on production. It exposes more error detail and assumes the app source is writable, which is not how a production deployment is set up.
+
+Continue to [Create the DocType](/tutorial/create-the-doctype).

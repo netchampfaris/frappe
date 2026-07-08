@@ -28,7 +28,8 @@ Options:
   from the `sites` directory.
 - `--type`: `Insert`, `Update`, or `Upsert`. Defaults to `Insert`.
 - `--submit-after-import`: submit each document after inserting it.
-- `--mute-emails`: suppress emails during the import (on by default).
+
+Emails are muted during the import by default (the Data Import doctype's `mute_emails` field defaults to checked). There is also a `--mute-emails` flag, but it has no effect: the CLI command accepts it and never passes it through to the import.
 
 Progress is printed as the import runs, and any row errors are printed to the
 console.
@@ -63,12 +64,14 @@ duplicate records.
 
 ## How chunking works
 
-The importer does not load and commit everything in one shot. It parses the file
-into payloads (one payload per document, which may combine several rows for
-documents with child tables), then processes them in batches. The default batch
-size is 1000 payloads. Each batch is committed before the next one starts, which
-keeps memory steady and means a crash does not lose every successful row before
-it.
+The importer parses the whole file into payloads up front (one payload per
+document, which may combine several rows for documents with child tables), so
+it does not keep memory flat for very large files. It then processes payloads
+in batches, committing after every successful document and rolling back just
+that document if it fails (see `import_data()` in
+`frappe/core/doctype/data_import/importer.py`). Batching drives iteration and
+progress reporting; it is not a commit boundary. The default batch size is
+1000 payloads.
 
 You can change the batch size in your site config (`site_config.json`):
 
@@ -78,16 +81,21 @@ You can change the batch size in your site config (`site_config.json`):
 }
 ```
 
-Lower the batch size if rows are heavy (many child rows or large text fields) and
-you hit memory pressure. Raise it if rows are small and you want fewer commits.
+The batch size only controls how often progress is reported, not memory use: the
+whole file is parsed into payloads before batching starts, so the file still
+needs to fit in memory regardless of batch size. Lower it for more frequent
+progress updates, raise it for fewer.
 
 ## Tips for large files
 
 - Prefer CSV over Excel for very large files. CSV parses faster and uses less
   memory.
-- If your CSV uses a non-comma delimiter, the importer can sniff it. From the UI
-  set `use_csv_sniffer`. From code, set `frappe.flags.delimiter_options` before
-  importing, or use `custom_delimiters` on the Data Import document.
+- If your CSV uses a non-comma delimiter, the importer can sniff it. From the UI,
+  check "Use CSV Sniffer" (`use_csv_sniffer`) on the Data Import document.
+  `import_file` does not expose this, so from code either construct
+  `Importer(doctype, file_path=file_path, use_sniffer=True)` yourself instead of
+  calling `import_file`, or set `custom_delimiters` and `delimiter_options` on a
+  Data Import document and run the import from that.
 - Run the import in a screen or tmux session, or as a background job, so a
   dropped SSH connection does not kill it.
 - Validate a small sample first (export 5 records as a template, import them, and

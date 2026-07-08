@@ -1,5 +1,5 @@
 ---
-title: Whats Next
+title: What's Next
 ---
 
 # What's Next

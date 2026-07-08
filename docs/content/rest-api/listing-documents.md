@@ -28,14 +28,15 @@ get more, pass query parameters.
 | Parameter           | Purpose                           | Example                           |
 | ------------------- | --------------------------------- | --------------------------------- |
 | `fields`            | JSON array of fields to return    | `["name","status","description"]` |
-| `filters`           | JSON conditions to match          | `[["status","=","Open"]]`         |
+| `filters`           | JSON conditions to match (AND-ed) | `[["status","=","Open"]]`         |
+| `or_filters`        | JSON conditions to match (OR-ed)  | `[["status","=","Open"]]`         |
 | `limit_page_length` | Max rows (use `0` for all)        | `50`                              |
 | `limit_start`       | Offset for pagination             | `40`                              |
 | `order_by`          | Sort expression                   | `creation desc`                   |
 | `as_dict`           | Return objects (default) vs lists | `1`                               |
 
-`fields`, `filters`, `limit_page_length`, `limit_start` and `order_by` are passed
-straight through to `frappe.get_list`. See
+`fields`, `filters`, `or_filters`, `limit_page_length`, `limit_start` and
+`order_by` are passed straight through to `frappe.get_list`. See
 [Filters, Fields & Pagination](/rest-api/filters-fields-pagination) for the full
 filter syntax.
 
@@ -84,6 +85,27 @@ curl -G https://example.com/api/resource/ToDo \
 
 This returns rows 41 to 60, newest first. To fetch **all** matching rows in one
 call, set `limit_page_length=0`.
+
+## Expanding link fields
+
+By default a Link field returns just the linked document's name. Pass `expand`
+(v1 only) to inline the full linked document instead. It's a JSON array of
+fieldnames, and each must also be in `fields` (skip this if `fields` is `["*"]`):
+
+```bash
+curl -G https://example.com/api/resource/ToDo \
+  -H "Authorization: token <api_key>:<api_secret>" \
+  --data-urlencode 'fields=["name","assigned_by"]' \
+  --data-urlencode 'expand=["assigned_by"]'
+```
+
+For a single document, pass `expand_links=1` to do the same for all of its Link
+and Dynamic Link fields, plus linked rows in table/multiselect fields:
+
+```bash
+curl "https://example.com/api/resource/ToDo/abc123?expand_links=1" \
+  -H "Authorization: token <api_key>:<api_secret>"
+```
 
 ## v2 listing
 

@@ -14,10 +14,21 @@ first.
 ## Install with Bench (recommended)
 
 [Bench](/administration/bench-overview) is the CLI that creates and manages
-Frappe environments. It is a separate tool from the framework; install it with
-`pip`:
+Frappe environments. It is a separate tool from the framework. On current
+Ubuntu/Debian and Homebrew Python, a plain `pip install` fails with an
+"externally-managed-environment" error, so install it with
+[`pipx`](https://pipx.pypa.io) instead:
 
 ```bash
+python3 -m pip install --user pipx
+pipx install frappe-bench
+```
+
+If you would rather manage a virtualenv yourself, that works too:
+
+```bash
+python3 -m venv ~/frappe-venv
+source ~/frappe-venv/bin/activate
 pip install frappe-bench
 ```
 

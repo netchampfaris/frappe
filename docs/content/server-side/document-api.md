@@ -16,6 +16,8 @@ doc.subject          # field access as attributes
 doc.get("status")    # or via .get()
 ```
 
+Pass `for_update=True` to take a row lock on the record, for code paths that read and then write back under concurrent access: `frappe.get_doc("Task", name, for_update=True)`.
+
 For a [Single DocType](/doctypes/single-doctypes) (one global record, e.g. settings), pass only the doctype:
 
 ```python
@@ -41,7 +43,7 @@ last = frappe.get_last_doc("Task", filters={"status": "Open"})
 
 ## Creating a document
 
-`frappe.new_doc(doctype, field=value, ...)` returns a new document with defaults applied and the given fields set. Call `insert()` to save it. `insert` runs `before_insert`, `validate`, `on_update`, and `after_insert`, checks `create` permission, and validates links and mandatory fields.
+`frappe.new_doc(doctype, field=value, ...)` returns a new document with defaults applied and the given fields set. Call `insert()` to save it. `insert` checks `create` permission and validates links and mandatory fields, then runs, in order: `before_insert`, `validate`, `before_save`, the database insert itself, `after_insert`, and finally `on_update`.
 
 ```python
 doc = frappe.new_doc("Task", subject="Write docs", status="Open")
@@ -136,6 +138,24 @@ frappe.rename_doc("Task", "TASK-0001", "TASK-0001-A")
 # merge into an existing record instead of just renaming
 frappe.rename_doc("Task", "TASK-0001", "TASK-0002", merge=True)
 ```
+
+## Copying a document
+
+`frappe.copy_doc(doc)` returns a new, unsaved document cloned from an existing one. It clears `name` (and `owner`, `creation`, `modified`, `modified_by`, `amended_from`), so the clone gets its own identity on `insert()`. Child table rows are copied too, minus the same identity fields, and treated as new rows.
+
+```python
+doc = frappe.get_doc("Quotation", "QTN-0001")
+new_doc = frappe.copy_doc(doc)
+new_doc.insert()
+```
+
+By default, fields marked `no_copy` in the DocType are still copied over (despite the name). Pass `ignore_no_copy=False` to actually drop them:
+
+```python
+new_doc = frappe.copy_doc(doc, ignore_no_copy=False)
+```
+
+`docstatus` is cleared too, so a clone of a submitted or cancelled document comes back as a Draft (the exception is inside test code, where `docstatus` is left as-is so tests can clone already-submitted documents).
 
 ## Working with child tables
 

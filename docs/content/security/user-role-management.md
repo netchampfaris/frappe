@@ -13,14 +13,12 @@ The User DocType is the account. It holds login details, the user's name and ema
 ```python
 user = frappe.get_doc("User", "jane@example.com")
 user.add_roles("Librarian", "Sales User")
-user.save()
 
 # remove a role
 user.remove_roles("Sales User")
-user.save()
 ```
 
-`add_roles` skips roles the user already has, so it is safe to call more than once.
+Both methods save the user document themselves, so you do not need a trailing `user.save()`. `add_roles` also skips roles the user already has, so it is safe to call more than once.
 
 ### User type and desk access
 

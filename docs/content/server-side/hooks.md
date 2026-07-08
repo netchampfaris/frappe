@@ -72,7 +72,7 @@ def on_submit(doc, method):
     frappe.msgprint(f"Loan {doc.name} issued")
 ```
 
-Supported events mirror the lifecycle: `before_insert`, `after_insert`, `validate`, `before_save`, `on_update`, `before_submit`, `on_submit`, `before_cancel`, `on_cancel`, `on_update_after_submit`, `before_rename`, `after_rename`, `on_trash`, `after_delete`, and `on_change`.
+Supported events mirror the lifecycle: `before_insert`, `after_insert`, `before_validate`, `validate`, `before_save`, `on_update`, `before_submit`, `on_submit`, `before_cancel`, `on_cancel`, `before_update_after_submit`, `on_update_after_submit`, `before_rename`, `after_rename`, `on_trash`, `after_delete`, and `on_change`.
 
 ## Scheduler events
 
@@ -365,7 +365,12 @@ after_install = "library.install.after_install"
 
 before_migrate = "library.migrate.before_migrate"
 after_migrate = "library.migrate.after_migrate"
+
+before_uninstall = "library.install.before_uninstall"
+after_uninstall = "library.install.after_uninstall"
 ```
+
+`before_uninstall`/`after_uninstall` run when the app is removed from a site with `bench uninstall-app`.
 
 `after_sync` runs after the app's fixtures are synced. `before_tests` runs once before the test suite starts, which is where you seed data your tests depend on.
 
@@ -406,6 +411,7 @@ The commonly used hooks, alphabetically, with the section that covers each.
 | `after_migrate`                | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `after_request`                | [Request and job hooks](#request-and-job-hooks)               |
 | `after_sync`                   | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `after_uninstall`              | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `app_include_css`              | [Assets](#assets)                                             |
 | `app_include_js`               | [Assets](#assets)                                             |
 | `app_name`, `app_title`, ...   | [App metadata](#app-metadata)                                 |
@@ -415,6 +421,7 @@ The commonly used hooks, alphabetically, with the section that covers each.
 | `before_migrate`               | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `before_request`               | [Request and job hooks](#request-and-job-hooks)               |
 | `before_tests`                 | [Install and migrate hooks](#install-and-migrate-hooks)       |
+| `before_uninstall`             | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `before_write_file`            | [File hooks](#file-hooks)                                     |
 | `delete_file_data_content`     | [File hooks](#file-hooks)                                     |
 | `doc_events`                   | [Document events](#document-events)                           |

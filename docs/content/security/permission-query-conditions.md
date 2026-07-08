@@ -21,13 +21,13 @@ permission_query_conditions = {
 }
 ```
 
-The function receives the user and must return a SQL condition string, or an empty string for no extra filtering:
+The function receives the user and the doctype the query is running against, and must return a SQL condition string, or an empty string for no extra filtering:
 
 ```python
 # library/permissions.py
 import frappe
 
-def book_query_conditions(user):
+def book_query_conditions(user, doctype=None):
     if not user:
         user = frappe.session.user
 
@@ -39,16 +39,18 @@ def book_query_conditions(user):
     return "`tabBook`.is_public = 1"
 ```
 
+Frappe calls the hook as `frappe.call(method, user, doctype=doctype)`, so accept `doctype` as a keyword argument even if a given function only handles one DocType. It becomes essential once you register the hook against `"*"` (see below), since the same function then has to branch on which DocType it is filtering.
+
 The returned string is inserted into the query, so reference columns with the full backticked table name (`` `tabBook` ``). Build any user-supplied value with `frappe.db.escape` to avoid SQL injection:
 
 ```python
-def book_query_conditions(user):
+def book_query_conditions(user, doctype=None):
     user = user or frappe.session.user
     branch = frappe.db.get_value("Library Member", {"user": user}, "branch")
     return f"`tabBook`.branch = {frappe.db.escape(branch)}"
 ```
 
-You can register the same hook against `"*"` to apply a condition to every DocType. Frappe joins the conditions from all matching functions with `and`.
+You can register the same hook against `"*"` to apply a condition to every DocType. Frappe joins the conditions from all matching functions with `and`. Since one function now runs for every DocType's queries, use the `doctype` argument to apply the right condition, or to skip DocTypes the function does not care about.
 
 ## has_permission
 

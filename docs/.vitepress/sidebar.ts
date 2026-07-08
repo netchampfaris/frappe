@@ -29,8 +29,8 @@ export const sidebar: SidebarSection[] = [
         text: "Permissions and Roles",
         link: "/tutorial/permissions-and-roles",
       },
-      { text: "Reports And Print", link: "/tutorial/reports-and-print" },
-      { text: "Whats Next", link: "/tutorial/whats-next" },
+      { text: "Reports and Print", link: "/tutorial/reports-and-print" },
+      { text: "What's Next", link: "/tutorial/whats-next" },
     ],
   },
   {
@@ -38,6 +38,7 @@ export const sidebar: SidebarSection[] = [
     items: [
       { text: "Overview", link: "/doctypes/overview" },
       { text: "Fields", link: "/doctypes/fields" },
+      { text: "Layout & View Settings", link: "/doctypes/layout-view-settings" },
       { text: "Naming", link: "/doctypes/naming" },
       { text: "Child Tables", link: "/doctypes/child-tables" },
       { text: "Single DocTypes", link: "/doctypes/single-doctypes" },
@@ -53,9 +54,8 @@ export const sidebar: SidebarSection[] = [
         text: "Modules & App Structure",
         link: "/doctypes/modules-app-structure",
       },
-      { text: "Layout View Settings", link: "/doctypes/layout-view-settings" },
       {
-        text: "Data Masking Audit Trail",
+        text: "Data Masking & Audit Trail",
         link: "/doctypes/data-masking-audit-trail",
       },
     ],
@@ -75,7 +75,7 @@ export const sidebar: SidebarSection[] = [
       { text: "Realtime", link: "/server-side/realtime" },
       { text: "Jinja SSR", link: "/server-side/jinja-ssr" },
       { text: "Caching", link: "/server-side/caching" },
-      { text: "Logging Errors", link: "/server-side/logging-errors" },
+      { text: "Logging & Errors", link: "/server-side/logging-errors" },
       { text: "Utilities", link: "/server-side/utilities" },
     ],
   },
@@ -124,7 +124,7 @@ export const sidebar: SidebarSection[] = [
       { text: "Overview", link: "/desk/overview" },
       { text: "Reports", link: "/desk/reports" },
       { text: "Print Formats", link: "/desk/print-formats" },
-      { text: "Client Server Scripts", link: "/desk/client-server-scripts" },
+      { text: "Client and Server Scripts", link: "/desk/client-server-scripts" },
       { text: "Attachments", link: "/desk/attachments" },
       { text: "System Console", link: "/desk/system-console" },
     ],
@@ -133,7 +133,7 @@ export const sidebar: SidebarSection[] = [
     text: "Portal & Web Forms",
     items: [
       { text: "Portal Pages", link: "/portal/portal-pages" },
-      { text: "Generators Routing", link: "/portal/generators-routing" },
+      { text: "Website Generators & Routing", link: "/portal/generators-routing" },
       { text: "Web Forms", link: "/portal/web-forms" },
       {
         text: "Portal Roles and Redirects",
@@ -153,9 +153,9 @@ export const sidebar: SidebarSection[] = [
       { text: "Document Sharing", link: "/security/document-sharing" },
       { text: "User Permissions", link: "/security/user-permissions" },
       { text: "Audit Trail", link: "/security/audit-trail" },
-      { text: "OAuth2", link: "/rest-api/oauth2" },
-      { text: "Social Login OIDC", link: "/rest-api/social-login-oidc" },
-      { text: "LDAP & Active Directory", link: "/rest-api/ldap" },
+      { text: "OAuth2", link: "/security/oauth2" },
+      { text: "Social Login OIDC", link: "/security/social-login-oidc" },
+      { text: "LDAP & Active Directory", link: "/security/ldap" },
       {
         text: "Security Best Practices",
         link: "/security/security-best-practices",
@@ -182,7 +182,7 @@ export const sidebar: SidebarSection[] = [
       { text: "Production Setup", link: "/administration/production-setup" },
       { text: "HTTPS", link: "/administration/https" },
       {
-        text: "Multitenancy Domains",
+        text: "Multitenancy and Domains",
         link: "/administration/multitenancy-domains",
       },
       {

@@ -161,7 +161,7 @@ Put CSS in the "Custom CSS" field. It is added to that form's page as a style bl
 
 ### Including code app-wide
 
-To inject JS or CSS into web forms across an app (not just one form), use the `webform_include_js` and `webform_include_css` hooks. They are keyed by DocType, and `webform_include_js` also matches every form with `*`. The files are rendered with the form context and appended to the form's own script and style.
+The `webform_include_js` and `webform_include_css` hooks add JS or CSS to standard web forms across an app, keyed by DocType (`webform_include_js` also matches every form with `*`). They only apply to a standard Web Form, and only once that form's own colocated `.js` or `.css` file exists on disk (`add_custom_context_and_script()` in `frappe/website/doctype/web_form/web_form.py`). The hook files are appended after it, not on their own. Non-standard Web Forms are unaffected.
 
 ```python
 # your_app/hooks.py

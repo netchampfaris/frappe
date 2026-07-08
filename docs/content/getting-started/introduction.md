@@ -17,16 +17,9 @@ and why you might choose it.
 Frappe is a **low-code, metadata-driven** framework for building database-backed
 web applications. You describe your data models as **DocTypes**, and the
 framework generates the database schema, REST API, admin UI, forms, list views,
-permissions, and reports for you. You don't write boilerplate for each layer.
-
-It ships with everything a typical business application needs out of the box:
-
-- An ORM and database abstraction over **MariaDB** and **PostgreSQL**
-- A web server, REST API, and role-based permission system
-- An admin interface (the **Desk**) with auto-generated forms, lists, and reports
-- A background job queue and scheduler backed by **Redis**
-- A website/portal engine with server-side rendering (Jinja)
-- Email, notifications, file management, and full-text search
+permissions, and reports for you. You don't write boilerplate for each layer. It
+ships with everything a typical business application needs out of the box (see
+below).
 
 ## Why metadata-driven?
 

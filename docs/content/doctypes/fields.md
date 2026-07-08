@@ -66,18 +66,23 @@ See [Links & Actions](/doctypes/links-actions) for Link/Dynamic Link and [Child 
 | `Select`       | One value from a fixed list. `options` = newline-separated choices. |
 | `Autocomplete` | Free text with suggestions from `options`.                          |
 
-### Files & media
+### Files
 
 | Fieldtype      | Stores                                |
 | -------------- | ------------------------------------- |
 | `Attach`       | File attachment, stores the file URL. |
 | `Attach Image` | Image attachment with preview.        |
 | `Signature`    | Hand-drawn signature image.           |
-| `Barcode`      | Barcode value.                        |
-| `Geolocation`  | GeoJSON map data.                     |
-| `Color`        | Color value.                          |
-| `Icon`         | Icon picker value.                    |
-| `Phone`        | Phone number with country code.       |
+
+### Specialized
+
+| Fieldtype     | Stores                          |
+| ------------- | -------------------------------- |
+| `Barcode`     | Barcode value.                   |
+| `Geolocation` | GeoJSON map data.                |
+| `Color`       | Color value.                     |
+| `Icon`        | Icon picker value.               |
+| `Phone`       | Phone number with country code.  |
 
 ### Layout-only (no value)
 
@@ -123,12 +128,14 @@ In the DocType JSON each field is an object. The properties you'll set most ofte
 | `read_only`          | `1` makes it non-editable in the UI.                                                                             |
 | `hidden`             | `1` hides it from the form.                                                                                      |
 | `description`        | Help text shown under the field.                                                                                 |
+| `length`             | Column length. For `Data` and similar text types this overrides the 140-character default.                     |
 | `precision`          | Decimal places for Float/Currency/Percent.                                                                       |
 | `in_list_view`       | `1` shows the field as a column in the list view.                                                                |
 | `in_standard_filter` | `1` adds it to the list view filter bar.                                                                         |
 | `search_index`       | `1` adds a DB index for faster lookups.                                                                          |
 | `no_copy`            | `1` skips the field when a document is duplicated/amended.                                                       |
 | `set_only_once`      | `1` allows the value to be set on insert but never changed afterwards.                                           |
+| `allow_on_submit`    | `1` lets this field stay editable after the document is submitted. See [Docstatus](/doctypes/docstatus).        |
 
 ### `depends_on`: conditional display
 

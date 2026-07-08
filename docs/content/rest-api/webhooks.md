@@ -32,9 +32,14 @@ Create a **Webhook** record (Desk: search "Webhook &gt; New") and set:
 | `on_trash`               | a document is deleted               |
 | `on_update_after_submit` | a submitted document is edited      |
 | `on_change`              | any change to the document          |
-| `workflow_transition`    | a workflow state transition occurs  |
+| `workflow_transition`    | see note below                      |
 
 The submit/cancel events require the DocType to be submittable.
+
+`workflow_transition` does not auto-dispatch like the other events; it is not in
+the webhook module's `supported_events` set. Instead, attach the webhook as a
+**Webhook** task on a **Workflow Transition**'s _Transition Tasks_ table
+(`frappe/model/workflow.py`); it then runs whenever that transition happens.
 
 ## Conditions
 
@@ -49,12 +54,13 @@ If the expression is falsy, no request is sent.
 
 ## Request body
 
-You choose how the payload is built.
+You choose how the payload is built, based on **Request Structure**.
 
-**Mapped fields** (default): add rows under _Data_, each mapping a document
-fieldname to an outgoing key. The body is a flat JSON object of those keys.
+**Mapped fields** (default, Request Structure = `Form URL-Encoded`): add rows
+under _Data_, each mapping a document fieldname to an outgoing key. The body is
+a flat JSON object of those keys.
 
-**Custom JSON**: set Request Structure to `JSON` and write a Jinja template in
+**Custom JSON** (Request Structure = `JSON`): write a Jinja template in
 _Webhook JSON_, with the document available as `doc`:
 
 ```jinja
@@ -68,6 +74,10 @@ _Webhook JSON_, with the document available as `doc`:
 The rendered template must be valid JSON. The request is always sent with a JSON
 body (`Content-Type` is governed by your headers; the payload itself is serialized
 as JSON).
+
+Setting one clears the other: saving with Request Structure `Form URL-Encoded`
+clears _Webhook JSON_, and saving with `JSON` clears the _Data_ rows
+(`validate_request_body` in `webhook.py`).
 
 ## Custom headers
 

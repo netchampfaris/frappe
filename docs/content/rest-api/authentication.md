@@ -11,7 +11,7 @@ you must authenticate. Frappe supports four mechanisms, resolved in
 
 - **API key + secret** (token or basic): best for server-to-server scripts
 - **Session cookie**: for browser clients that have logged in
-- **OAuth 2.0 bearer token**: for third-party apps (see [OAuth2](/rest-api/oauth2))
+- **OAuth 2.0 bearer token**: for third-party apps (see [OAuth2](/security/oauth2))
 - **Custom auth hooks**: for your own schemes via the [`auth_hooks`](/server-side/hooks) hook
 
 For most integrations, use an **API key and secret**.
@@ -150,6 +150,6 @@ It returns the resolved user; `Guest` means authentication didn't take effect.
 
 ## See also
 
-- [OAuth2](/rest-api/oauth2): for third-party apps acting on behalf of users
+- [OAuth2](/security/oauth2): for third-party apps acting on behalf of users
 - [Permissions in code](/server-side/permissions-in-code): what an authenticated user can access
 - [Overview](/rest-api/overview): endpoint structure

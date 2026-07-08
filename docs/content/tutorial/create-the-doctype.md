@@ -17,7 +17,7 @@ and a Python controller all at once. See the
 Go to the DocType list and click **+ Add DocType**:
 
 ```text
-http://library.localhost:8000/app/doctype/new
+http://library.localhost:8000/desk/doctype/new
 ```
 
 Fill in the top section:
@@ -130,7 +130,7 @@ class Article(Document):
 Go to the Article list and add one so you have data to work with:
 
 ```text
-http://library.localhost:8000/app/article/new
+http://library.localhost:8000/desk/article/new
 ```
 
 Enter an **Article Name** like `The Pragmatic Programmer`, an author, and save.

@@ -1,5 +1,5 @@
 ---
-title: Multitenancy Domains
+title: Multitenancy and Domains
 ---
 
 # Multitenancy and Domains
@@ -62,10 +62,15 @@ different ports), Bench supports port-based routing instead:
 
 ```bash
 bench config dns_multitenant off
-bench --site customer-a.com set-config port 8000
+bench set-nginx-port customer-a.com 8000
 sudo bench setup nginx
 sudo systemctl reload nginx
 ```
+
+`set-nginx-port` writes the site's `nginx_port`, the key the nginx config
+generator actually reads. (`bench set-config port` sets a different key that the
+generator ignores, so the site keeps listening on its old port.) You still have
+to regenerate nginx config and reload it for the new port to take effect.
 
 DNS-based routing is the usual choice; reach for ports only when DNS is not an
 option.

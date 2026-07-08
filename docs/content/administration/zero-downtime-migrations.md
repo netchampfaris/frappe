@@ -65,6 +65,24 @@ replica keys.
 Because schema sync can run long `ALTER TABLE` statements on big tables, plan
 deploys that touch large tables for low-traffic windows even with reads allowed.
 
+## If the migration fails
+
+`bench update` takes a backup before it touches anything, unless you passed
+`--no-backup`. If a migration leaves the site broken, restore that backup:
+
+```bash
+bench --site mysite.localhost restore /path/to/backup.sql.gz
+```
+
+If instead a single patch is failing and you need the site back up while you
+fix it, skip failing patches and run the rest:
+
+```bash
+bench --site mysite.localhost migrate --skip-failing
+```
+
+Fix the patch, then run a normal `migrate` again so it is no longer skipped.
+
 ## Checking readiness
 
 Before a deploy you can confirm there are no pending background jobs that a

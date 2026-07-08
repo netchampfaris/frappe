@@ -15,7 +15,7 @@ it the access it needs.
 Create a new Role record:
 
 ```text
-http://library.localhost:8000/app/role/new
+http://library.localhost:8000/desk/role/new
 ```
 
 Set **Role Name** to `Librarian` and save. Leave **Desk Access** ticked so users
@@ -25,7 +25,7 @@ with this role can use the Desk.
 
 There are two places to edit permissions, and they store the rules differently:
 
-- The **Role Permissions Manager** (`/app/permission-manager`) creates **Custom
+- The **Role Permissions Manager** (`/desk/permission-manager`) creates **Custom
   DocPerm** records in the database. These are overrides that stay on the site and
   are not written to your app's files.
 - The DocType form's **Permissions** table writes the rules into the DocType's
@@ -36,7 +36,7 @@ For an app you are building, edit the rules on the DocType so they travel with t
 code. Open the Article DocType:
 
 ```text
-http://library.localhost:8000/app/doctype/Article
+http://library.localhost:8000/desk/doctype/Article
 ```
 
 Scroll to the **Permissions** section and add a row for the `Librarian` role. Tick
@@ -80,7 +80,7 @@ app's files. The `permissions` block in `article.json` looks like this:
 Create a test user and give them the role:
 
 ```text
-http://library.localhost:8000/app/user/new
+http://library.localhost:8000/desk/user/new
 ```
 
 Fill in an email and name, then in the **Roles** section tick **Librarian** and

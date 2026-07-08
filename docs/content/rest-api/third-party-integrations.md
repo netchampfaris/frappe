@@ -20,7 +20,7 @@ shared by the Google integrations:
 
 The OAuth handling for these lives in `frappe/integrations/google_oauth.py`.
 For "Login with Google" on the login page, see
-[Social Login OIDC](/rest-api/social-login-oidc) instead, which uses a separate
+[Social Login OIDC](/security/social-login-oidc) instead, which uses a separate
 **Social Login Key**.
 
 ## Dropbox
@@ -50,6 +50,17 @@ Outgoing webhooks let your site POST to an external URL when a document event
 fires. They are configured with the **Webhook** DocType. See
 [Webhooks](/rest-api/webhooks) for the details.
 
+## Slack
+
+**Slack Webhook URL** (`frappe/integrations/doctype/slack_webhook_url/`) stores
+an incoming webhook URL for a Slack channel. The **Notification** DocType uses
+it to post messages to Slack.
+
+## Push notifications
+
+**Push Notification Settings** (`frappe/integrations/doctype/push_notification_settings/`)
+configures the service used to send mobile push notifications from the site.
+
 ## Helper utilities
 
 Shared request helpers live in `frappe/integrations/utils.py`, including
@@ -60,5 +71,5 @@ Request**.
 ## See also
 
 - [Connected Apps](/rest-api/connected-apps) for calling any external OAuth2 API
-- [Social Login OIDC](/rest-api/social-login-oidc) for external login providers
+- [Social Login OIDC](/security/social-login-oidc) for external login providers
 - [Webhooks](/rest-api/webhooks) for outgoing event notifications

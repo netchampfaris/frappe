@@ -20,9 +20,18 @@ A few things must be true or the certificate request will fail:
 - The site's domain points at this server (an A record for `mysite.com`).
 - Port 80 is open to the internet, Let's Encrypt validates over HTTP.
 - You have already run `bench setup production`, so nginx is serving the site.
+- DNS multitenancy is on (`bench config dns_multitenant on`). `bench setup
+  lets-encrypt` refuses to run without it, even for a single site.
 - The site name in the bench matches the domain you are requesting, or you have
   added it as a custom domain (see
   [Multitenancy and Domains](/administration/multitenancy-domains)).
+
+To request a certificate for a custom domain added to a site rather than the
+site's own name, pass `--custom-domain`:
+
+```bash
+sudo bench setup lets-encrypt customer-a.com --custom-domain shop.customer-a.com
+```
 
 ## What it does
 

@@ -98,7 +98,7 @@ For several actions per row, use `dropdown_button`, which takes a `get_label` an
 
 ```javascript
 get_form_link(doc) {
-    return `/app/task/${doc.name}`;
+    return `/desk/task/${doc.name}`;
 }
 ```
 

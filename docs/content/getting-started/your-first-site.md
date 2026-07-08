@@ -79,12 +79,15 @@ Open the site and log in as `Administrator` with the password you set:
 http://library.localhost:8000
 ```
 
+A fresh site redirects every request to the setup wizard until it is completed.
+Go through it (or click through the steps quickly) before continuing.
+
 Site names that end in `.localhost` resolve to `127.0.0.1` automatically, so no
 extra setup is needed. If you use a different hostname (for example
 `library.test`), register it locally:
 
 ```bash
-bench --site library.localhost add-to-hosts
+bench --site library.test add-to-hosts
 ```
 
 ## Next steps

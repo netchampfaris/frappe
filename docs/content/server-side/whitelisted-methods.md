@@ -25,7 +25,7 @@ def get_overdue_loans(member: str):
 
 It's now callable at `/api/method/library.library.api.get_overdue_loans` (the full dotted import path).
 
-Only logged-in users can call a whitelisted method, and the framework still enforces document permissions inside it (because you used `get_all` here, it does not; use [`get_list`](/server-side/querying-data) if you want per-user filtering). Whitelisting only opens the door; it does not bypass permissions.
+Whitelisting only authenticates the request; it decides who may call the function at all (a logged-in user, or a guest if `allow_guest=True`). It does not by itself enforce document permissions. Whether permissions are checked depends on what the function calls inside: `frappe.get_all` skips permissions, while `frappe.get_list` and document methods like `insert`/`save`/`delete` enforce them. The example above uses `get_all`, so it returns every matching Library Loan regardless of who's asking; use [`get_list`](/server-side/querying-data) if you want per-user filtering.
 
 ### Argument types
 
@@ -97,9 +97,9 @@ curl -X POST https://mysite.localhost/api/method/run_doc_method \
 
 ## Calling from the client
 
-`frappe.call` is only available inside Desk (the `/app` interface). `frm.call` is narrower still: it only exists on a form, so you can use it inside Desk form scripts. Outside Desk (a custom portal page, a separate frontend) call the method over REST instead.
+`frappe.call` is available in Desk (the `/app` interface) and on Frappe-rendered website pages, since the website JS bundle ships it too. It is not available in a fully custom frontend (a separate SPA, a non-Frappe site); call the method over REST there instead. `frm.call` is narrower still: it only exists on a form, so you can use it inside Desk form scripts.
 
-From browser JavaScript inside Desk, use `frappe.call` for module-level functions:
+From browser JavaScript inside Desk (or a Frappe-rendered website page), use `frappe.call` for module-level functions:
 
 ```javascript
 frappe.call({

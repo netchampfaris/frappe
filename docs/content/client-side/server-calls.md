@@ -39,7 +39,7 @@ The method you call must be decorated with `@frappe.whitelist()` on the server. 
 Useful options:
 
 - `args`: arguments passed to the method.
-- `type`: `"POST"` (default) or `"GET"`. Use `GET` for read-only calls so they can be cached.
+- `type`: `"POST"` (default) or `"GET"`. The method must allow the type you use, and a `GET` call must not write to the database; `GET` marks the call as read-only.
 - `freeze`: set true to block the UI with an overlay while the call runs.
 - `freeze_message`: the text shown on that overlay.
 - `callback` and `error`: success and failure handlers.

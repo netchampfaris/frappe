@@ -36,8 +36,6 @@ ORDER BY exp_end_date
 
 Column headers use the format `Label:Fieldtype/Options:Width`. So `name AS "Task:Link/Task:200"` makes a 200px column labelled "Task" that links to the Task DocType. Filter values are passed as a dict and bound with `%(fieldname)s` placeholders, which keeps the query safe from injection. Only `SELECT` queries are allowed, and the query runs in a read-only transaction.
 
-Writing Query Reports requires the **Script Manager** role.
-
 ## Script Report
 
 A Script Report runs Python and returns the result. Use it when you need joins across documents, computed columns, or logic that SQL alone cannot express. Set **Report Type** to `Script Report`.
@@ -149,6 +147,8 @@ Reports that take a while to run can use **Prepared Report**. Instead of blockin
 ## Permissions
 
 A report respects two checks: the **Roles** table on the Report record (who may open this report) and the `report` permission on the **Ref DocType** (who may pull report data for that DocType). If the Roles table is empty, anyone with report access to the reference DocType can run it.
+
+Writing or editing a non-standard Query Report or Script Report also requires the **Script Manager** role. Report Builder and Custom Reports are exempt, since they hold no code.
 
 ## Standard reports and exporting
 

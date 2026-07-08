@@ -1,5 +1,5 @@
 ---
-title: Client Server Scripts
+title: Client and Server Scripts
 ---
 
 # Client and Server Scripts
@@ -16,7 +16,7 @@ A **Client Script** is JavaScript that runs in Desk for one DocType. It is the s
 frappe.ui.form.on("Task", {
   refresh(frm) {
     if (frm.doc.status === "Overdue") {
-      frm.dashboard.set_headline("This task is overdue");
+      frm.set_intro("This task is overdue", "red");
     }
   },
   status(frm) {
@@ -27,7 +27,7 @@ frappe.ui.form.on("Task", {
 });
 ```
 
-For a list view, use the `frappe.listview_settings` form:
+For a list view, use the `frappe.listview_settings` form. See [List View](/client-side/list-view) for the hooks it accepts:
 
 ```javascript
 frappe.listview_settings["Task"] = {

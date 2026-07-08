@@ -1,14 +1,17 @@
 ---
-title: Generators Routing
+title: Website Generators & Routing
 ---
 
-# Generators Routing
+# Website Generators & Routing
 
 Static files in `www/` cover fixed pages. When you want one web page per record of a DocType (one page per blog post, per product, per help article), use a Website Generator. The DocType drives the pages, and each published record gets its own URL.
 
 ## Has Web View
 
-A DocType becomes a generator when you enable "Has Web View" in the DocType form. Frappe then adds a few standard fields and expects the controller to subclass `WebsiteGenerator` instead of `Document`.
+A DocType becomes a generator when you enable "Has Web View" in the DocType form. Saving with "Has Web View" on does two things:
+
+- Frappe rewrites the controller file to subclass `WebsiteGenerator` instead of `Document` (`set_base_class_for_controller()` in `frappe/core/doctype/doctype/doctype.py`).
+- Validation now requires a `route` field on the DocType. If you have not added one yourself, save fails with `Field "route" is mandatory for Web Views` (`validate_website()` in the same file).
 
 ```python
 # your_app/your_app/doctype/blog_post/blog_post.py
@@ -20,13 +23,12 @@ class BlogPost(WebsiteGenerator):
         # add anything else the template needs
 ```
 
-When "Has Web View" is on, the DocType has these fields:
+Besides the `route` field you add, "Has Web View" turns on two more DocType-level settings (not fields on the record):
 
-- `route`: the URL path for the record, like `blog/my-first-post`.
-- An "is published" field (you choose which field). The record is only served when this field is true.
 - "Allow Guest to View" so visitors who are not logged in can open the page.
+- "Is Published Field", where you pick which field on the DocType marks a record as published.
 
-The web template lives in the DocType folder as `blog_post.html` next to the controller.
+The web template lives in a `templates` subfolder next to the controller, named after the DocType: `doctype/blog_post/templates/blog_post.html` (`Meta.get_web_template()` in `frappe/model/meta.py`).
 
 ## Route field
 
@@ -53,16 +55,6 @@ class BlogPost(WebsiteGenerator):
         return bool(self.published) and self.published_on <= frappe.utils.today()
 ```
 
-## How a route resolves to a page
-
-When a request comes in, `PathResolver.resolve()` in `frappe/website/path_resolver.py` works through the path:
-
-1. Check redirects.
-2. Turn dynamic routes into a target using `resolve_from_map()`.
-3. Try each renderer in order: static file, web form, document (generator), template page, print, list. The first one whose `can_render()` returns true wins.
-
-For a generator, the document renderer matches a route to a published record of a DocType that has a web view.
-
 ## Request lifecycle
 
 Every request hits `application()` in `frappe/app.py`, which splits traffic by path before the website router runs:
@@ -74,13 +66,13 @@ Every request hits `application()` in `frappe/app.py`, which splits traffic by p
 
 Public files under `/files` are served by static middleware (NGINX in production), so they never reach the Python router.
 
-## Path resolver stages
+## How a route resolves to a page
 
-`PathResolver.resolve()` returns the final endpoint and a renderer instance. It works in three stages:
+`PathResolver.resolve()` in `frappe/website/path_resolver.py` returns the final endpoint and a renderer instance. It works in three stages:
 
 1. Redirect resolution. `resolve_redirect()` checks the `website_redirects` hook and the Route Redirects table in Website Settings. A match raises `frappe.Redirect` and the resolver returns a `RedirectPage`.
 2. Route resolution. With no redirect, `resolve_path()` maps the incoming path to an endpoint using `website_route_rules` and the dynamic routes of DocTypes that have a web view. A `website_path_resolver` hook can replace this step.
-3. Renderer selection. The endpoint is passed to each renderer in order. The first one whose `can_render()` returns true is used. If none match, the resolver returns a `NotFoundPage`.
+3. Renderer selection. The endpoint is passed to each renderer in order: static file, web form, document (generator), template page, print, list. The first one whose `can_render()` returns true is used. For a generator, this is the document renderer, which matches the endpoint to a published record of a DocType that has a web view. If none match, the resolver returns a `NotFoundPage`.
 
 ## Page renderers
 
@@ -98,7 +90,7 @@ The standard renderers are tried in this order (see `PathResolver.resolve()`):
 - `DocumentPage`: renders a generator document. It looks for a template in the DocType's `templates` folder named after the DocType, for example `doctype/blog_post/templates/blog_post.html`.
 - `TemplatePage`: serves an HTML or markdown file from any app's `www` folder. For a folder, it serves `index.html` or `index.md`.
 - `PrintPage`: renders the print view of a document, using the standard print format unless the DocType sets a `default_print_format`.
-- `ListPage`: renders a DocType list template from the DocType's `templates` folder when one exists.
+- `ListPage`: matches when the path is a DocType name that has a web view (or whose module defines `get_list_context`), and renders the standard portal list template.
 
 Two more renderers handle errors: `NotFoundPage` responds with 404, and `NotPermittedPage` responds with 403.
 

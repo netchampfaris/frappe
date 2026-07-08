@@ -104,6 +104,6 @@ This is checked by `provider_allows_signup` in
 
 ## See also
 
-- [OAuth2](/rest-api/oauth2) for using Frappe as an OAuth2 provider or client
+- [OAuth2](/security/oauth2) for using Frappe as an OAuth2 provider or client
 - [Connected Apps](/rest-api/connected-apps) for calling external OAuth2 APIs
 - [Authentication](/rest-api/authentication) for API keys and bearer tokens

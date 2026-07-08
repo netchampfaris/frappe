@@ -28,12 +28,10 @@ Create a site and install the app on it:
 ```bash
 bench new-site library.localhost
 bench --site library.localhost install-app library_management
-bench use library.localhost
 ```
 
-Turn on developer mode so the framework writes your DocType definitions to disk
-as JSON, then clear the cache. Developer mode is a bench-level setting, so use
-the `-g` flag to write it to the bench's `common_site_config.json`:
+Turn on developer mode, then clear the cache. See
+[Developer Mode](/tutorial/developer-mode) for what this does and why:
 
 ```bash
 bench set-config -g developer_mode 1
@@ -56,6 +54,9 @@ Open the site in your browser and log in as `Administrator`:
 http://library.localhost:8000
 ```
 
+A fresh site redirects to the setup wizard until it is completed. Go through it
+(or click through the steps quickly) before continuing.
+
 If the hostname does not resolve, register it locally:
 
 ```bash
@@ -72,4 +73,4 @@ A small data model with three DocTypes:
 
 You build **Article** in full first, then add the other two the same way.
 
-Continue to [Create the DocType](/tutorial/create-the-doctype).
+Continue to [Developer Mode](/tutorial/developer-mode).

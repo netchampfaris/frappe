@@ -19,7 +19,7 @@ your_app/
 
 An `index.html` (or `index.md`) is served at the folder route. So `support/index.html` answers `/support`, not `/support/index`.
 
-`www/` is the canonical folder for portal pages. Frappe scans it in `get_start_folders()` (see `frappe/website/router.py`).
+`www/` is the canonical folder for portal pages. `get_start_folders()` in `frappe/website/router.py` also scans `templates/pages`, an older location kept for backward compatibility. Use `www/` for new pages.
 
 ## A minimal page
 

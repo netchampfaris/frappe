@@ -11,7 +11,7 @@ stores the tokens per user in a **Token Cache**, and refreshes expired access
 tokens for you.
 
 This is different from being an OAuth2 _provider_. For letting other apps log in
-to your site, see [OAuth2](/rest-api/oauth2).
+to your site, see [OAuth2](/security/oauth2).
 
 ## Set up a Connected App
 
@@ -119,6 +119,6 @@ The token is stored under an empty user key and reused until it expires.
 
 ## See also
 
-- [OAuth2](/rest-api/oauth2) for using Frappe as an OAuth2 provider
-- [Social Login OIDC](/rest-api/social-login-oidc) for logging users in with an external provider
+- [OAuth2](/security/oauth2) for using Frappe as an OAuth2 provider
+- [Social Login OIDC](/security/social-login-oidc) for logging users in with an external provider
 - [Third Party Integrations](/rest-api/third-party-integrations) for the built-in integrations

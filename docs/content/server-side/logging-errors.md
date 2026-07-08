@@ -1,8 +1,8 @@
 ---
-title: Logging Errors
+title: Logging & Errors
 ---
 
-# Logging Errors
+# Logging & Errors
 
 When something goes wrong in server code, you want a record of it. Frappe gives you two tools: `frappe.log_error` to write structured errors into the database, and `frappe.logger` to write line-based logs to disk.
 
@@ -40,7 +40,7 @@ frappe.log_error(
 
 Keep the title short and stable. A good title groups similar failures together so you can spot a recurring problem. Do not put the full traceback or a unique id in the title; that belongs in the message.
 
-`log_error` writes to the database, so it works inside requests and background jobs. It does not raise; logging a failure should never cause a second failure.
+`log_error` writes to the database, so it works inside requests and background jobs. It is meant to degrade gracefully rather than compound a failure: if `frappe.db` is not available it just prints the title instead of raising. The insert itself can still fail (for example on a broken database connection), so do not rely on it as a guarantee.
 
 ## The Error Log DocType
 

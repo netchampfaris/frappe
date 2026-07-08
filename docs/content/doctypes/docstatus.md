@@ -1,5 +1,5 @@
 ---
-title: Docstatus
+title: Docstatus & the Submit Flow
 ---
 
 # Docstatus & the Submit Flow
@@ -48,7 +48,7 @@ Submitted (1) → Submitted (1)    update after submit
 Submitted (1) → Cancelled (2)    cancel
 ```
 
-Everything else throws. You cannot go from Draft straight to Cancelled, nor from Submitted or Cancelled back to Draft, nor edit a cancelled document.
+Everything else throws for save, submit and cancel. You cannot go from Submitted or Cancelled back to Draft, nor edit a cancelled document, through those operations. Discarding is a separate path; see below.
 
 ## Submitting and cancelling in code
 
@@ -70,6 +70,15 @@ class SalesInvoice(Document):
 
     def on_cancel(self):
         reverse_ledger_entries(self)
+```
+
+## Discarding a draft
+
+`doc.discard()` is the sanctioned way to go from Draft straight to Cancelled, skipping Submitted entirely. It runs `before_discard`, sets `docstatus = 2` via `db_set`, then runs `on_discard`. Use it for drafts you want to drop without ever posting them, while still keeping the row around (e.g. for audit purposes) instead of deleting it.
+
+```python
+doc = frappe.get_doc("Sales Invoice", "SINV-0002")
+doc.discard()  # docstatus 0 → 2, runs before_discard / on_discard
 ```
 
 ## Editing after submit
