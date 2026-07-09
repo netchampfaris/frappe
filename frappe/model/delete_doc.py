@@ -184,6 +184,15 @@ def delete_doc(
 			delete_from_table(doctype, name, ignore_doctypes, doc)
 			doc.run_method("after_delete")
 
+			# frappe.sync — log delete row for opted-in doctypes
+			try:
+				from frappe.sync.log import notify_change, is_synced
+
+				if is_synced(doctype):
+					notify_change(doctype, name, "delete")
+			except Exception:
+				frappe.logger("sync").exception("sync notify_change delete failed")
+
 			# delete attachments
 			remove_all(doctype, name, from_delete=True, delete_permanently=delete_permanently)
 

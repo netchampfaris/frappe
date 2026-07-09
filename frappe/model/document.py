@@ -1904,6 +1904,16 @@ class Document(BaseDocument):
 			data = {"doctype": self.doctype, "name": self.name, "user": frappe.session.user}
 			frappe.publish_realtime("list_update", data, after_commit=True)
 
+		# frappe.sync — write a Sync Log row (cursor) for opted-in doctypes.
+		try:
+			from frappe.sync.log import notify_change, is_synced
+
+			if is_synced(self.doctype):
+				op = "create" if self.flags.in_insert else "update"
+				notify_change(self.doctype, self.name, op)
+		except Exception:
+			frappe.logger("sync").exception("sync notify_change failed")
+
 	def db_set(self, fieldname, value=None, update_modified=True, notify=False, commit=False):
 		"""Set a value in the document object, update the timestamp and update the database.
 

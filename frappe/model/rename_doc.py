@@ -230,6 +230,15 @@ def rename_doc(
 		after_commit=True,
 	)
 
+	# frappe.sync — log rename row for opted-in doctypes
+	try:
+		from frappe.sync.log import notify_change, is_synced
+
+		if is_synced(doctype):
+			notify_change(doctype, old, "rename", new_name=new)
+	except Exception:
+		frappe.logger("sync").exception("sync notify_change rename failed")
+
 	return new
 
 
