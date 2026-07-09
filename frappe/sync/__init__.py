@@ -9,3 +9,4 @@ Sync Log rows are the cursor: name is autoincremented, so `MAX(name)` is the tip
 """
 
 from frappe.sync.views import view, get_view, list_views  # noqa: F401
+from frappe.sync.api import pull, push  # noqa: F401
