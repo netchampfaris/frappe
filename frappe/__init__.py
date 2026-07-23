@@ -576,7 +576,7 @@ def _in_request_or_test():
 	return getattr(local, "request", None) or in_test
 
 
-def whitelist(allow_guest=False, xss_safe=False, methods=None, force_types=None):
+def whitelist(allow_guest=False, xss_safe=False, methods=None, force_types=None, permission_type=None):
 	"""
 	Decorator for whitelisting a function and making it accessible via HTTP.
 	Standard request will be `/api/method/[path.to.method]`
@@ -585,6 +585,10 @@ def whitelist(allow_guest=False, xss_safe=False, methods=None, force_types=None)
 	:param methods: Allowed http method to access the method.
 	:param force_types: Method should have type annotations. If unset, defaults to hooks
 						specification.
+	:param permission_type: For a controller (doc) method exposed over HTTP, the document
+						permission the caller must hold, overriding the default derived from
+						the HTTP verb (GET -> read, POST -> write). Must be a standard right
+						(e.g. "read", "write"). Ignored for module-level methods.
 
 	Use as:
 
@@ -610,6 +614,12 @@ def whitelist(allow_guest=False, xss_safe=False, methods=None, force_types=None)
 
 		whitelisted.add(fn)
 		allowed_http_methods_for_whitelisted_func[fn] = methods
+
+		if permission_type is not None:
+			# Consumed by frappe.permissions.get_doc_method_permission_type when the
+			# method is invoked as a doc-method. The attribute is the contract; this
+			# kwarg is sugar for setting it.
+			fn.permission_type = permission_type
 
 		if allow_guest:
 			guest_methods.add(fn)

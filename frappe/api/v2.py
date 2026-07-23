@@ -20,6 +20,7 @@ from frappe.api import discovery
 from frappe.core.doctype.server_script.server_script_utils import get_server_script_map
 from frappe.database.utils import DefaultOrderBy
 from frappe.handler import is_valid_http_method, run_server_script, upload_file
+from frappe.permissions import get_doc_method_permission_type
 
 PERMISSION_MAP = {
 	"GET": "read",
@@ -259,7 +260,7 @@ def execute_doc_method(doctype: str, name: str, method: str | None = None):
 	is_valid_http_method(fn)
 
 	assert frappe.request.method in PERMISSION_MAP, "execute_doc_method route is only mounted for GET/POST"
-	doc.check_permission(PERMISSION_MAP[frappe.request.method])
+	doc.check_permission(get_doc_method_permission_type(fn, PERMISSION_MAP[frappe.request.method]))
 	result = doc.run_method(method, **frappe.form_dict)
 	doc.apply_fieldlevel_read_permissions()
 	frappe.response.docs.append(doc.as_dict())
@@ -580,14 +581,19 @@ def run_doc_method(method: str, document: dict[str, Any] | str, kwargs=None):
 		kwargs = {}
 
 	assert frappe.request.method in PERMISSION_MAP, "run_doc_method route is only mounted for GET/POST"
-	doc = frappe.get_doc(document, check_permission=PERMISSION_MAP[frappe.request.method])
-	doc._original_modified = doc.modified
-	doc.check_if_latest()
+	doc = frappe.get_doc(document)
 
 	method_obj = getattr(doc, method)
 	fn = getattr(method_obj, "__func__", method_obj)
 	is_whitelisted(fn)
 	is_valid_http_method(fn)
+
+	# Resolve the perm from the method's own declaration if it has one, else the
+	# HTTP-verb default. Checked before check_if_latest so an unauthorized caller is
+	# rejected regardless of document freshness.
+	doc.check_permission(get_doc_method_permission_type(fn, PERMISSION_MAP[frappe.request.method]))
+	doc._original_modified = doc.modified
+	doc.check_if_latest()
 
 	new_kwargs = get_newargs(fn, kwargs)
 	response = doc.run_method(method, **new_kwargs)

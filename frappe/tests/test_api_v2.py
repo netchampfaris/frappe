@@ -7,6 +7,7 @@ import requests
 import frappe
 from frappe.api import discovery
 from frappe.installer import update_site_config
+from frappe.tests import IntegrationTestCase
 from frappe.tests.test_api import FrappeAPITestCase, suppress_stdout
 from frappe.tests.utils import toggle_test_mode, whitelist_for_tests
 
@@ -299,6 +300,78 @@ class TestMethodAPIV2(FrappeAPITestCase):
 			self.resource("User", "Administrator", "method", "add_comment"), {"text": comment_txt}
 		).json
 		self.assertEqual(response["data"]["content"], comment_txt)
+
+
+class TestDocMethodPermissionType(IntegrationTestCase):
+	"""A doc-method's required permission defaults to the HTTP verb (GET -> read,
+	POST -> write) but a method may override it by declaring `permission_type`.
+	These assert execute_doc_method gates on the right permission."""
+
+	def _gated_permission(self, http_method, declared):
+		"""Run execute_doc_method with run_method stubbed out and return the list of
+		permissions it asked check_permission for."""
+		from contextlib import nullcontext
+
+		from frappe.api import v2
+
+		todo = frappe.get_doc({"doctype": "ToDo", "description": "perm-type probe"}).insert()
+		requested = []
+
+		fn = frappe.get_doc("ToDo", todo.name).add_comment.__func__
+		declare_ctx = (
+			patch.object(fn, "permission_type", declared, create=True)
+			if declared is not None
+			else nullcontext()
+		)
+
+		previous_request = getattr(frappe.local, "request", None)
+		frappe.local.request = frappe._dict(method=http_method)
+		frappe.local.response = frappe._dict(docs=[])
+		frappe.local.form_dict = frappe._dict()
+		try:
+			with (
+				declare_ctx,
+				patch(
+					"frappe.model.document.Document.check_permission",
+					lambda self, permtype="read", *a, **k: requested.append(permtype),
+				),
+				patch("frappe.model.document.Document.run_method", lambda self, *a, **k: None),
+			):
+				v2.execute_doc_method("ToDo", todo.name, "add_comment")
+		finally:
+			frappe.local.request = previous_request
+		return requested
+
+	def test_post_defaults_to_write(self):
+		self.assertIn("write", self._gated_permission("POST", declared=None))
+
+	def test_get_defaults_to_read(self):
+		self.assertIn("read", self._gated_permission("GET", declared=None))
+
+	def test_declared_permission_type_overrides_verb(self):
+		# POST would default to write; the declaration downgrades the gate to read so a
+		# read-only caller can reach it.
+		requested = self._gated_permission("POST", declared="read")
+		self.assertIn("read", requested)
+		self.assertNotIn("write", requested)
+
+	def test_invalid_permission_type_is_rejected(self):
+		from frappe.permissions import get_doc_method_permission_type
+
+		def some_method():
+			pass
+
+		some_method.permission_type = "sudo"
+		with self.assertRaises(frappe.ValidationError):
+			get_doc_method_permission_type(some_method, "read")
+
+	def test_undeclared_falls_back_to_default(self):
+		from frappe.permissions import get_doc_method_permission_type
+
+		def some_method():
+			pass
+
+		self.assertEqual(get_doc_method_permission_type(some_method, "write"), "write")
 
 
 class TestBulkOperationsV2(FrappeAPITestCase):

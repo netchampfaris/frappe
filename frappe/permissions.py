@@ -40,6 +40,31 @@ ADMIN_ROLE = "Administrator"
 AUTOMATIC_ROLES = (GUEST_ROLE, ALL_USER_ROLE, SYSTEM_USER_ROLE, ADMIN_ROLE)
 
 
+def get_doc_method_permission_type(fn, default: str) -> str:
+	"""Resolve the permission a whitelisted doc-method requires before it runs.
+
+	By default a doc-method inherits the permission implied by the HTTP verb it was
+	called with (GET -> read, POST -> write). A method can override that by declaring
+	a `permission_type` attribute on the function -- set explicitly, or via
+	`@frappe.whitelist(permission_type=...)`. This lets a method that only reads (e.g.
+	toggling the caller's own reaction) be reached over POST without demanding write
+	access, without loosening the default for every other method.
+
+	Only standard rights are accepted, so a method cannot declare an unknown
+	permission to slip past the check.
+	"""
+	declared = getattr(fn, "permission_type", None)
+	if declared is None:
+		return default
+	if declared not in rights:
+		frappe.throw(
+			_("Invalid permission_type {0} declared on {1}").format(
+				frappe.bold(declared), frappe.bold(getattr(fn, "__name__", str(fn)))
+			)
+		)
+	return declared
+
+
 def print_has_permission_check_logs(func):
 	@functools.wraps(func)
 	def inner(*args, **kwargs):

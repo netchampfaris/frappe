@@ -327,6 +327,16 @@ def run_doc_method(method, docs=None, dt=None, dn=None, arg=None, args=None):
 	is_whitelisted(fn)
 	is_valid_http_method(fn)
 
+	# get_doc above already enforced read. A method may declare (via
+	# @frappe.whitelist(permission_type=...) or a permission_type attribute) that it
+	# needs a stronger permission; enforce that here. read stays the floor, so this
+	# only tightens, never loosens, the existing behaviour.
+	from frappe.permissions import get_doc_method_permission_type
+
+	permission_type = get_doc_method_permission_type(fn, "read")
+	if permission_type != "read":
+		doc.check_permission(permission_type)
+
 	fnargs = list(signature(method_obj).parameters)
 
 	if not fnargs or (len(fnargs) == 1 and fnargs[0] == "self"):
