@@ -99,20 +99,20 @@ The optional 4-element form `[doctype, fieldname, operator, value]` lets you fil
 
 ### Filtering across a Link field
 
-If a field is a Link, you can filter on a field of the linked doctype with dot notation: `link_field.target_field`. The query joins the linked table for you. For example, if `Task` has a `customer` Link field, filter on the customer's territory like this:
+If a field is a Link, you can filter on a field of the linked doctype with dot notation: `link_field.target_field`. The query joins the linked table for you. For example, if `Invoice` has a `customer` Link field, filter on the customer's territory like this:
 
 ```python
 # dict form
-frappe.get_all("Task", filters={"customer.territory": "Australia"})
+frappe.get_all("Invoice", filters={"customer.territory": "Australia"})
 
 # list form
-frappe.get_all("Task", filters=[["customer.territory", "=", "Australia"]])
+frappe.get_all("Invoice", filters=[["customer.territory", "=", "Australia"]])
 ```
 
 The same dot notation works in `fields` to pull a value from the linked record:
 
 ```python
-frappe.get_all("Task", fields=["name", "customer.territory"])
+frappe.get_all("Invoice", fields=["name", "customer.territory"])
 ```
 
 ### Supported operators
