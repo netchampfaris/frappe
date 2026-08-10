@@ -62,7 +62,7 @@ Then clear the cache so the change takes effect:
 bench --site library.localhost clear-cache
 ```
 
-> Turn developer mode **off** in production. It is meant for development only.
+> Always keep developer mode **off** in production. It is meant for development only.
 > See [Developer Mode](/tutorial/developer-mode) for details.
 
 ## Start and log in
