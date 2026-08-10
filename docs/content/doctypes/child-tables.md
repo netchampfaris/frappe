@@ -8,7 +8,7 @@ A **child table** lets a document hold a list of rows: line items on an invoice,
 
 ## The child DocType
 
-A child DocType is an ordinary DocType with the `istable` flag set to `1`. It never has its own form or list view. Its rows always belong to a parent.
+A child DocType is an ordinary DocType with the `istable` flag set to `1`. It has its own database table but never has a form or list view. Its rows always belong to a parent.
 
 ```json
 {
