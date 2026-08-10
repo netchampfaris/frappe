@@ -49,7 +49,7 @@ bench --site library.localhost install-app erpnext library_management
 
 **Developer mode** makes the framework write DocType definitions to disk as JSON
 in your app and skips certain caches, so your schema changes are tracked in
-version control. Set it in the bench's common site config so it applies to every
+version control. Set it in the bench's common site config (a `JSON` file holding bench level configurations) so it applies to every
 site on the bench:
 
 ```bash
