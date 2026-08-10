@@ -4,7 +4,7 @@ title: Reports and Print
 
 # Reports and Print
 
-Two ways to get data out of your app: a **report** to view and filter rows in a
+There are two ways to get data out of your app: a **report** to view and filter rows in a
 table, and a **print format** to produce a printable document. You build one of
 each, using the Library Transaction records you created earlier.
 
