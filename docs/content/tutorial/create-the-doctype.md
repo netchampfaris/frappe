@@ -14,7 +14,7 @@ and a Python controller all at once. See the
 
 ## Open the DocType builder
 
-Go to the DocType list and click **+ Add DocType**:
+Go to the DocType list using the search bar (Awesome bar) and click **+ Add DocType**:
 
 ```text
 http://library.localhost:8000/desk/doctype/new
@@ -28,7 +28,7 @@ Fill in the top section:
 
 ## Add fields
 
-Add these fields in the **Fields** table. For each row set the **Type**, the
+Use the DocType form builder to create the below fields. For each row set the **Type**, the
 **Label**, and (where shown) the **Options**. The **Name** column (the
 `fieldname`) is generated from the label, so `Article Name` becomes
 `article_name`.
@@ -50,6 +50,10 @@ Available
 Issued
 ```
 
+You can also create/edit these fields using the table in the **Fields** section.
+
+> This is the meta-data driven approach which differentiates Frappe Framework from traditional web development setups like Django. 
+
 ## Set the title field and naming
 
 Open the **Settings** section (or the **Naming** section) of the DocType form:
@@ -64,8 +68,7 @@ See [Naming](/doctypes/naming) for the other naming rules.
 
 ## Save
 
-Click **Save**. Because developer mode is on, Frappe creates the `tabArticle`
-table and writes the DocType files to your app.
+Click **Save**. Frappe creates the `tabArticle` table and because developer mode is on, writes the DocType files to your app.
 
 ## The generated files
 
