@@ -89,7 +89,7 @@ When called this way, the framework loads the document with `check_permission=Tr
 Over HTTP, controller methods go through the built-in `run_doc_method` endpoint. Pass the doctype as `dt`, the document name as `dn`, and the method name:
 
 ```bash
-curl -X POST https://mysite.localhost/api/method/run_doc_method \
+curl -X POST https://mysite.localhost/api/v2/method/run_doc_method \
   -H "Authorization: token <api_key>:<api_secret>" \
   -H "Content-Type: application/json" \
   -d '{"dt": "Library Loan", "dn": "LOAN-0001", "method": "mark_returned"}'
@@ -97,7 +97,7 @@ curl -X POST https://mysite.localhost/api/method/run_doc_method \
 
 ## Calling from the client
 
-`frappe.call` is available in Desk (the `/app` interface) and on Frappe-rendered website pages, since the website JS bundle ships it too. It is not available in a fully custom frontend (a separate SPA, a non-Frappe site); call the method over REST there instead. `frm.call` is narrower still: it only exists on a form, so you can use it inside Desk form scripts.
+`frappe.call` is available in Desk (the `/desk` interface) and on Frappe-rendered website pages, since the website JS bundle ships it too. It is not available in a fully custom frontend (a separate SPA, a non-Frappe site); call the method over REST there instead. `frm.call` is narrower still: it only exists on a form, so you can use it inside Desk form scripts.
 
 From browser JavaScript inside Desk (or a Frappe-rendered website page), use `frappe.call` for module-level functions:
 
@@ -126,7 +126,7 @@ frm.call("mark_returned").then((r) => {
 Whitelisted methods are also plain HTTP endpoints. `GET` for reads, `POST` for writes; authenticate with a token or session.
 
 ```bash
-curl -X POST https://mysite.localhost/api/method/library.library.api.create_loan \
+curl -X POST https://mysite.localhost/api/v2/method/library.library.api.create_loan \
   -H "Authorization: token <api_key>:<api_secret>" \
   -H "Content-Type: application/json" \
   -d '{"book": "BOOK-0001", "member": "MEMBER-0001"}'
