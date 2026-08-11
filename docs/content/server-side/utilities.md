@@ -10,8 +10,8 @@ title: Utilities
 from frappe.utils import nowdate, add_days, flt, fmt_money
 
 due = add_days(nowdate(), 14)
-total = flt("1,250.50")           # -> 1250.5
-label = fmt_money(total, currency="USD")
+total = flt("1,250.50")                     # -> 1250.5
+label = fmt_money(total, currency="USD")    # -> "$ 1,250.50"
 ```
 
 ## Dates and times
@@ -29,7 +29,7 @@ nowdate()    # "2024-05-01"           today's date as a string
 
 ```python
 getdate("2024-05-01")          # datetime.date(2024, 5, 1)
-getdate()                       # today's date object
+getdate()                      # today's date object
 ```
 
 `add_days` and `add_months` return a new date offset from the given one. They accept strings or date objects.
@@ -122,8 +122,8 @@ get_link_to_form("Library Loan", "LOAN-0001")
 ```python
 from frappe.utils import format_date
 
-format_date("2024-05-01")              # "05-01-2024" (depends on user format)
-format_date("2024-05-01", "dd MMM yyyy")  # "01 May 2024"
+format_date("2024-05-01")                   # "05-01-2024" (depends on user format)
+format_date("2024-05-01", "dd MMM yyyy")    # "01 May 2024"
 ```
 
 `pretty_date` turns a datetime into a relative string like "2 days ago", handy for activity feeds.
@@ -156,7 +156,7 @@ strip_html("<h1>Hello</h1>")           # "Hello"
 ```python
 from frappe.utils import validate_email_address
 
-validate_email_address("john@example.com, bad")   # "john@example.com"
+validate_email_address("john@example.com, bad")    # "john@example.com"
 validate_email_address("bad", throw=True)          # raises InvalidEmailAddressError
 ```
 
@@ -174,7 +174,7 @@ These are some of the helpers you will reach for often, but there are many more 
 
 For the full list, browse the source on GitHub:
 
-- [frappe/utils/data.py](https://github.com/frappe/frappe/blob/develop/frappe/utils/data.py)
+- [`frappe/utils/data.py`](https://github.com/frappe/frappe/blob/develop/frappe/utils/data.py)
 - [`frappe/utils/__init__.py`](https://github.com/frappe/frappe/blob/develop/frappe/utils/__init__.py)
 
 ## See also
