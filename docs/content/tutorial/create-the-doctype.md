@@ -14,7 +14,7 @@ and a Python controller all at once. See the
 
 ## Open the DocType builder
 
-Go to the DocType list using the search bar (Awesome bar) and click **+ Add DocType**:
+Go to the DocType list using the search bar (awesomebar) and click **+ Add DocType**:
 
 ```text
 http://library.localhost:8000/desk/doctype/new
