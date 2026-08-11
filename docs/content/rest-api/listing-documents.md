@@ -107,7 +107,7 @@ curl "https://example.com/api/resource/ToDo/abc123?expand_links=1" \
   -H "Authorization: token <api_key>:<api_secret>"
 ```
 
-## v2 listing
+## v2 equivalents
 
 The v2 endpoint is `/api/v2/document/<DocType>` and uses `start`/`limit` instead
 of `limit_start`/`limit_page_length`. It also reports whether more pages exist via

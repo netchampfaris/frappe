@@ -7,7 +7,7 @@ title: Connected Apps
 A **Connected App** is how Frappe acts as an OAuth2 _client_. Use it when your
 server code needs to call an external API that is protected by OAuth2, such as a
 user's Google Drive or a partner's REST API. Frappe runs the authorization flow,
-stores the tokens per user in a **Token Cache**, and refreshes expired access
+stores the tokens per user in a **Token Cache** (document), and refreshes expired access
 tokens for you.
 
 This is different from being an OAuth2 _provider_. For letting other apps log in
