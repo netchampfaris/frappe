@@ -89,7 +89,7 @@ Pick a queue based on how long the work takes, not how important it is. A long j
 
 Queues can be served by dedicated worker processes. The standard production setup (via `bench setup supervisor`) runs a separate worker per queue, so flooding the `default` queue does not stop `long` jobs from running. In development, `bench start` runs a single worker that consumes all queues, so a flood of one queue delays the others.
 
-Frappe rejects new jobs when a queue gets too full (around 500 pending jobs by default), raising `frappe.QueueOverloaded`. This protects the system from a runaway producer.
+Frappe rejects new jobs when a queue gets too full (around 500 pending jobs by default), raising `frappe.QueueOverloaded`. This protects the system from a runaway producer: code that enqueues faster than workers drain.
 
 ## frappe.enqueue_doc
 
