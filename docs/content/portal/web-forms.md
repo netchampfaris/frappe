@@ -6,7 +6,7 @@ title: Web Forms
 
 A Web Form is a public form that creates or edits records of a DocType from the website. You pick a DocType, choose which fields to show, give it a route, and Frappe renders the form, handles validation, saves the record, and (optionally) lists the submissions. No template work needed for the common case.
 
-Create one from the Desk by opening the Web Form list and adding a new Web Form, or by going to `/app/web-form/new`.
+Create one from the Desk by opening the Web Form list and adding a new Web Form, or by going to `/desk/web-form/new`.
 
 ## The basics
 

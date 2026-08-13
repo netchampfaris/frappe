@@ -45,8 +45,8 @@ On a form, `frm.get_formatted(fieldname)` gives the formatted value of a field s
 For numbers specifically, `format_number(value, format, decimals)` and `format_currency(value, currency, decimals)` are global helpers.
 
 ```javascript
-format_number(1234.567, null, 2); // "1,234.57"
-format_currency(1234.5, "USD"); // "$ 1,234.50"
+format_number(1234.567, null, 2);   // "1,234.57"
+format_currency(1234.5, "USD");     // "$ 1,234.50"
 ```
 
 `flt(value, decimals)` parses anything into a float (returning 0 for junk), and `cint(value)` parses into an integer. Both are global. Use them before doing math on field values, which may arrive as strings.
