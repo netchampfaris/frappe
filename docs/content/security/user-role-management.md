@@ -22,7 +22,7 @@ Both methods save the user document themselves, so you do not need a trailing `u
 
 ### User type and desk access
 
-Every user is either a System User or a Website User. System Users get desk access (the backend UI at `/app`). Website Users can only use portal pages and the public site. The type is derived from the user's roles: if any assigned role has `desk_access` turned on, the user becomes a System User. This is recalculated automatically when roles or the role's `desk_access` flag change.
+Every user is either a System User or a Website User. System Users get desk access (the backend UI at `/desk`). Website Users can only use portal pages and the public site. The type is derived from the user's roles: if any assigned role has `desk_access` turned on, the user becomes a System User. This is recalculated automatically when roles or the role's `desk_access` flag change.
 
 ## Role
 

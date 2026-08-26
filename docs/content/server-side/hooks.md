@@ -379,6 +379,18 @@ after_sync = "library.install.after_sync"
 before_tests = "library.tests.before_tests"
 ```
 
+## Other app install hooks
+
+You can also react to installation and uninstallation of other apps on a site, useful when toggling functionality when a certain app (e.g. integrations) is installed.
+
+```python
+before_app_install = "library.integrations.before_app_install"
+after_app_install = "library.integrations.after_app_install"
+
+before_app_uninstall = "library.integrations.before_app_uninstall"
+after_app_uninstall = "library.integrations.after_app_uninstall"
+```
+
 ## File hooks
 
 These override how user-uploaded files are stored, so you can write to a CDN or object store instead of the local disk.
@@ -406,6 +418,8 @@ The commonly used hooks, alphabetically, with the section that covers each.
 
 | Hook                           | Section                                                       |
 | ------------------------------ | ------------------------------------------------------------- |
+| `after_app_install`            | [Other app install hooks](#other-app-install-hooks)           |
+| `after_app_uninstall`          | [Other app install hooks](#other-app-install-hooks)           |
 | `after_install`                | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `after_job`                    | [Request and job hooks](#request-and-job-hooks)               |
 | `after_migrate`                | [Install and migrate hooks](#install-and-migrate-hooks)       |
@@ -416,6 +430,8 @@ The commonly used hooks, alphabetically, with the section that covers each.
 | `app_include_js`               | [Assets](#assets)                                             |
 | `app_name`, `app_title`, ...   | [App metadata](#app-metadata)                                 |
 | `auth_hooks`                   | [Authentication hooks](#authentication-hooks)                 |
+| `before_app_install`           | [Other app install hooks](#other-app-install-hooks)           |
+| `before_app_uninstall`         | [Other app install hooks](#other-app-install-hooks)           |
 | `before_install`               | [Install and migrate hooks](#install-and-migrate-hooks)       |
 | `before_job`                   | [Request and job hooks](#request-and-job-hooks)               |
 | `before_migrate`               | [Install and migrate hooks](#install-and-migrate-hooks)       |

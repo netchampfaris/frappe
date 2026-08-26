@@ -109,6 +109,8 @@ report_summary = [
 ]
 ```
 
+`indicator` accepts Green, Red, or Blue. Any other value renders in the default text color.
+
 ### Filter fields
 
 The matching `.js` file defines `frappe.query_reports["Report Name"]` with the filter fields the user sees:

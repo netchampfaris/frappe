@@ -128,7 +128,7 @@ provides Compose files for both development (a dev container with bench inside)
 and production (separate web, worker, database, and Redis containers). It avoids
 installing dependencies on your host. Follow the README in that repository.
 
-For a manual, non-Bench setup, see
+For a manual, non-docker (supervisor based) setup, see
 [Production Setup](/administration/production-setup).
 
 ## Next steps

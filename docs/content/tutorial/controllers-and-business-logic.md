@@ -9,7 +9,7 @@ The **controller** is the Python class behind a DocType. For Article it lives in
 at fixed points in a document's life. The most common one is `validate`, which
 runs every time a document is about to be saved. You add server-side rules there.
 
-Open the controller you generated:
+Open the controller file generated when you created the Article DocType:
 
 ```text
 apps/library_management/library_management/library_management/doctype/article/article.py
@@ -44,7 +44,7 @@ not allowed.
 
 ## Try it
 
-No restart is needed for controller changes during `bench start`. Open an Article,
+No restart is needed for controller changes when `bench start` is running. Open an Article,
 type an ISBN with dashes like `978-0-13-595705-9`, and save. The dashes are
 removed. Now type a short value like `123` and save: the message appears and the
 save is blocked.

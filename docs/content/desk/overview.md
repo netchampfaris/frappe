@@ -45,7 +45,7 @@ Most day-to-day customization happens inside Desk itself:
 - Workspaces for navigation and dashboards.
 - [Reports](/desk/reports) for tabular data.
 - [Print Formats](/desk/print-formats) for documents and PDFs.
-- [Client and Server Scripts](/desk/client-server-scripts) for no-deploy logic.
+- [Client and Server Scripts](/desk/client-server-scripts) for logic without any deployment step.
 - [Attachments](/desk/attachments) for files on records.
 - [System Console](/desk/system-console) for running Python or SQL against the site.
 

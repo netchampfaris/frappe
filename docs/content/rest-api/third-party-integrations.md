@@ -36,6 +36,8 @@ uploads site backups to an Amazon S3 bucket (or any S3-compatible store). Set th
 bucket, region, and access keys, and a scheduled job pushes backups on the
 interval you choose.
 
+> Google Drive, Dropbox, and S3 backup integrations have been moved to [a separate app](https://github.com/frappe/offsite_backups) as of Version 16.
+
 ## LDAP
 
 **LDAP Settings** (`frappe/integrations/doctype/ldap_settings/`) authenticates

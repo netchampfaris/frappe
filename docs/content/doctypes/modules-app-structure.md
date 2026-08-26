@@ -80,7 +80,7 @@ bench set-config -g developer_mode 1
 
 ## Creating a new DocType
 
-In developer mode, create the DocType from the Desk UI (New → DocType), pick its module, and Frappe scaffolds the folder and files for you. You can also generate the boilerplate from the bench console. Either way, the controller and client files are created next to the JSON, ready for your logic.
+In developer mode, create the DocType from the Desk UI (DocType List → Add), pick its module, and Frappe scaffolds the folder and files for you. You can also generate the boilerplate from the bench console. Either way, the controller and client files are created next to the JSON, ready for your logic.
 
 ## See also
 

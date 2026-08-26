@@ -165,6 +165,8 @@ for doc in docs:
         doc.insert()
 ```
 
+In the above code, if one of the document inserts fail, only that `doc`'s writes will go away without hurting the progress. 
+
 It also works as a decorator that wraps the whole function:
 
 ```python

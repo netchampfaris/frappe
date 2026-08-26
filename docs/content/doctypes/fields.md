@@ -9,7 +9,7 @@ Fields define the schema of a DocType. Each field has a **fieldtype** (what kind
 
 ## Field types
 
-Most value-storing field types are listed in `frappe/model/__init__.py` as `data_fieldtypes` (the Table types below are backed by child rows rather than a column). Grouped by what they hold:
+Most value-storing field types are listed in `frappe/model/__init__.py` as `data_fieldtypes` (the Table types below are backed by child rows rather than a column). Here are the field types grouped by what they hold:
 
 ### Text & content
 
