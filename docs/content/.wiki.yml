@@ -111,7 +111,7 @@ sidebar:
       - security/ldap.md
       - security/security-best-practices.md
   - label: "App Lifecycle & Tooling"
-    slug: server-side
+    slug: app-lifecycle
     items:
       - server-side/migrations-patches.md
       - server-side/translations.md
