@@ -1,0 +1,146 @@
+# Sidebar for the wiki's git sync. Paths are relative to this folder.
+# Page titles come from each file's front matter or H1.
+sidebar:
+  - label: "Getting Started"
+    slug: getting-started
+    items:
+      - getting-started/introduction.md
+      - getting-started/architecture.md
+      - getting-started/prerequisites.md
+      - getting-started/installation.md
+      - getting-started/your-first-app.md
+      - getting-started/your-first-site.md
+      - getting-started/key-concepts.md
+  - label: "Tutorial (Build an App)"
+    slug: tutorial
+    items:
+      - tutorial/setup.md
+      - tutorial/developer-mode.md
+      - tutorial/create-the-doctype.md
+      - tutorial/controllers-and-business-logic.md
+      - tutorial/form-scripts.md
+      - tutorial/permissions-and-roles.md
+      - tutorial/reports-and-print.md
+      - tutorial/whats-next.md
+  - label: "DocTypes & Data Model"
+    slug: doctypes
+    items:
+      - doctypes/overview.md
+      - doctypes/fields.md
+      - doctypes/layout-view-settings.md
+      - doctypes/naming.md
+      - doctypes/child-tables.md
+      - doctypes/single-doctypes.md
+      - doctypes/virtual-doctypes.md
+      - doctypes/controllers-lifecycle.md
+      - doctypes/docstatus.md
+      - doctypes/links-actions.md
+      - doctypes/customization.md
+      - doctypes/modules-app-structure.md
+      - doctypes/data-masking-audit-trail.md
+  - label: "Server-Side (Python API)"
+    slug: server-side
+    items:
+      - server-side/overview.md
+      - server-side/document-api.md
+      - server-side/querying-data.md
+      - server-side/query-builder.md
+      - server-side/database-api.md
+      - server-side/whitelisted-methods.md
+      - server-side/hooks.md
+      - server-side/permissions-in-code.md
+      - server-side/background-jobs.md
+      - server-side/realtime.md
+      - server-side/jinja-ssr.md
+      - server-side/caching.md
+      - server-side/logging-errors.md
+      - server-side/utilities.md
+  - label: "REST API & Integrations"
+    slug: rest-api
+    items:
+      - rest-api/overview.md
+      - rest-api/authentication.md
+      - rest-api/listing-documents.md
+      - rest-api/creating-updating.md
+      - rest-api/calling-methods.md
+      - rest-api/filters-fields-pagination.md
+      - rest-api/webhooks.md
+      - rest-api/connected-apps.md
+      - rest-api/third-party-integrations.md
+      - rest-api/rate-limiting.md
+  - label: "Client-Side (JS API)"
+    slug: client-side
+    items:
+      - client-side/form-api.md
+      - client-side/controls.md
+      - client-side/server-calls.md
+      - client-side/list-view.md
+      - client-side/dialog-api.md
+      - client-side/charts-scanner.md
+      - client-side/custom-pages.md
+      - client-side/tree-view.md
+      - client-side/asset-bundling.md
+      - client-side/common-utilities.md
+  - label: "Desk & UI"
+    slug: desk
+    items:
+      - desk/overview.md
+      - desk/reports.md
+      - desk/print-formats.md
+      - desk/client-server-scripts.md
+      - desk/attachments.md
+      - desk/system-console.md
+  - label: "Portal & Web Forms"
+    slug: portal
+    items:
+      - portal/portal-pages.md
+      - portal/generators-routing.md
+      - portal/web-forms.md
+      - portal/portal-roles-redirects.md
+  - label: "Security, Auth & Permissions"
+    slug: security
+    items:
+      - security/permission-model.md
+      - security/user-role-management.md
+      - security/permission-query-conditions.md
+      - security/document-sharing.md
+      - security/user-permissions.md
+      - security/audit-trail.md
+      - security/oauth2.md
+      - security/social-login-oidc.md
+      - security/ldap.md
+      - security/security-best-practices.md
+  - label: "App Lifecycle & Tooling"
+    slug: app-lifecycle
+    items:
+      - server-side/migrations-patches.md
+      - server-side/translations.md
+      - server-side/custom-bench-commands.md
+  - label: "Administration & Deployment"
+    slug: administration
+    items:
+      - administration/bench-overview.md
+      - administration/site-management.md
+      - administration/site-config.md
+      - administration/production-setup.md
+      - administration/https.md
+      - administration/multitenancy-domains.md
+      - administration/database-administration.md
+      - administration/zero-downtime-migrations.md
+      - administration/monitoring.md
+      - administration/performance-optimization.md
+  - label: "Testing & Quality"
+    slug: testing
+    items:
+      - testing/overview.md
+      - testing/unit-testing.md
+      - testing/integration-testing.md
+      - testing/ui-testing.md
+      - testing/debugging.md
+      - testing/profiling-monitoring.md
+  - label: "Data Import / Export"
+    slug: data-import
+    items:
+      - data-import/data-import.md
+      - data-import/large-csv-import.md
+      - data-import/moving-data-between-sites.md
